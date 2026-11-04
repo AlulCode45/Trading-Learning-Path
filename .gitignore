@@ -3,6 +3,8 @@ node_modules/
 vendor/
 graphify-out/
 .taste-skill/
+dist/
+data/
 
 # Environment files
 .env

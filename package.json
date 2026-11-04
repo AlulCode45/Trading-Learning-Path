@@ -1,0 +1,38 @@
+{
+  "name": "trading-learning-path",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n \"API,VITE\" -c \"cyan,green\" \"bun server/index.ts\" \"vite\"",
+    "server": "bun server/index.ts",
+    "client": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "clsx": "^2.1.1",
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "lucide-react": "^1.68.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwind-merge": "^3.7.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.4",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "autoprefixer": "^10.6.2",
+    "concurrently": "^10.0.6",
+    "postcss": "^8.5.32",
+    "tailwindcss": "^4.3.4",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5"
+  }
+}
