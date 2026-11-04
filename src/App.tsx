@@ -143,17 +143,20 @@ export function App() {
   const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-[#08090D] not-dark:bg-[#F8FAFC] text-[#F8FAFC] not-dark:text-[#0F172A] flex flex-col font-sans transition-colors duration-200">
-      <Header
-        currentView={currentView}
-        setCurrentView={setCurrentView}
-        onOpenCreateModal={() => setIsCreateModalOpen(true)}
-        completionPercentage={completionPercentage}
-        completedNodes={completedCount}
-        totalNodes={totalCount}
-        theme={theme}
-        setTheme={setTheme}
-      />
+    <div className={`min-h-screen ${currentView === 'landing' ? 'bg-[#F5F3ED]' : 'bg-[#08090D] not-dark:bg-[#F8FAFC] text-[#F8FAFC] not-dark:text-[#0F172A]'} flex flex-col font-sans transition-colors duration-200`}>
+      {/* App Workspace Navigation (shown on dashboard, roadmap, playground, community, profile) */}
+      {currentView !== 'landing' && (
+        <Header
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          onOpenCreateModal={() => setIsCreateModalOpen(true)}
+          completionPercentage={completionPercentage}
+          completedNodes={completedCount}
+          totalNodes={totalCount}
+          theme={theme}
+          setTheme={setTheme}
+        />
+      )}
 
       {/* Main Content Router */}
       <main className="flex-1 flex flex-col">
@@ -164,8 +167,8 @@ export function App() {
               handleSelectRoadmap(slug);
               setCurrentView('roadmap');
             }}
-            theme={theme}
-            setTheme={setTheme}
+            onNavigateToPlayground={() => setCurrentView('playground')}
+            onOpenCreateRoadmap={() => setIsCreateModalOpen(true)}
           />
         )}
 

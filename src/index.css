@@ -2,6 +2,22 @@
 
 @layer base {
   :root {
+    /* Market Atlas Editorial Palette */
+    --color-paper: #F5F3ED;
+    --color-ink: #171916;
+    --color-signal: #F26A3D;
+    --color-market: #6D896B;
+    --color-border: #DCD9D0;
+    --color-surface: #EAE7DF;
+    --color-muted: #85857D;
+    --color-card-bg: #FFFFFF;
+
+    /* Semantic */
+    --color-success: #527D5B;
+    --color-warning: #D69A3A;
+    --color-danger: #C64D43;
+
+    /* Dark App Theme Tokens (preserved for app workspace) */
     --canvas-bg: #08090D;
     --canvas-surface: #0D1017;
     --canvas-card: #121722;
@@ -10,84 +26,45 @@
     --border-hover: #2B3547;
     --text-primary: #F8FAFC;
     --text-secondary: #929BAA;
-    --text-muted: #64748B;
-    --accent-lime: #C6F36A;
-    --accent-emerald: #27D99B;
-    --accent-blue: #6EA8FE;
-    --accent-amber: #F59E0B;
-    --accent-rose: #F43F5E;
-    --grid-line: rgba(29, 37, 50, 0.4);
   }
 
-  /* Light Mode Palette */
-  html:not(.dark) {
-    --canvas-bg: #F8FAFC;
-    --canvas-surface: #FFFFFF;
-    --canvas-card: #F1F5F9;
-    --canvas-elevated: #E2E8F0;
-    --border-subtle: #E2E8F0;
-    --border-hover: #CBD5E1;
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-muted: #64748B;
-    --accent-lime: #15803D;
-    --accent-emerald: #059669;
-    --accent-blue: #0284C7;
-    --accent-amber: #D97706;
-    --accent-rose: #E11D48;
-    --grid-line: rgba(226, 232, 240, 0.85);
+  /* Editorial Serif Class */
+  .font-editorial {
+    font-family: 'Instrument Serif', 'Newsreader', 'Times New Roman', Georgia, serif;
+    letter-spacing: -0.015em;
   }
 
-  body {
-    background-color: var(--canvas-bg);
-    color: var(--text-primary);
+  .font-sans-ui {
     font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  code, pre, .font-mono {
+  .font-mono-data {
     font-family: 'JetBrains Mono', 'Geist Mono', monospace;
+    font-feature-settings: 'tnum' 1;
   }
 }
 
-/* Tactical Trading Grid Pattern */
-.bg-grid-tactical {
-  background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+/* Swiss Editorial Grid Lines */
+.border-hairline {
+  border-width: 1px;
+  border-color: #DCD9D0;
 }
 
-.bg-dot-matrix {
-  background-size: 24px 24px;
-  background-image: radial-gradient(var(--grid-line) 1px, transparent 1px);
+.divide-hairline > * + * {
+  border-color: #DCD9D0;
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar for Editorial Atlas */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--canvas-bg);
+  background: #F5F3ED;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
-  border-radius: 9999px;
+  background: #DCD9D0;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--border-hover);
-}
-
-/* Pulsing neon glows */
-.glow-lime {
-  box-shadow: 0 0 25px rgba(198, 243, 106, 0.2);
-}
-
-.glow-emerald {
-  box-shadow: 0 0 25px rgba(39, 217, 155, 0.2);
-}
-
-.glow-blue {
-  box-shadow: 0 0 25px rgba(110, 168, 254, 0.2);
+  background: #85857D;
 }
