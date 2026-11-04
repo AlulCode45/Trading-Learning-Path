@@ -13,6 +13,14 @@ export interface Roadmap {
   created_at: string;
 }
 
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation: string;
+}
+
 export interface RoadmapNode {
   id: string;
   roadmap_id: string;
@@ -29,6 +37,7 @@ export interface RoadmapNode {
   status: 'locked' | 'available' | 'in_progress' | 'completed';
   checklists: Array<{ id: string; text: string; is_completed: boolean }>;
   resources: Array<{ id: string; title: string; url: string; type: string; author: string | null }>;
+  quizzes?: QuizQuestion[];
 }
 
 export interface CommunityRoadmap {
@@ -41,4 +50,24 @@ export interface CommunityRoadmap {
   nodes: Array<{ title: string; level: number; duration: string }>;
   upvotes: number;
   created_at: string;
+}
+
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
+  unlockedAt?: string;
+  category: 'progress' | 'streak' | 'accuracy' | 'mastery';
+}
+
+export interface UserStats {
+  streakDays: number;
+  totalXp: number;
+  masteredNodesCount: number;
+  totalNodesCount: number;
+  completedQuizzesCount: number;
+  hoursSpent: number;
+  rankTitle: string;
 }

@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Roadmap, RoadmapNode, CommunityRoadmap } from './types';
-import { Header } from './components/Header';
+import { Header, ViewType } from './components/Header';
 import { LandingPage } from './components/LandingPage';
+import { DashboardView } from './components/DashboardView';
 import { RoadmapCanvas } from './components/RoadmapCanvas';
+import { PlaygroundView } from './components/PlaygroundView';
 import { NodeDrawer } from './components/NodeDrawer';
 import { CommunityView } from './components/CommunityView';
+import { ProfileView } from './components/ProfileView';
 import { SyllabusPlanView } from './components/SyllabusPlanView';
 import { CreateRoadmapModal } from './components/CreateRoadmapModal';
-import { Sparkles, Layers, RefreshCw } from 'lucide-react';
+import { Layers, RefreshCw, Sparkles } from 'lucide-react';
 
 export function App() {
-  const [currentView, setCurrentView] = useState<'landing' | 'app'>('landing');
-  const [activeTab, setActiveTab] = useState<'roadmap' | 'community' | 'syllabus'>('roadmap');
+  const [currentView, setCurrentView] = useState<ViewType>('landing');
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     return (localStorage.getItem('tlp-theme') as 'dark' | 'light') || 'dark';
   });
@@ -48,7 +50,7 @@ export function App() {
     }
   };
 
-  // Fetch current roadmap details (nodes, checklists, progress)
+  // Fetch current roadmap details (nodes, checklists, quizzes)
   const fetchRoadmapDetails = async (slug: string) => {
     setLoading(true);
     try {
@@ -141,12 +143,10 @@ export function App() {
   const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-[#090D16] not-dark:bg-[#F8FAFC] text-[#F8FAFC] not-dark:text-[#0F172A] flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-[#08090D] not-dark:bg-[#F8FAFC] text-[#F8FAFC] not-dark:text-[#0F172A] flex flex-col font-sans transition-colors duration-200">
       <Header
         currentView={currentView}
         setCurrentView={setCurrentView}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
         onOpenCreateModal={() => setIsCreateModalOpen(true)}
         completionPercentage={completionPercentage}
         completedNodes={completedCount}
@@ -155,109 +155,126 @@ export function App() {
         setTheme={setTheme}
       />
 
-      {currentView === 'landing' ? (
-        <LandingPage
-          onEnterApp={() => {
-            setCurrentView('app');
-            setActiveTab('roadmap');
-          }}
-          onExploreMethod={(slug) => {
-            handleSelectRoadmap(slug);
-            setCurrentView('app');
-            setActiveTab('roadmap');
-          }}
-          theme={theme}
-          setTheme={setTheme}
-        />
-      ) : (
-        <main className="flex-1 flex flex-col">
-          {activeTab === 'roadmap' && (
-            <div>
-              {/* Roadmap Selector Subheader */}
-              <div className="bg-[#0B101D] not-dark:bg-slate-100 border-b border-[#1E293B] not-dark:border-slate-200 px-4 sm:px-8 py-3 flex items-center justify-between overflow-x-auto transition-colors">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs font-mono text-[#94A3B8] not-dark:text-slate-600 uppercase flex items-center space-x-1.5 mr-2">
-                    <Layers className="w-3.5 h-3.5 text-[#10B981]" />
-                    <span className="hidden sm:inline">Pilih Metodologi:</span>
-                  </span>
+      {/* Main Content Router */}
+      <main className="flex-1 flex flex-col">
+        {currentView === 'landing' && (
+          <LandingPage
+            onEnterApp={() => setCurrentView('roadmap')}
+            onExploreMethod={(slug) => {
+              handleSelectRoadmap(slug);
+              setCurrentView('roadmap');
+            }}
+            theme={theme}
+            setTheme={setTheme}
+          />
+        )}
 
-                  {roadmaps.map(rm => (
-                    <button
-                      key={rm.id}
-                      onClick={() => handleSelectRoadmap(rm.slug)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap flex items-center space-x-2 ${
-                        currentSlug === rm.slug
-                          ? 'bg-[#10B981]/20 text-[#10B981] border border-[#10B981]/50 font-semibold shadow-[0_0_10px_rgba(16,185,129,0.15)]'
-                          : 'bg-[#0F172A] not-dark:bg-white text-[#94A3B8] not-dark:text-slate-700 hover:text-[#F8FAFC] not-dark:hover:text-black border border-[#1E293B] not-dark:border-slate-300'
-                      }`}
-                    >
-                      <span>{rm.title}</span>
-                      {rm.slug !== 'price-action-market-structure' && (
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 bg-[#38BDF8]/15 text-[#38BDF8] rounded">
-                          Next
-                        </span>
-                      )}
-                    </button>
-                  ))}
-                </div>
+        {currentView === 'dashboard' && (
+          <DashboardView
+            roadmap={currentRoadmap}
+            nodes={nodes}
+            onSelectNode={setSelectedNode}
+            onNavigateToRoadmap={() => setCurrentView('roadmap')}
+            onNavigateToPlayground={() => setCurrentView('playground')}
+          />
+        )}
 
-                <button
-                  onClick={() => fetchRoadmapDetails(currentSlug)}
-                  title="Refresh progress"
-                  className="p-1.5 text-[#94A3B8] hover:text-[#10B981] transition-colors ml-2 flex-shrink-0"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                </button>
+        {currentView === 'roadmap' && (
+          <div>
+            {/* Methodology Bar */}
+            <div className="bg-[#0D1017] not-dark:bg-slate-100 border-b border-[#1D2532] not-dark:border-slate-200 px-4 sm:px-8 py-3 flex items-center justify-between overflow-x-auto transition-colors">
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-mono text-[#929BAA] not-dark:text-slate-600 uppercase flex items-center space-x-1.5 mr-2">
+                  <Layers className="w-3.5 h-3.5 text-[#10B981]" />
+                  <span className="hidden sm:inline">Pilih Metodologi:</span>
+                </span>
+
+                {roadmaps.map(rm => (
+                  <button
+                    key={rm.id}
+                    onClick={() => handleSelectRoadmap(rm.slug)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap flex items-center space-x-2 ${
+                      currentSlug === rm.slug
+                        ? 'bg-[#10B981]/20 text-[#10B981] border border-[#10B981]/50 font-semibold shadow-[0_0_10px_rgba(16,185,129,0.15)]'
+                        : 'bg-[#121722] not-dark:bg-white text-[#929BAA] not-dark:text-slate-700 hover:text-[#F8FAFC] not-dark:hover:text-black border border-[#1D2532] not-dark:border-slate-300'
+                    }`}
+                  >
+                    <span>{rm.title}</span>
+                    {rm.slug !== 'price-action-market-structure' && (
+                      <span className="text-[10px] font-mono px-1.5 py-0.2 bg-[#38BDF8]/15 text-[#38BDF8] rounded">
+                        Next
+                      </span>
+                    )}
+                  </button>
+                ))}
               </div>
 
-              {loading ? (
-                <div className="flex-1 flex items-center justify-center p-20 text-[#94A3B8] font-mono text-xs">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-[#10B981] animate-ping" />
-                    <span>Memuat Peta Jalan &amp; Titik Struktur...</span>
-                  </div>
-                </div>
-              ) : currentRoadmap && nodes.length > 0 ? (
-                <RoadmapCanvas
-                  roadmap={currentRoadmap}
-                  nodes={nodes}
-                  onSelectNode={setSelectedNode}
-                  selectedNodeId={selectedNode?.id || null}
-                />
-              ) : (
-                <div className="text-center py-20 text-[#94A3B8]">
-                  <p>Roadmap ini sedang dalam penyusunan kurikulum interaktif.</p>
-                  <button
-                    onClick={() => setActiveTab('syllabus')}
-                    className="mt-3 px-4 py-2 bg-[#10B981] text-[#090D16] rounded-lg text-xs font-semibold inline-flex items-center space-x-1"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Lihat Rencana Silabus</span>
-                  </button>
-                </div>
-              )}
+              <button
+                onClick={() => fetchRoadmapDetails(currentSlug)}
+                title="Refresh progress"
+                className="p-1.5 text-[#929BAA] hover:text-[#10B981] transition-colors ml-2 flex-shrink-0"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
             </div>
-          )}
 
-          {activeTab === 'community' && (
-            <CommunityView
-              roadmaps={communityRoadmaps}
-              onUpvote={handleUpvoteCommunity}
-              onOpenCreateModal={() => setIsCreateModalOpen(true)}
-            />
-          )}
+            {loading ? (
+              <div className="flex-1 flex items-center justify-center p-20 text-[#929BAA] font-mono text-xs">
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-[#10B981] animate-ping" />
+                  <span>Memuat Peta Jalan &amp; Titik Struktur...</span>
+                </div>
+              </div>
+            ) : currentRoadmap && nodes.length > 0 ? (
+              <RoadmapCanvas
+                roadmap={currentRoadmap}
+                nodes={nodes}
+                onSelectNode={setSelectedNode}
+                selectedNodeId={selectedNode?.id || null}
+              />
+            ) : (
+              <div className="text-center py-20 text-[#929BAA]">
+                <p>Roadmap ini sedang dalam penyusunan kurikulum interaktif.</p>
+                <button
+                  onClick={() => setCurrentView('syllabus')}
+                  className="mt-3 px-4 py-2 bg-[#10B981] text-[#08090D] rounded-lg text-xs font-semibold inline-flex items-center space-x-1"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Lihat Rencana Silabus</span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
-          {activeTab === 'syllabus' && (
-            <SyllabusPlanView />
-          )}
-        </main>
-      )}
+        {currentView === 'playground' && (
+          <PlaygroundView />
+        )}
 
-      {/* Node Slide-Over Detail Drawer */}
+        {currentView === 'community' && (
+          <CommunityView
+            roadmaps={communityRoadmaps}
+            onUpvote={handleUpvoteCommunity}
+            onOpenCreateModal={() => setIsCreateModalOpen(true)}
+          />
+        )}
+
+        {currentView === 'profile' && (
+          <ProfileView nodes={nodes} />
+        )}
+
+        {currentView === 'syllabus' && (
+          <SyllabusPlanView />
+        )}
+      </main>
+
+      {/* Node Slide-Over Detail Drawer with Quizzes & Confetti */}
       {selectedNode && (
         <NodeDrawer
           node={selectedNode}
+          allNodes={nodes}
           onClose={() => setSelectedNode(null)}
+          onSelectNode={setSelectedNode}
           onUpdateStatus={handleUpdateNodeStatus}
           onToggleChecklist={handleToggleChecklist}
         />
@@ -269,7 +286,7 @@ export function App() {
         onClose={() => setIsCreateModalOpen(false)}
         onCreated={() => {
           fetchCommunity();
-          setActiveTab('community');
+          setCurrentView('community');
         }}
       />
     </div>

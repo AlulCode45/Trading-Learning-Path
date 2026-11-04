@@ -2,34 +2,38 @@
 
 @layer base {
   :root {
-    --canvas-bg: #090D16;
-    --canvas-card: #0F172A;
-    --canvas-surface: #131C31;
-    --border-color: #1E293B;
-    --border-focus: #334155;
+    --canvas-bg: #08090D;
+    --canvas-surface: #0D1017;
+    --canvas-card: #121722;
+    --canvas-elevated: #171D28;
+    --border-subtle: #1D2532;
+    --border-hover: #2B3547;
     --text-primary: #F8FAFC;
-    --text-secondary: #94A3B8;
+    --text-secondary: #929BAA;
     --text-muted: #64748B;
-    --accent-emerald: #10B981;
+    --accent-lime: #C6F36A;
+    --accent-emerald: #27D99B;
+    --accent-blue: #6EA8FE;
     --accent-amber: #F59E0B;
-    --accent-cyan: #38BDF8;
     --accent-rose: #F43F5E;
-    --grid-line: rgba(30, 41, 59, 0.45);
+    --grid-line: rgba(29, 37, 50, 0.4);
   }
 
   /* Light Mode Palette */
   html:not(.dark) {
     --canvas-bg: #F8FAFC;
-    --canvas-card: #FFFFFF;
-    --canvas-surface: #F1F5F9;
-    --border-color: #E2E8F0;
-    --border-focus: #CBD5E1;
+    --canvas-surface: #FFFFFF;
+    --canvas-card: #F1F5F9;
+    --canvas-elevated: #E2E8F0;
+    --border-subtle: #E2E8F0;
+    --border-hover: #CBD5E1;
     --text-primary: #0F172A;
     --text-secondary: #475569;
     --text-muted: #64748B;
+    --accent-lime: #15803D;
     --accent-emerald: #059669;
+    --accent-blue: #0284C7;
     --accent-amber: #D97706;
-    --accent-cyan: #0284C7;
     --accent-rose: #E11D48;
     --grid-line: rgba(226, 232, 240, 0.85);
   }
@@ -54,6 +58,11 @@
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
 }
 
+.bg-dot-matrix {
+  background-size: 24px 24px;
+  background-image: radial-gradient(var(--grid-line) 1px, transparent 1px);
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -63,9 +72,22 @@
   background: var(--canvas-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: var(--border-subtle);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--border-focus);
+  background: var(--border-hover);
+}
+
+/* Pulsing neon glows */
+.glow-lime {
+  box-shadow: 0 0 25px rgba(198, 243, 106, 0.2);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 25px rgba(39, 217, 155, 0.2);
+}
+
+.glow-blue {
+  box-shadow: 0 0 25px rgba(110, 168, 254, 0.2);
 }
