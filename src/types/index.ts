@@ -71,3 +71,63 @@ export interface UserStats {
   hoursSpent: number;
   rankTitle: string;
 }
+
+export interface TableOfContentItem {
+  id: string;
+  title: string;
+}
+
+export interface ArticleSection {
+  id: string;
+  title: string;
+  content: string;
+  visualType?: string;
+  callout?: {
+    type: 'note' | 'warning' | 'tip' | 'example';
+    title?: string;
+    text: string;
+  };
+  financialExample?: {
+    scenario: string;
+    analysis: string;
+    outcome: string;
+  };
+}
+
+export interface CommonMistake {
+  mistake: string;
+  correction: string;
+}
+
+export interface RelatedTopic {
+  slug: string;
+  title: string;
+  category: string;
+}
+
+export interface ArticleReference {
+  title: string;
+  author: string;
+  year?: string;
+  url?: string;
+}
+
+export interface EducationalArticle {
+  id: string;
+  nodeId?: string;
+  slug: string;
+  title: string;
+  category: string;
+  level: number;
+  readingTimeMinutes: number;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  summary: string;
+  prerequisites: string[];
+  tableOfContents: TableOfContentItem[];
+  sections: ArticleSection[];
+  commonMistakes: CommonMistake[];
+  keyTakeaways: string[];
+  relatedTopics: RelatedTopic[];
+  references: ArticleReference[];
+}
+

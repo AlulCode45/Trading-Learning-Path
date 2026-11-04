@@ -14,7 +14,7 @@ import {
   Flame 
 } from 'lucide-react';
 
-export type ViewType = 'landing' | 'dashboard' | 'roadmap' | 'playground' | 'community' | 'profile' | 'syllabus';
+export type ViewType = 'landing' | 'dashboard' | 'roadmap' | 'docs' | 'playground' | 'community' | 'profile' | 'syllabus';
 
 interface HeaderProps {
   currentView: ViewType;
@@ -103,6 +103,18 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             <button
+              onClick={() => setCurrentView('docs')}
+              className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                currentView === 'docs'
+                  ? 'bg-[#10B981] text-[#08090D] font-semibold shadow-sm'
+                  : 'text-[#929BAA] not-dark:text-slate-600 hover:text-white not-dark:hover:text-black'
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Dokumentasi</span>
+            </button>
+
+            <button
               onClick={() => setCurrentView('playground')}
               className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 currentView === 'playground'
@@ -181,8 +193,9 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex lg:hidden items-center justify-between py-2 border-t border-[#1D2532] not-dark:border-slate-200 overflow-x-auto space-x-2">
           {[
             { id: 'landing', label: 'Beranda' },
-            { id: 'dashboard', label: 'Dashboard' },
             { id: 'roadmap', label: 'Roadmap' },
+            { id: 'docs', label: 'Dokumentasi' },
+            { id: 'dashboard', label: 'Dashboard' },
             { id: 'playground', label: 'Playground' },
             { id: 'community', label: 'Komunitas' },
             { id: 'profile', label: 'Profil' }

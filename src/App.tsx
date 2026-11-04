@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Roadmap, RoadmapNode, CommunityRoadmap } from './types';
 import { Header, ViewType } from './components/Header';
-import { LandingPage } from './components/LandingPage';
+import { HomeDiscovery } from './components/HomeDiscovery';
+import { DocReader } from './components/DocReader';
 import { DashboardView } from './components/DashboardView';
 import { RoadmapCanvas } from './components/RoadmapCanvas';
 import { PlaygroundView } from './components/PlaygroundView';
@@ -10,6 +11,7 @@ import { CommunityView } from './components/CommunityView';
 import { ProfileView } from './components/ProfileView';
 import { SyllabusPlanView } from './components/SyllabusPlanView';
 import { CreateRoadmapModal } from './components/CreateRoadmapModal';
+import { ContributorPortalModal } from './components/ContributorPortalModal';
 import { Layers, RefreshCw, Sparkles } from 'lucide-react';
 
 export function App() {
@@ -23,8 +25,10 @@ export function App() {
   const [currentRoadmap, setCurrentRoadmap] = useState<Roadmap | null>(null);
   const [nodes, setNodes] = useState<RoadmapNode[]>([]);
   const [selectedNode, setSelectedNode] = useState<RoadmapNode | null>(null);
+  const [selectedArticleSlug, setSelectedArticleSlug] = useState<string>('candlestick-anatomy-wick-dynamics');
   const [communityRoadmaps, setCommunityRoadmaps] = useState<CommunityRoadmap[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+  const [isContributorModalOpen, setIsContributorModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Sync theme with document element
@@ -142,33 +146,50 @@ export function App() {
   const totalCount = nodes.length;
   const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
+  const nodeStatusMap = useMemo(() => {
+    const map: Record<string, RoadmapNode['status']> = {};
+    nodes.forEach(n => { map[n.id] = n.status; });
+    return map;
+  }, [nodes]);
+
   return (
-    <div className={`min-h-screen ${currentView === 'landing' ? 'bg-[#F5F3ED]' : 'bg-[#08090D] not-dark:bg-[#F8FAFC] text-[#F8FAFC] not-dark:text-[#0F172A]'} flex flex-col font-sans transition-colors duration-200`}>
-      {/* App Workspace Navigation (shown on dashboard, roadmap, playground, community, profile) */}
-      {currentView !== 'landing' && (
-        <Header
-          currentView={currentView}
-          setCurrentView={setCurrentView}
-          onOpenCreateModal={() => setIsCreateModalOpen(true)}
-          completionPercentage={completionPercentage}
-          completedNodes={completedCount}
-          totalNodes={totalCount}
-          theme={theme}
-          setTheme={setTheme}
-        />
-      )}
+    <div className="min-h-screen bg-[#08090D] not-dark:bg-[#F8FAFC] text-[#F8FAFC] not-dark:text-[#0F172A] flex flex-col font-sans transition-colors duration-200">
+      {/* Universal Header with Navigation & Theme Toggle */}
+      <Header
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        onOpenCreateModal={() => setIsCreateModalOpen(true)}
+        completionPercentage={completionPercentage}
+        completedNodes={completedCount}
+        totalNodes={totalCount}
+        theme={theme}
+        setTheme={setTheme}
+      />
 
       {/* Main Content Router */}
       <main className="flex-1 flex flex-col">
         {currentView === 'landing' && (
-          <LandingPage
-            onEnterApp={() => setCurrentView('roadmap')}
-            onExploreMethod={(slug) => {
-              handleSelectRoadmap(slug);
-              setCurrentView('roadmap');
+          <HomeDiscovery
+            roadmaps={roadmaps}
+            onSelectRoadmap={handleSelectRoadmap}
+            onNavigateToRoadmap={() => setCurrentView('roadmap')}
+            onNavigateToDocs={(slug) => {
+              setSelectedArticleSlug(slug);
+              setCurrentView('docs');
             }}
             onNavigateToPlayground={() => setCurrentView('playground')}
-            onOpenCreateRoadmap={() => setIsCreateModalOpen(true)}
+            onOpenContributorModal={() => setIsContributorModalOpen(true)}
+          />
+        )}
+
+        {currentView === 'docs' && (
+          <DocReader
+            articleSlug={selectedArticleSlug}
+            allNodes={nodes}
+            onSelectArticle={(slug) => setSelectedArticleSlug(slug)}
+            onReturnToRoadmap={() => setCurrentView('roadmap')}
+            onUpdateNodeStatus={handleUpdateNodeStatus}
+            nodeStatus={nodeStatusMap}
           />
         )}
 
@@ -280,6 +301,11 @@ export function App() {
           onSelectNode={setSelectedNode}
           onUpdateStatus={handleUpdateNodeStatus}
           onToggleChecklist={handleToggleChecklist}
+          onOpenDocReader={(slug) => {
+            setSelectedArticleSlug(slug);
+            setSelectedNode(null);
+            setCurrentView('docs');
+          }}
         />
       )}
 
@@ -290,6 +316,16 @@ export function App() {
         onCreated={() => {
           fetchCommunity();
           setCurrentView('community');
+        }}
+      />
+
+      {/* Contributor Portal Modal */}
+      <ContributorPortalModal
+        isOpen={isContributorModalOpen}
+        onClose={() => setIsContributorModalOpen(false)}
+        onOpenCreateRoadmap={() => {
+          setIsContributorModalOpen(false);
+          setIsCreateModalOpen(true);
         }}
       />
     </div>

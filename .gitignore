@@ -4,7 +4,7 @@ vendor/
 graphify-out/
 .taste-skill/
 dist/
-data/
+/data/
 
 # Environment files
 .env

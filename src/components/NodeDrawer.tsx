@@ -25,6 +25,7 @@ interface NodeDrawerProps {
   onSelectNode: (node: RoadmapNode) => void;
   onUpdateStatus: (nodeId: string, status: RoadmapNode['status']) => void;
   onToggleChecklist: (checklistId: string, isCompleted: boolean) => void;
+  onOpenDocReader?: (slug: string) => void;
 }
 
 export const NodeDrawer: React.FC<NodeDrawerProps> = ({
@@ -33,7 +34,8 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
   onClose,
   onSelectNode,
   onUpdateStatus,
-  onToggleChecklist
+  onToggleChecklist,
+  onOpenDocReader
 }) => {
   if (!node) return null;
 
@@ -101,13 +103,34 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 
         {/* Lesson Theory & Detailed Content */}
         <div className="border-t border-[#1E293B] not-dark:border-slate-200 pt-5">
-          <h3 className="text-xs font-mono uppercase tracking-wider text-[#10B981] mb-3 flex items-center space-x-2">
-            <BookOpen className="w-4 h-4" />
-            <span>Materi Inti & Panduan Praktik</span>
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-xs font-mono uppercase tracking-wider text-[#10B981] flex items-center space-x-2">
+              <BookOpen className="w-4 h-4" />
+              <span>Materi Inti & Panduan Praktik</span>
+            </h3>
+            {onOpenDocReader && (
+              <button
+                onClick={() => onOpenDocReader(node.slug)}
+                className="text-[11px] font-mono text-[#10B981] hover:underline flex items-center space-x-1"
+              >
+                <span>Buka Artikel Penuh</span>
+                <ArrowRight className="w-3 h-3" />
+              </button>
+            )}
+          </div>
           <div className="text-xs leading-relaxed text-[#CBD5E1] not-dark:text-slate-700 space-y-3 whitespace-pre-line bg-[#090D16] not-dark:bg-slate-50 p-4 rounded-xl border border-[#1E293B] not-dark:border-slate-200">
             {node.content}
           </div>
+          {onOpenDocReader && (
+            <button
+              onClick={() => onOpenDocReader(node.slug)}
+              className="w-full mt-3 py-2.5 px-4 rounded-xl bg-[#121722] not-dark:bg-slate-100 hover:bg-[#10B981] hover:text-black border border-[#1D2532] hover:border-[#10B981] text-xs font-mono text-[#10B981] flex items-center justify-center space-x-2 transition-all shadow-sm"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Baca Dokumentasi Teknis Lengkap &amp; Studi Kasus</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         {/* Interactive Verification Checklist */}

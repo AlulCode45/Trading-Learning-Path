@@ -1,535 +1,562 @@
-# Trading Learning Path — Design System
+# TRADING LEARNING PATH
+## Product & Design System
 
-Version: 1.0
-Design Direction: The Market Atlas
-Product: Trading Learning Path
-
----
-
-## 1. Design Philosophy
-
-Trading Learning Path is an editorial-first financial education platform.
-
-It should feel like a combination of:
-
-- A premium financial publication.
-- An interactive educational platform.
-- A professional market research tool.
-- A carefully art-directed digital experience.
-
-The interface must communicate intelligence, clarity, trust, and curiosity.
-
-The design must NOT look like a generic SaaS dashboard or an AI-generated website template.
-
-### Core principles
-
-1. Editorial over generic SaaS.
-2. Clarity over decoration.
-3. Typography over excessive cards.
-4. Information hierarchy over visual noise.
-5. Real interactions over decorative animations.
-6. Custom visualizations over generic illustrations.
-7. Consistency over random component styling.
-
-The product should feel intentionally designed, not assembled from a component library.
+Version: 2.0
+Product Direction: Financial Knowledge Atlas
+Core Inspiration: roadmap.sh
 
 ---
 
-## 2. Brand Identity
+# 1. PRODUCT DEFINITION
 
-Brand name: Trading Learning Path
+Trading Learning Path is an open, community-driven knowledge platform focused on trading and financial markets.
 
-Brand positioning:
-A structured and interactive journey to understanding financial markets and trading.
+It provides structured visual learning roadmaps and comprehensive reading materials.
 
-Brand personality:
-- Intelligent
-- Precise
-- Curious
-- Analytical
-- Approachable
-- Professional
+The product is NOT:
 
-Suggested brand tagline:
+- An online trading course.
+- A trading signals platform.
+- A brokerage service.
+- A financial advisory company.
+- A conventional SaaS dashboard.
+- A subscription-based learning management system.
 
-"Understand the Market. Master the Process."
+The product IS:
 
-Alternative:
-"Your Path to Understanding the Markets."
+- A visual learning roadmap platform.
+- An open trading knowledge base.
+- A collection of interconnected educational documentation.
+- A directory of useful financial learning resources.
+- A collaborative knowledge platform.
 
----
+Core philosophy:
 
-## 3. Visual Direction
+"Explore the roadmap. Understand the concepts. Build your knowledge."
 
-### Overall aesthetic
+The platform should closely follow the information architecture and learning experience philosophy of roadmap.sh, adapted specifically for trading and financial markets.
 
-Editorial Swiss design with contemporary financial visualization.
-
-Visual references:
-- Swiss International Typographic Style.
-- Premium financial magazines.
-- Minimalist editorial websites.
-- Contemporary data journalism.
-- Awwwards-quality interactive experiences.
-
-Use:
-- Asymmetric layouts.
-- Large editorial typography.
-- Strong grid systems.
-- Generous whitespace.
-- Carefully controlled accent colors.
-- Custom market-inspired graphics.
-- Fine dividers and subtle borders.
-
-Avoid:
-- Generic SaaS dashboard layouts.
-- Excessive rounded cards.
-- Purple gradient backgrounds.
-- Random decorative blobs.
-- Glassmorphism everywhere.
-- Excessive shadows.
-- Unnecessary glowing effects.
-- Repeated three-column feature cards.
-- Generic stock illustrations.
-- Fake terminal aesthetics.
-- Excessive floating elements.
-- Unnecessary badge collections.
+Do not directly copy its visual design.
 
 ---
 
-## 4. Color System
+# 2. CORE PRODUCT PRINCIPLES
 
-Use CSS variables and centralized design tokens.
+## Roadmap First
 
-### Primary colors
+The roadmap is the heart of the entire application.
 
---color-paper: #F5F3ED;
---color-ink: #171916;
---color-signal: #F26A3D;
---color-market: #6D896B;
---color-border: #DCD9D0;
---color-surface: #EAE7DF;
+Users should be able to visually understand what they need to learn, what comes first, and how concepts relate to one another.
 
-### Semantic colors
+Every major learning category must have a real visual roadmap.
 
---color-success: #527D5B;
---color-warning: #D69A3A;
---color-danger: #C64D43;
---color-muted: #85857D;
+A roadmap is not a list of cards.
 
-### Usage rules
+It is a structured graph containing:
+- Learning nodes.
+- Connections.
+- Dependencies.
+- Learning stages.
+- Topic relationships.
+- Optional branches.
 
-Paper:
-Main page background.
+## Documentation First
 
-Ink:
-Primary typography, navigation, and important interface elements.
+Every meaningful roadmap node should connect to actual educational content.
 
-Signal:
-Primary CTA, active states, and important highlights.
+Do not create empty topic pages.
 
-Market:
-Positive market examples and successful learning states.
+The knowledge base must be a first-class part of the application.
 
-Border:
-Dividers, separators, and subtle component outlines.
+## Public Knowledge
 
-Never use all accent colors simultaneously without a clear semantic purpose.
+All educational roadmaps, articles, documentation, and public resources must be accessible without authentication.
+
+## Community Driven
+
+Registered contributors can submit and maintain educational materials according to their permissions.
 
 ---
 
-## 5. Typography
+# 3. INFORMATION ARCHITECTURE
 
-Typography is a core visual element.
+Primary navigation:
 
-Use a deliberate pairing:
+- Home
+- Roadmaps
+- Knowledge Base
+- Resources
+- About
 
-Display serif:
-Instrument Serif or a comparable editorial serif.
+Secondary action:
 
-Interface sans-serif:
-Inter, Geist, or a comparable modern sans-serif.
+- Become a Contributor
 
-Suggested hierarchy:
+Contributor authentication:
+- Register
+- Login
 
-Display:
-Large editorial headlines with tight line height.
+Never require authentication to read public content.
 
-Heading:
-Clear section hierarchy.
+## Main application routes
 
-Body:
-Comfortable reading size and generous line height.
+Suggested routes:
 
-Metadata:
-Small uppercase labels with restrained letter spacing.
+/
+  Homepage
 
-Use serif typography selectively for headlines and important editorial moments.
+/roadmaps
+  Roadmap directory
 
-Do not use oversized typography in every section.
+/roadmaps/:slug
+  Interactive roadmap detail
 
-Do not use excessive font weights.
+/learn/:slug
+  Educational documentation
 
----
+/topics
+  Knowledge base directory
 
-## 6. Layout System
+/topics/:slug
+  Topic detail
 
-Use a consistent responsive grid.
+/resources
+  External learning resources
 
-Desktop:
-- Maximum content width around 1440px.
-- Generous horizontal margins.
-- 12-column conceptual grid.
-- Asymmetric content distribution.
-- Consistent section spacing.
+/resources/:slug
+  Resource detail
 
-Tablet:
-- Adapt the grid to 8 columns.
-- Reduce horizontal spacing.
+/contribute
+  Contributor information
 
-Mobile:
-- Single-column content flow.
-- Maintain typography hierarchy.
-- Avoid horizontal overflow.
-- Preserve whitespace and readability.
+/contribute/register
+  Contributor registration
 
-Use consistent spacing tokens.
+/contribute/login
+  Contributor login
 
-Do not make every section use the same layout.
+/contributor
+  Contributor workspace
 
-Each section should have a layout appropriate to its content.
+Adapt these routes to existing project conventions.
 
----
-
-## 7. Component Design
-
-### Navigation
-
-Minimal editorial navigation.
-
-Include:
-- Brand identity.
-- Learning paths.
-- Explore.
-- About.
-- Login / Get Started.
-
-Avoid oversized navigation bars.
-
-### Buttons
-
-Primary:
-Signal orange background with dark text or an appropriately accessible contrasting treatment.
-
-Secondary:
-Transparent background with subtle border.
-
-Buttons should have clear hover and focus states.
-
-Avoid unnecessary pill-shaped buttons.
-
-### Cards
-
-Cards should be used only when content benefits from containment.
-
-Prefer:
-- Editorial sections.
-- Open layouts.
-- Dividers.
-- Structured content groups.
-
-Use rounded corners sparingly.
-
-### Interactive elements
-
-Every interactive element must have a real purpose.
-
-Include:
-- Hover feedback.
-- Focus states.
-- Loading states.
-- Empty states.
-- Error states where relevant.
+Do not create duplicate routing systems.
 
 ---
 
-## 8. Landing Page Art Direction
+# 4. ROADMAP SYSTEM
 
-The landing page is the primary expression of the brand.
+This is the most important product feature.
 
-It must feel like an editorial experience, not a generic product landing page.
+Each roadmap must be a real visual graph.
 
-### Section 01 — Hero
+A roadmap consists of:
 
-Purpose:
-Communicate the platform's value immediately.
+- Title.
+- Description.
+- Difficulty.
+- Estimated learning scope.
+- Categories.
+- Learning nodes.
+- Edges and dependencies.
+- Related roadmaps.
 
-Content:
-- Small editorial eyebrow.
-- Strong headline.
-- Concise description.
-- Primary CTA.
-- Secondary CTA.
-- Custom market visualization.
+## Node states
+
+- Not started.
+- Available.
+- In progress.
+- Completed.
+- Optional.
+- Locked, only when a genuine prerequisite exists.
+
+Do not artificially lock educational content.
+
+## Node interaction
+
+When a user selects a node, show:
+
+- Topic title.
+- Short explanation.
+- Learning objectives.
+- Prerequisites.
+- Related topics.
+- Estimated reading time when known.
+- Documentation link.
+- External references.
+
+A node must link to actual content.
+
+## Roadmap interactions
+
+Support:
+- Zoom in/out.
+- Pan and drag.
+- Fit to screen.
+- Node selection.
+- Search.
+- Category filtering.
+- Progress visualization.
+- Navigation to documentation.
+
+Use React Flow or an appropriate SVG-based graph renderer.
+
+Choose the implementation that produces the best balance between visual quality, performance, and usability.
+
+The roadmap must remain usable on mobile.
+
+---
+
+# 5. INITIAL ROADMAP CATALOG
+
+Create a coherent roadmap catalog.
+
+Recommended initial roadmaps:
+
+1. Trading Fundamentals
+2. Financial Markets
+3. Technical Analysis
+4. Fundamental Analysis
+5. Risk Management
+6. Trading Psychology
+7. Price Action
+8. Forex Trading
+9. Stock Market
+10. Cryptocurrency Trading
+11. Derivatives and Futures
+12. Algorithmic Trading
+
+Each roadmap should have a meaningful scope and structured learning dependencies.
+
+Avoid duplicating topics unnecessarily.
+
+Related topics can be shared between roadmaps.
+
+---
+
+# 6. DOCUMENTATION & KNOWLEDGE BASE
+
+Documentation is equally important as roadmaps.
+
+Every core topic must have a readable article or documentation page.
+
+## Documentation structure
+
+- Breadcrumb navigation.
+- Article title.
+- Short introduction.
+- Table of contents.
+- Main educational content.
+- Relevant diagrams.
+- Financial examples.
+- Key takeaways.
+- Common mistakes.
+- Related topics.
+- External references.
+- Previous and next navigation.
+
+## Content requirements
+
+Content must be genuinely educational.
+
+Do not use:
+- Lorem ipsum.
+- Repetitive generic explanations.
+- One-paragraph placeholder articles.
+- Unsupported financial claims.
+- Fabricated references.
+
+Each article should explain its topic with sufficient depth.
+
+Use diagrams and visual examples when they genuinely improve understanding.
+
+Clearly distinguish educational examples from live market data.
+
+---
+
+# 7. HOMEPAGE
+
+The homepage should behave as a knowledge discovery interface.
+
+It is NOT a marketing landing page for a financial education company.
+
+Primary purpose:
+Help visitors discover learning roadmaps and explore financial knowledge.
+
+Recommended sections:
+
+## Hero
+
+A concise introduction.
 
 Suggested headline:
 
-"Understand the Market.
-One Concept at a Time."
+"Your Map to Understanding the Markets."
 
-Supporting text:
+Supporting description:
 
-"An interactive learning path designed to take you from trading fundamentals to confident market analysis."
+"Explore structured trading roadmaps, understand financial concepts, and learn how markets work — one topic at a time."
 
-Visual:
-Create a custom market-inspired visualization.
+Primary CTA:
+Explore Roadmaps.
 
-Do not use a generic stock trading dashboard screenshot.
+Secondary CTA:
+Browse Knowledge Base.
 
-### Section 02 — Market Perspective
+Include a visible preview of an actual learning roadmap.
 
-Purpose:
-Explain that trading is a structured discipline.
+The roadmap should be a major visual component of the hero or the first content section.
 
-Show:
-- Market structure.
-- Price behavior.
-- Risk and probability.
-- Analytical thinking.
+## Roadmap Directory
 
-Use custom diagrams and visual explanations.
+Display available learning paths.
 
-### Section 03 — Learning Roadmap
+Show meaningful metadata:
+- Difficulty.
+- Topic count.
+- Category.
+- Description.
 
-Purpose:
-Show the core product experience.
+## Knowledge Discovery
 
-Create a visually distinctive roadmap preview.
+Allow users to explore important educational articles.
 
-Show progression:
-01. Foundations
-02. Market Mechanics
-03. Technical Analysis
-04. Risk Management
-05. Trading Strategies
-06. Advanced Practice
+## Financial Concepts
 
-The roadmap should feel connected, structured, and interactive.
+Introduce key areas:
+- Market Structure.
+- Technical Analysis.
+- Fundamental Analysis.
+- Risk Management.
+- Trading Psychology.
 
-### Section 04 — Learn Through Practice
+## Resources
 
-Purpose:
-Show that users do more than read lessons.
+Display curated educational resources.
 
-Include:
-- Candlestick exercises.
-- Chart interpretation.
-- Risk/reward examples.
-- Interactive learning previews.
+## Community Contribution
 
-Use real working demonstrations wherever possible.
+Explain how people can contribute knowledge.
 
-### Section 05 — Learning Philosophy
-
-Purpose:
-Explain the educational methodology.
-
-Use editorial typography and structured content.
-
-Avoid generic benefit cards.
-
-### Section 06 — Final CTA
-
-Purpose:
-Encourage users to begin learning.
-
-Use a strong visual and concise message.
+Do not present the platform as an instructor-led business.
 
 ---
 
-## 9. Motion & Interaction
+# 8. VISUAL DESIGN DIRECTION
 
-Motion should be intentional.
+Direction:
 
-Preferred principles:
-- Subtle entrance transitions.
-- Short and responsive hover interactions.
-- Smooth section transitions.
-- Interactive chart feedback.
-- Scroll storytelling only where meaningful.
+Financial Knowledge Atlas.
 
-Respect prefers-reduced-motion.
+The visual language should combine:
+
+- Financial market aesthetics.
+- Technical documentation.
+- Interactive knowledge graphs.
+- Modern developer learning platforms.
+- Data visualization.
+
+Use a sophisticated visual identity.
+
+Suggested colors:
+
+--background: #0B1018;
+--surface: #121B27;
+--surface-elevated: #182434;
+--foreground: #E8EDF3;
+--muted: #98A5B5;
+--border: #293647;
+
+--market-green: #31C48D;
+--market-red: #F06464;
+--signal-blue: #5B9CFF;
+--signal-amber: #E7B65B;
+
+Colors should communicate meaning.
+
+Green:
+Positive market examples and completed states.
+
+Red:
+Negative market examples and risk warnings.
+
+Blue:
+Information and active navigation.
+
+Amber:
+Warnings and important concepts.
+
+Do not turn the entire website into a trading terminal.
+
+Use market-inspired visual elements selectively.
+
+## Typography
+
+Use modern, readable sans-serif typography.
+
+Suggested:
+- Geist.
+- Inter.
+- IBM Plex Sans.
+
+Use monospaced typography selectively for:
+- Financial symbols.
+- Chart labels.
+- Technical values.
+- Metadata.
+
+Maintain excellent reading comfort.
+
+## Layout
+
+Prefer:
+- Strong content hierarchy.
+- Structured navigation.
+- Technical grid systems.
+- Clear spacing.
+- Visual relationships.
+- Purposeful whitespace.
+- Information-dense but readable layouts.
 
 Avoid:
-- Excessive parallax.
-- Constant floating animations.
-- Endless pulsing effects.
-- Animations that delay content access.
-- Animations that distract from reading.
-
-Preferred tools:
-- Motion for React.
-- GSAP when complex sequencing is necessary.
-
----
-
-## 10. Data Visualization
-
-Financial graphics should be treated as educational content.
-
-Preferred:
-- Candlestick charts.
-- Market structure diagrams.
-- Support/resistance illustrations.
-- Trend visualization.
-- Risk/reward diagrams.
-
-Use real charting libraries where interaction is required.
-
-Clearly label illustrative or simulated market data.
-
-Never present fabricated data as live market data.
+- Generic AI SaaS templates.
+- Excessive card layouts.
+- Unnecessary glassmorphism.
+- Excessive gradients.
+- Random illustrations.
+- Repetitive feature grids.
+- Decorative animations.
+- Oversized marketing sections.
 
 ---
 
-## 11. Accessibility
+# 9. DOCUMENTATION DESIGN
 
-Requirements:
-- Semantic HTML.
-- Sufficient color contrast.
-- Keyboard navigation.
-- Visible focus states.
-- Accessible controls.
-- Reduced-motion support.
-- Responsive text sizing.
-
-Do not sacrifice usability for visual effects.
-
----
-
-## 12. Responsive Behavior
+The article reading experience must be inspired by high-quality technical documentation.
 
 Desktop:
-Editorial compositions with custom visualizations.
-
-Tablet:
-Preserve visual hierarchy while simplifying layouts.
+- Left navigation or roadmap context.
+- Main reading column.
+- Right table of contents.
 
 Mobile:
-Prioritize reading, navigation, and touch interaction.
+- Single reading column.
+- Collapsible table of contents.
+- Easy previous/next navigation.
 
-Every section must be intentionally adapted to mobile.
+The article must prioritize readability.
 
----
-
-## 13. Implementation Rules
-
-1. Read this document before implementing any new UI.
-2. Reuse existing design tokens.
-3. Never introduce random colors.
-4. Never introduce arbitrary border radii.
-5. Never create new typography styles without considering the hierarchy.
-6. Avoid duplicating components.
-7. Preserve existing application functionality.
-8. Keep the implementation maintainable.
-9. Test responsive layouts.
-10. Ensure all visible interactions work.
-
-When a design decision conflicts with this document, follow this document unless there is a strong usability or accessibility reason to deviate.
+Support:
+- Headings.
+- Lists.
+- Tables.
+- Code or formula blocks when relevant.
+- Images.
+- SVG diagrams.
+- Callouts.
+- References.
+- Related articles.
 
 ---
 
-## 14. Quality Gate
+# 10. PROGRESS TRACKING
 
-Before considering a page complete, ask:
+Learning progress is optional and must not require authentication.
 
-- Does it look intentionally art-directed?
-- Does it avoid generic AI-generated aesthetics?
-- Is the visual hierarchy obvious?
-- Does typography create a recognizable identity?
-- Is whitespace used effectively?
-- Does each component have a purpose?
-- Are interactions functional?
-- Does the mobile layout feel intentional?
-- Does the page feel like one cohesive product?
+Anonymous progress may be stored locally.
 
-If the answer to any important question is no, revise before declaring completion.
+Do not block learning when browser storage is unavailable.
 
-Design quality must be evaluated as a complete composition, not just a collection of individual components.
+Progress indicators must be optional and must never restrict public content.
 
-## 15. Public-First Product Architecture
+Clearly communicate local-only persistence.
 
-Trading Learning Path is a PUBLIC-FIRST educational platform.
+---
 
-The platform must never require authentication to access educational content.
+# 11. CONTRIBUTOR SYSTEM
 
-### Public Learners
+Authentication exists exclusively for contributors and authorized content managers.
 
-Visitors can immediately:
+Public users:
+- Browse all roadmaps.
+- Read all articles.
+- Explore resources.
+- Use public learning tools.
 
-- Explore all learning roadmaps.
-- Read educational lessons.
-- Access trading playgrounds.
-- Use educational calculators.
-- Complete interactive exercises.
-- Browse educational resources.
-- Access public learning materials.
+Registered contributors:
+- Submit educational articles.
+- Propose roadmap nodes.
+- Edit authorized contributions.
+- View moderation status.
+- Manage their submissions.
 
-No registration wall.
-No mandatory login.
-No authentication popup interrupting learning.
+Publishing permissions must respect the actual backend authorization model.
 
-Learning progress may be stored locally using browser storage, where appropriate.
+---
 
-Clearly communicate that locally stored progress may not synchronize across devices.
+# 12. CONTENT QUALITY
 
-### Registered Contributors
+Accuracy is essential.
 
-Authentication is exclusively intended for contributors and authorized content management users.
+Financial education must:
+- Explain uncertainty.
+- Avoid profit guarantees.
+- Explain risks.
+- Avoid presenting trading as an easy way to make money.
+- Distinguish educational simulations from actual market information.
+- Provide credible references.
 
-Contributor capabilities may include:
+Risk management must be represented throughout the learning system.
 
-- Contributor registration.
-- Contributor login.
-- Contributor profile.
-- Submit educational materials.
-- Edit their own submissions.
-- View submission review status.
-- Manage their contributions.
+---
 
-Any publishing or editing permissions must follow the application's actual authorization rules.
+# 13. ACCESSIBILITY & PERFORMANCE
 
-### Navigation Rules
+Requirements:
+- Keyboard-accessible roadmap.
+- Semantic HTML.
+- Accessible graph alternatives.
+- Responsive documentation.
+- Reduced motion.
+- Efficient rendering.
+- Optimized graph interactions.
+- No horizontal overflow.
 
-Public navigation should prioritize:
+Provide a readable alternative to the visual roadmap for screen readers and users who prefer linear navigation.
 
-- Home
-- Learning Paths
-- Explore
-- Trading Playground
-- About
+---
 
-Contributor actions should be presented separately:
+# 14. DESIGN QUALITY RULES
 
-- Become a Contributor
-- Contributor Login
+Read the antislop skill and frontend-taste skill before creating interfaces.
 
-Do not display a prominent Login button as the primary CTA.
+Never blindly generate generic UI.
 
-The primary CTA must always encourage users to start learning.
+Every component must serve a product purpose.
 
-### Authentication UX
+Every roadmap node must connect to meaningful knowledge.
 
-Authentication pages should be visually consistent with the main design system.
+Every article must contain meaningful educational content.
 
-However, they should remain separate from the public learning experience.
+Every navigation element must lead somewhere real.
 
-Registration should clearly communicate that it is for contributors, not ordinary learners.
+The final application must feel like a complete open knowledge ecosystem.
 
-### Product Philosophy
+---
 
-The platform should communicate:
+# 15. DEFINITION OF DONE
 
-"Knowledge should be accessible. Contribution should be collaborative."
+The product is not complete when it merely looks attractive.
 
-The learning experience must be accessible without creating an account.
+It is complete when:
+
+1. Users can discover real roadmaps.
+2. Users can explore visual roadmap diagrams.
+3. Users can click roadmap nodes.
+4. Nodes link to actual educational documentation.
+5. Articles are readable and sufficiently detailed.
+6. Related topics are interconnected.
+7. Public content works without authentication.
+8. Contributor authentication works independently.
+9. Roadmaps work on desktop and mobile.
+10. The knowledge architecture is consistent and extensible.
