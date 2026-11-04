@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "path": ".agents/plugins/antislop"
+    },
+    {
+      "path": ".agents/plugins/chrome-devtools-plugin"
+    },
+    {
+      "path": ".agents/plugins/modern-web-guidance-plugin"
+    },
+    {
+      "path": ".agents/plugins/ponytail"
+    }
+  ]
+}
