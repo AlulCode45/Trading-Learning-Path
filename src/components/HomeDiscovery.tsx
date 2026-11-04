@@ -1,6 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { Roadmap } from '../types';
 import { getAllArticles } from '../data/articles';
+import { SpotlightCard } from './reactbits/SpotlightCard';
+import { BorderBeam } from './reactbits/BorderBeam';
+import { DecryptedText } from './reactbits/DecryptedText';
+import { MagnetButton } from './reactbits/MagnetButton';
+import { InteractiveChartBite } from './reactbits/InteractiveChartBite';
 import { 
   Search, 
   Map, 
@@ -71,9 +76,13 @@ export const HomeDiscovery: React.FC<HomeDiscoveryProps> = ({
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293710_1px,transparent_1px),linear-gradient(to_bottom,#1f293710_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none" />
         
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981] text-xs font-mono mb-6">
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#10B981]/10 border border-[#10B981]/30 text-[#10B981] text-xs font-mono mb-6">
             <span className="w-2 h-2 rounded-full bg-[#10B981] animate-ping" />
-            <span>Atlas Pengetahuan Finansial &amp; Trading Terbuka</span>
+            <DecryptedText
+              text="ATLAS PENGETAHUAN FINANSIAL & TRADING TERBUKA"
+              speed={35}
+              className="text-[#10B981] font-semibold text-[11px] tracking-wider"
+            />
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#F8FAFC] not-dark:text-slate-900 leading-[1.15] mb-6">
@@ -109,35 +118,38 @@ export const HomeDiscovery: React.FC<HomeDiscoveryProps> = ({
             </div>
           </div>
 
-          {/* Quick Action CTAs */}
+          {/* Quick Action CTAs with React Bits MagnetButton */}
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <button
+            <MagnetButton
               onClick={() => {
                 onSelectRoadmap('price-action-market-structure');
                 onNavigateToRoadmap();
               }}
+              strength={14}
               className="px-6 py-3 rounded-xl bg-[#10B981] hover:bg-[#059669] text-[#08090D] font-bold text-xs sm:text-sm flex items-center space-x-2 transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)] hover:scale-[1.02]"
             >
               <Map className="w-4 h-4" />
               <span>Buka Peta Jalan Price Action</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </MagnetButton>
 
-            <button
+            <MagnetButton
               onClick={() => onNavigateToDocs('candlestick-anatomy-wick-dynamics')}
+              strength={10}
               className="px-5 py-3 rounded-xl bg-[#121722] not-dark:bg-white hover:bg-[#1D2532] not-dark:hover:bg-slate-100 text-[#CBD5E1] not-dark:text-slate-700 border border-[#1D2532] not-dark:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 transition-all"
             >
               <BookOpen className="w-4 h-4 text-[#38BDF8]" />
               <span>Baca Dokumentasi Lengkap</span>
-            </button>
+            </MagnetButton>
 
-            <button
+            <MagnetButton
               onClick={onNavigateToPlayground}
+              strength={10}
               className="px-5 py-3 rounded-xl bg-[#121722] not-dark:bg-white hover:bg-[#1D2532] not-dark:hover:bg-slate-100 text-[#CBD5E1] not-dark:text-slate-700 border border-[#1D2532] not-dark:border-slate-300 font-medium text-xs sm:text-sm flex items-center space-x-2 transition-all"
             >
               <Terminal className="w-4 h-4 text-[#F59E0B]" />
               <span>Kalkulator &amp; Simulator</span>
-            </button>
+            </MagnetButton>
           </div>
         </div>
       </section>
@@ -168,8 +180,9 @@ export const HomeDiscovery: React.FC<HomeDiscoveryProps> = ({
             </button>
           </div>
 
-          {/* Interactive DAG Preview Canvas Box */}
+          {/* Interactive DAG Preview Canvas Box with React Bits BorderBeam */}
           <div className="p-6 rounded-2xl bg-[#0D1017] not-dark:bg-white border border-[#1D2532] not-dark:border-slate-200 shadow-xl relative overflow-hidden">
+            <BorderBeam size={300} duration={12} colorFrom="#10B981" colorTo="#38BDF8" borderWidth={1.5} />
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Level 1: Foundations */}
               <div className="space-y-3">
@@ -316,6 +329,11 @@ export const HomeDiscovery: React.FC<HomeDiscoveryProps> = ({
                 </div>
               </div>
             </div>
+
+            {/* Embedded React Bits: Interactive Candlestick & Auction Scrubber */}
+            <div className="mt-6 pt-6 border-t border-[#1D2532] not-dark:border-slate-100">
+              <InteractiveChartBite />
+            </div>
           </div>
         </div>
       </section>
@@ -353,12 +371,13 @@ export const HomeDiscovery: React.FC<HomeDiscoveryProps> = ({
           </div>
         </div>
 
-        {/* Roadmap Cards Grid */}
+        {/* Roadmap Cards Grid with React Bits SpotlightCard */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredRoadmaps.map((rm) => (
-            <div
+            <SpotlightCard
               key={rm.id}
-              className="p-6 rounded-2xl bg-[#0D1017] not-dark:bg-white border border-[#1D2532] not-dark:border-slate-200 hover:border-[#10B981]/60 transition-all flex flex-col justify-between group shadow-sm hover:shadow-xl"
+              spotlightColor="rgba(16, 185, 129, 0.18)"
+              className="p-6 flex flex-col justify-between group shadow-sm hover:shadow-xl"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
@@ -402,7 +421,7 @@ export const HomeDiscovery: React.FC<HomeDiscoveryProps> = ({
                   <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
-            </div>
+            </SpotlightCard>
           ))}
         </div>
       </section>
@@ -426,10 +445,11 @@ export const HomeDiscovery: React.FC<HomeDiscoveryProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {filteredArticles.map(art => (
-              <div
+              <SpotlightCard
                 key={art.slug}
                 onClick={() => onNavigateToDocs(art.slug)}
-                className="p-4 rounded-xl bg-[#0D1017] not-dark:bg-white border border-[#1D2532] not-dark:border-slate-200 hover:border-[#10B981] cursor-pointer transition-all flex flex-col justify-between group"
+                spotlightColor="rgba(56, 189, 248, 0.16)"
+                className="p-4 hover:border-[#10B981] cursor-pointer transition-all flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between text-[10px] font-mono text-[#64748B] mb-2">
@@ -451,7 +471,7 @@ export const HomeDiscovery: React.FC<HomeDiscoveryProps> = ({
                     <ArrowRight className="w-2.5 h-2.5" />
                   </span>
                 </div>
-              </div>
+              </SpotlightCard>
             ))}
           </div>
         </div>
