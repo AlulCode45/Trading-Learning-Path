@@ -3,17 +3,42 @@
 @layer base {
   :root {
     --canvas-bg: #090D16;
-    --card-bg: #0F172A;
-    --border-subtle: #1E293B;
+    --canvas-card: #0F172A;
+    --canvas-surface: #131C31;
+    --border-color: #1E293B;
+    --border-focus: #334155;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
     --accent-emerald: #10B981;
-    --state-amber: #F59E0B;
-    --state-locked: #475569;
+    --accent-amber: #F59E0B;
+    --accent-cyan: #38BDF8;
+    --accent-rose: #F43F5E;
+    --grid-line: rgba(30, 41, 59, 0.45);
+  }
+
+  /* Light Mode Palette */
+  html:not(.dark) {
+    --canvas-bg: #F8FAFC;
+    --canvas-card: #FFFFFF;
+    --canvas-surface: #F1F5F9;
+    --border-color: #E2E8F0;
+    --border-focus: #CBD5E1;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #64748B;
+    --accent-emerald: #059669;
+    --accent-amber: #D97706;
+    --accent-cyan: #0284C7;
+    --accent-rose: #E11D48;
+    --grid-line: rgba(226, 232, 240, 0.85);
   }
 
   body {
     background-color: var(--canvas-bg);
-    color: #F8FAFC;
+    color: var(--text-primary);
     font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   code, pre, .font-mono {
@@ -25,8 +50,8 @@
 .bg-grid-tactical {
   background-size: 32px 32px;
   background-image: 
-    linear-gradient(to right, rgba(30, 41, 59, 0.45) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(30, 41, 59, 0.45) 1px, transparent 1px);
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
 }
 
 /* Custom Scrollbar */
@@ -35,12 +60,12 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #090D16;
+  background: var(--canvas-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
+  background: var(--border-color);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: var(--border-focus);
 }
