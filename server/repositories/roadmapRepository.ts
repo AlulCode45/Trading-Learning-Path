@@ -119,6 +119,14 @@ export class RoadmapRepository {
     return db.prepare('SELECT * FROM community_roadmaps ORDER BY upvotes DESC, created_at DESC').all() as CommunityRoadmap[];
   }
 
+  getCommunityRoadmapBySlug(slug: string): CommunityRoadmap | undefined {
+    return db.prepare('SELECT * FROM community_roadmaps WHERE slug = ?').get(slug) as CommunityRoadmap | undefined;
+  }
+
+  getCommunityRoadmapById(id: string): CommunityRoadmap | undefined {
+    return db.prepare('SELECT * FROM community_roadmaps WHERE id = ?').get(id) as CommunityRoadmap | undefined;
+  }
+
   createCommunityRoadmap(roadmap: {
     id: string;
     slug: string;
@@ -127,10 +135,11 @@ export class RoadmapRepository {
     description: string;
     category: string;
     nodes_json: string;
+    forked_from_id?: string;
   }): void {
     db.prepare(`
-      INSERT INTO community_roadmaps (id, slug, title, creator_name, description, category, nodes_json, upvotes)
-      VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+      INSERT INTO community_roadmaps (id, slug, title, creator_name, description, category, nodes_json, upvotes, forked_from_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?)
     `).run(
       roadmap.id,
       roadmap.slug,
@@ -138,7 +147,54 @@ export class RoadmapRepository {
       roadmap.creator_name,
       roadmap.description,
       roadmap.category,
-      roadmap.nodes_json
+      roadmap.nodes_json,
+      roadmap.forked_from_id || null
     );
+  }
+
+  upvoteCommunityRoadmap(id: string): { upvotes: number } {
+    db.prepare('UPDATE community_roadmaps SET upvotes = upvotes + 1 WHERE id = ?').run(id);
+    const row = db.prepare('SELECT upvotes FROM community_roadmaps WHERE id = ?').get(id) as { upvotes: number };
+    return row || { upvotes: 0 };
+  }
+
+  getCommunityArticle(slug: string) {
+    return db.prepare('SELECT * FROM community_articles WHERE slug = ?').get(slug);
+  }
+
+  saveCommunityArticle(article: {
+    id?: string;
+    slug: string;
+    title: string;
+    content_markdown: string;
+    illustration_mode?: string;
+    illustration_payload?: string;
+    author_name?: string;
+    roadmap_id?: string;
+    node_id?: string;
+  }) {
+    const id = article.id || 'art-comm-' + Date.now();
+    db.prepare(`
+      INSERT INTO community_articles (id, slug, roadmap_id, node_id, title, content_markdown, illustration_mode, illustration_payload, author_name, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(slug) DO UPDATE SET
+        title = excluded.title,
+        content_markdown = excluded.content_markdown,
+        illustration_mode = excluded.illustration_mode,
+        illustration_payload = excluded.illustration_payload,
+        author_name = excluded.author_name,
+        updated_at = CURRENT_TIMESTAMP
+    `).run(
+      id,
+      article.slug,
+      article.roadmap_id || null,
+      article.node_id || null,
+      article.title,
+      article.content_markdown,
+      article.illustration_mode || 'preset',
+      article.illustration_payload || null,
+      article.author_name || 'Community Trader'
+    );
+    return this.getCommunityArticle(article.slug);
   }
 }

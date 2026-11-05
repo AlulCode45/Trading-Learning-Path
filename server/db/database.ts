@@ -97,14 +97,37 @@ export function initDatabase() {
       category TEXT NOT NULL,
       nodes_json TEXT NOT NULL,
       upvotes INTEGER DEFAULT 0,
+      forked_from_id TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS community_articles (
+      id TEXT PRIMARY KEY,
+      slug TEXT UNIQUE NOT NULL,
+      roadmap_id TEXT,
+      node_id TEXT,
+      title TEXT NOT NULL,
+      content_markdown TEXT NOT NULL,
+      illustration_mode TEXT DEFAULT 'preset',
+      illustration_payload TEXT,
+      author_name TEXT DEFAULT 'Community Trader',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE INDEX IF NOT EXISTS idx_roadmaps_slug ON roadmaps(slug);
+    CREATE INDEX IF NOT EXISTS idx_community_roadmaps_slug ON community_roadmaps(slug);
+    CREATE INDEX IF NOT EXISTS idx_community_articles_slug ON community_articles(slug);
     CREATE INDEX IF NOT EXISTS idx_roadmap_nodes_parent ON roadmap_nodes(roadmap_id, parent_node_id, order_index);
     CREATE INDEX IF NOT EXISTS idx_node_checklists_node ON node_checklists(node_id, order_index);
     CREATE INDEX IF NOT EXISTS idx_node_resources_node ON node_resources(node_id);
   `);
+
+  try {
+    db.exec('ALTER TABLE community_roadmaps ADD COLUMN forked_from_id TEXT;');
+  } catch (_e) {
+    // Column already exists
+  }
 
   seedInitialData();
 }

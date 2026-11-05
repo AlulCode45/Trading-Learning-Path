@@ -21,8 +21,13 @@ app.put('/api/nodes/:nodeId/status', controller.updateNodeStatus);
 app.put('/api/checklists/:checklistId/toggle', controller.toggleChecklist);
 
 app.get('/api/community', controller.getCommunityRoadmaps);
+app.get('/api/community/roadmaps/:slug', controller.getCommunityRoadmapDetails);
 app.post('/api/community', controller.createCommunityRoadmap);
+app.post('/api/community/:id/fork', controller.forkCommunityRoadmap);
 app.post('/api/community/:id/upvote', controller.upvoteCommunityRoadmap);
+
+app.get('/api/community/articles/:slug', controller.getCommunityArticle);
+app.post('/api/community/articles', controller.saveCommunityArticle);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });

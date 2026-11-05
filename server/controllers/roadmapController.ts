@@ -64,11 +64,40 @@ export class RoadmapController {
     try {
       const community = this.service.getCommunityRoadmaps().map(c => ({
         ...c,
-        nodes: JSON.parse(c.nodes_json || '[]')
+        nodes: JSON.parse((c as any).nodes_json || '[]')
       }));
       res.json({ success: true, data: community });
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  getCommunityRoadmapDetails = (req: Request, res: Response) => {
+    try {
+      const { slug } = req.params;
+      const data = this.service.getCommunityRoadmapBySlug(slug);
+      if (!data) {
+        res.status(404).json({ success: false, message: 'Roadmap komunitas tidak ditemukan' });
+        return;
+      }
+      res.json({ success: true, data });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  forkCommunityRoadmap = (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { creator_name } = req.body;
+      if (!creator_name) {
+        res.status(400).json({ success: false, message: 'Creator name wajib diisi' });
+        return;
+      }
+      const result = this.service.forkRoadmap(id, creator_name);
+      res.status(201).json(result);
+    } catch (error: any) {
+      res.status(400).json({ success: false, message: error.message });
     }
   };
 
@@ -92,9 +121,42 @@ export class RoadmapController {
     try {
       const { id } = req.params;
       const result = this.service.upvoteCommunityRoadmap(id);
-      res.json(result);
+      res.json({ success: true, data: result });
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  getCommunityArticle = (req: Request, res: Response) => {
+    try {
+      const { slug } = req.params;
+      const article = this.service.getArticleBySlug(slug);
+      if (!article) {
+        res.status(404).json({ success: false, message: 'Artikel tutorial tidak ditemukan' });
+        return;
+      }
+      res.json({ success: true, data: article });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  saveCommunityArticle = (req: Request, res: Response) => {
+    try {
+      const { slug, title, content_markdown, illustration_mode, illustration_payload, author_name, roadmap_id, node_id } = req.body;
+      const result = this.service.saveArticle({
+        slug,
+        title,
+        content_markdown,
+        illustration_mode,
+        illustration_payload: typeof illustration_payload === 'object' ? JSON.stringify(illustration_payload) : illustration_payload,
+        author_name,
+        roadmap_id,
+        node_id
+      });
+      res.status(201).json({ success: true, data: result });
+    } catch (error: any) {
+      res.status(400).json({ success: false, message: error.message });
     }
   };
 }

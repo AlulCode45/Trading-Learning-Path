@@ -75,6 +75,85 @@ export class RoadmapService {
     return this.repo.getCommunityRoadmaps();
   }
 
+  getCommunityRoadmapBySlug(slug: string) {
+    const rm = this.repo.getCommunityRoadmapBySlug(slug);
+    if (!rm) return null;
+    return {
+      ...rm,
+      nodes: JSON.parse((rm as any).nodes_json || '[]')
+    };
+  }
+
+  forkRoadmap(roadmapId: string, creatorName: string) {
+    // Check if official roadmap
+    const official = this.repo.getAllRoadmaps().find(r => r.id === roadmapId);
+    let title = '';
+    let description = '';
+    let category = '';
+    let nodes: any[] = [];
+
+    if (official) {
+      title = `${official.title} (Forked by ${creatorName})`;
+      description = `Kustomisasi berbasis roadmap resmi ${official.title}`;
+      category = official.category;
+      const officialNodes = this.repo.getNodesForRoadmap(official.id);
+      nodes = officialNodes.map(n => ({
+        title: n.title,
+        level: n.level,
+        duration: '1-2 jam',
+        visual_type: n.visual_type,
+        summary: n.summary
+      }));
+    } else {
+      const comm = this.repo.getCommunityRoadmapById(roadmapId);
+      if (!comm) throw new Error('Roadmap yang ingin di-fork tidak ditemukan');
+      title = `${comm.title} (Fork by ${creatorName})`;
+      description = comm.description;
+      category = comm.category;
+      nodes = JSON.parse((comm as any).nodes_json || '[]');
+    }
+
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '') + '-' + Math.random().toString(36).substring(2, 6);
+
+    const id = 'fork-' + Date.now();
+
+    this.repo.createCommunityRoadmap({
+      id,
+      slug,
+      title,
+      creator_name: creatorName,
+      description,
+      category,
+      nodes_json: JSON.stringify(nodes),
+      forked_from_id: roadmapId
+    });
+
+    return { success: true, id, slug, title };
+  }
+
+  getArticleBySlug(slug: string) {
+    return this.repo.getCommunityArticle(slug);
+  }
+
+  saveArticle(data: {
+    slug: string;
+    title: string;
+    content_markdown: string;
+    illustration_mode?: string;
+    illustration_payload?: string;
+    author_name?: string;
+    roadmap_id?: string;
+    node_id?: string;
+  }) {
+    if (!data.slug || !data.title || !data.content_markdown) {
+      throw new Error('Slug, Title, dan Content Markdown wajib diisi');
+    }
+    return this.repo.saveCommunityArticle(data);
+  }
+
   createCommunityRoadmap(data: {
     title: string;
     creator_name: string;
@@ -107,7 +186,6 @@ export class RoadmapService {
   }
 
   upvoteCommunityRoadmap(id: string) {
-    this.repo.upvoteCommunityRoadmap(id);
-    return { success: true };
+    return this.repo.upvoteCommunityRoadmap(id);
   }
 }
