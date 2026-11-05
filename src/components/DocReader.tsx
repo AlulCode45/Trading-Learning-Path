@@ -66,6 +66,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sidebarSearch, setSidebarSearch] = useState<string>('');
   const [dynamicArticle, setDynamicArticle] = useState<EducationalArticle | null>(null);
+  const [dynamicRoadmapMeta, setDynamicRoadmapMeta] = useState<{ title: string; slug: string } | null>(null);
 
   useEffect(() => {
     if (!EDUCATIONAL_ARTICLES[articleSlug]) {
@@ -74,47 +75,103 @@ export const DocReader: React.FC<DocReaderProps> = ({
         .then(json => {
           if (json.success && json.data) {
             const row = json.data;
-            let parsedChart = undefined;
-            let parsedSnapshot = undefined;
+            let payload: any = {};
             try {
-              if (row.chart_config_json) parsedChart = JSON.parse(row.chart_config_json);
-            } catch (e) {
-              console.error(e);
-            }
-            try {
-              if (row.snapshot_config_json) parsedSnapshot = JSON.parse(row.snapshot_config_json);
+              if (row.illustration_payload) {
+                payload = JSON.parse(row.illustration_payload);
+              }
             } catch (e) {
               console.error(e);
             }
 
+            if (payload.roadmapSlug) {
+              setDynamicRoadmapMeta({
+                title: payload.roadmapTitle || 'Kurikulum Komunitas',
+                slug: payload.roadmapSlug
+              });
+            } else {
+              setDynamicRoadmapMeta(null);
+            }
+
+            const docCfg = payload.docConfig;
+            const builtSections =
+              docCfg && Array.isArray(docCfg.sections) && docCfg.sections.length > 0
+                ? docCfg.sections.map((sec: any, idx: number) => ({
+                    id: sec.id || `sec-${idx + 1}`,
+                    title: sec.title || `Bab ${idx + 1}`,
+                    content: sec.content || '',
+                    illustrationMode:
+                      sec.illustrationMode && sec.illustrationMode !== 'none'
+                        ? sec.illustrationMode
+                        : idx === 0
+                        ? payload.illustrationMode || row.illustration_mode
+                        : undefined,
+                    customChartConfig:
+                      sec.customChartConfig || (idx === 0 ? payload.customChartConfig : undefined),
+                    snapshotConfig: sec.snapshotUrl
+                      ? { src: sec.snapshotUrl, caption: sec.title }
+                      : idx === 0
+                      ? payload.snapshotConfig
+                      : undefined,
+                    callout:
+                      sec.callout && sec.callout.enabled
+                        ? {
+                            type: sec.callout.type || 'tip',
+                            title: sec.callout.title,
+                            text: sec.callout.text
+                          }
+                        : undefined,
+                    financialExample:
+                      sec.financialExample && sec.financialExample.enabled
+                        ? {
+                            scenario: sec.financialExample.scenario,
+                            analysis: sec.financialExample.analysis,
+                            outcome: sec.financialExample.outcome
+                          }
+                        : undefined
+                  }))
+                : [
+                    {
+                      id: 'sec-materi',
+                      title: row.title,
+                      illustrationMode: (payload.illustrationMode || row.illustration_mode || 'custom_builder') as any,
+                      customChartConfig: payload.customChartConfig,
+                      snapshotConfig: payload.snapshotConfig,
+                      content: row.content_markdown || ''
+                    }
+                  ];
+
             const art: EducationalArticle = {
               id: row.id,
+              nodeId: payload.nodeId || row.node_id,
               slug: row.slug,
               title: row.title,
-              category: row.category,
-              readingTime: 8,
-              summary: row.content_markdown ? row.content_markdown.slice(0, 150) + '...' : 'Modul Kurikulum Komunitas',
-              difficulty: 'Intermediate',
-              tableOfContents: [
-                { id: 'sec-overview', title: 'Ringkasan & Pengenalan', level: 2 },
-                { id: 'sec-materi', title: 'Materi Lengkap & Studi Kasus', level: 2 }
-              ],
-              keyTakeaways: [
-                'Pahami struktur dan metodologi trading yang disajikan secara sistematis.',
-                'Perhatikan visualisasi diagram, candlestick chart interaktif, atau anotasi snapshot.',
-                'Disiplin dalam manajemen risiko dan validasi sebelum entry.'
-              ],
-              sections: [
-                {
-                  id: 'sec-materi',
-                  title: row.title,
-                  illustrationMode: (row.illustration_mode as any) || 'preset',
-                  diagramType: (row.diagram_type as any) || 'candlestick-anatomy',
-                  chartConfig: parsedChart,
-                  snapshotConfig: parsedSnapshot,
-                  content: row.content_markdown || ''
-                }
-              ]
+              category: payload.category || row.category || 'Kurikulum Komunitas',
+              level: payload.level || 1,
+              readingTimeMinutes: docCfg?.readingTimeMinutes || 8,
+              summary:
+                docCfg?.summary ||
+                (row.content_markdown
+                  ? row.content_markdown.replace(/[#*`]/g, '').slice(0, 160) + '...'
+                  : 'Dokumentasi Modul Kurikulum Komunitas'),
+              difficulty: payload.difficulty || 'Intermediate',
+              prerequisites: docCfg?.prerequisites || [],
+              tableOfContents: builtSections.map((s: any) => ({
+                id: s.id,
+                title: s.title
+              })),
+              keyTakeaways:
+                docCfg?.keyTakeaways && docCfg.keyTakeaways.length > 0
+                  ? docCfg.keyTakeaways
+                  : [
+                      'Pahami struktur dan metodologi trading yang disajikan secara sistematis.',
+                      'Perhatikan visualisasi skematik candlestick chart atau anotasi snapshot.',
+                      'Disiplin dalam manajemen risiko dan validasi sebelum eksekusi.'
+                    ],
+              commonMistakes: docCfg?.commonMistakes || [],
+              sections: builtSections as any,
+              relatedTopics: [],
+              references: []
             };
             setDynamicArticle(art);
           }
@@ -122,6 +179,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
         .catch(err => console.error('Failed to load community article', err));
     } else {
       setDynamicArticle(null);
+      setDynamicRoadmapMeta(null);
     }
   }, [articleSlug]);
 
@@ -176,6 +234,9 @@ export const DocReader: React.FC<DocReaderProps> = ({
   }, [sidebarSearch, selectedCategory]);
 
   const connectedRoadmap = useMemo(() => {
+    if (dynamicRoadmapMeta) {
+      return dynamicRoadmapMeta;
+    }
     const rSlug = getRoadmapSlugForArticle(article);
     switch (rSlug) {
       case 'smart-money-concepts-ict':
@@ -189,7 +250,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
       default:
         return { title: 'Price Action & Market Structure', slug: 'price-action-market-structure' };
     }
-  }, [article]);
+  }, [article, dynamicRoadmapMeta]);
 
   // Current module's articles for logical in-module prev/next
   const currentModuleArticles = useMemo(() => {
@@ -468,13 +529,13 @@ export const DocReader: React.FC<DocReaderProps> = ({
               <p className="text-[11px] text-slate-600 dark:text-[#94A3B8] leading-relaxed mb-2.5">
                 Modul ini terhubung ke kurikulum <strong>{connectedRoadmap.title}</strong>.
               </p>
-              <button
-                onClick={onReturnToRoadmap}
+              <Link
+                to={`/roadmaps/${connectedRoadmap.slug}`}
                 className="w-full py-1.5 px-3 rounded-lg bg-slate-100 hover:bg-emerald-50 text-emerald-800 border border-slate-300 hover:border-emerald-500 dark:bg-[#121722] dark:hover:bg-white/5 dark:border-[#1D2532] dark:hover:border-[#10B981] dark:text-[#10B981] text-xs font-mono flex items-center justify-center space-x-1.5 transition-colors font-medium"
               >
                 <Map className="w-3.5 h-3.5" />
                 <span>Buka Kanvas Interaktif</span>
-              </button>
+              </Link>
             </div>
 
           </div>

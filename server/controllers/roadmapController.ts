@@ -103,12 +103,13 @@ export class RoadmapController {
 
   createCommunityRoadmap = (req: Request, res: Response) => {
     try {
-      const { title, creator_name, description, category, nodes } = req.body;
+      const { title, creator_name, description, category, difficulty, nodes } = req.body;
       const result = this.service.createCommunityRoadmap({
         title,
         creator_name,
         description,
         category,
+        difficulty,
         nodes
       });
       res.status(201).json(result);
@@ -122,6 +123,15 @@ export class RoadmapController {
       const { id } = req.params;
       const result = this.service.upvoteCommunityRoadmap(id);
       res.json({ success: true, data: result });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  getAllCommunityArticles = (_req: Request, res: Response) => {
+    try {
+      const articles = this.service.getAllCommunityArticles();
+      res.json({ success: true, data: articles });
     } catch (error: any) {
       res.status(500).json({ success: false, message: error.message });
     }

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   BookOpen, 
@@ -33,6 +33,18 @@ export const DocsHubPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedModuleId, setSelectedModuleId] = useState<string>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
+  const [communityArticles, setCommunityArticles] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/community/articles')
+      .then(res => res.json())
+      .then(json => {
+        if (json.success && Array.isArray(json.data)) {
+          setCommunityArticles(json.data);
+        }
+      })
+      .catch(err => console.error('Failed to load community articles', err));
+  }, []);
 
   const allArticles = useMemo(() => getAllArticles(), []);
 
@@ -101,6 +113,16 @@ export const DocsHubPage: React.FC = () => {
           <p className="text-sm sm:text-base text-slate-600 dark:text-[#94A3B8] leading-relaxed">
             Kurikulum edukasi modular bergaya publikasi teknikal. Setiap modul dirancang terpisah dan mendalam: Price Action murni, likuiditas institusional SMC, siklus lelang Wyckoff, manajemen risiko asimetris, hingga pemodelan kuantitatif.
           </p>
+
+          <div className="pt-2 flex justify-center">
+            <Link
+              to="/roadmaps/create"
+              className="px-4 py-2 rounded-xl bg-[#FACC15] hover:bg-[#EAB308] text-black font-mono font-extrabold text-xs border-2 border-black shadow-[3px_3px_0px_#000] inline-flex items-center space-x-2 transition-all"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>✍️ Buat Kurikulum &amp; Dokumentasi Baru (/roadmaps/create)</span>
+            </Link>
+          </div>
         </div>
 
         {/* Search & Filter Toolbar */}
@@ -219,6 +241,89 @@ export const DocsHubPage: React.FC = () => {
 
         {/* Modules Content Stream (Grouped per Module like a Publication / Blog Hub) */}
         <div className="space-y-16">
+          {/* Community Published Documentation Articles Section */}
+          {communityArticles.length > 0 && selectedModuleId === 'all' && (
+            <section className="space-y-6">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b-2 border-slate-200 dark:border-zinc-800">
+                <div className="space-y-1.5 max-w-2xl">
+                  <div className="flex items-center space-x-2.5">
+                    <span className="text-[11px] font-mono px-2.5 py-0.5 rounded font-extrabold uppercase bg-[#FACC15] text-black border border-black">
+                      Community Docs
+                    </span>
+                    <span className="text-xs font-mono text-slate-500 dark:text-zinc-400">
+                      {communityArticles.length} Artikel Modul Komunitas
+                    </span>
+                  </div>
+                  <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                    Dokumentasi Kurikulum Komunitas
+                  </h2>
+                  <p className="text-xs text-slate-600 dark:text-[#94A3B8]">
+                    Dokumentasi lengkap yang disusun oleh kreator dan mentor melalui Studio Pembuat Roadmap.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {communityArticles
+                  .filter(a => !searchQuery.trim() || a.title?.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map((art, idx) => {
+                    let parsedPayload: any = {};
+                    try {
+                      if (art.illustration_payload) parsedPayload = JSON.parse(art.illustration_payload);
+                    } catch {
+                      // ignore
+                    }
+                    const sectionsCount = parsedPayload.docConfig?.sections?.length || 1;
+                    const readMins = parsedPayload.docConfig?.readingTimeMinutes || 8;
+                    const summaryText =
+                      parsedPayload.docConfig?.summary ||
+                      (art.content_markdown ? art.content_markdown.replace(/[#*`]/g, '').slice(0, 140) : '');
+
+                    return (
+                      <article
+                        key={art.id || art.slug}
+                        className="group bg-white dark:bg-[#121722] border-2 border-slate-200 dark:border-zinc-800/90 rounded-2xl p-5 flex flex-col justify-between hover:border-black dark:hover:border-zinc-400 transition-all duration-150 shadow-xs hover:-translate-y-1"
+                      >
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between text-[11px] font-mono">
+                            <span className="font-extrabold text-emerald-600 dark:text-emerald-400">
+                              #{String(idx + 1).padStart(2, '0')} • {parsedPayload.roadmapTitle || 'Komunitas'}
+                            </span>
+                            <span className="text-slate-400 dark:text-zinc-500 flex items-center space-x-1">
+                              <Clock className="w-3 h-3" />
+                              <span>{readMins}m</span>
+                            </span>
+                          </div>
+
+                          <h3 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-[#10B981] transition-colors leading-snug line-clamp-2">
+                            {art.title}
+                          </h3>
+
+                          <p className="text-xs text-slate-600 dark:text-[#94A3B8] leading-relaxed line-clamp-3">
+                            {summaryText}
+                          </p>
+                        </div>
+
+                        <div className="pt-4 mt-5 border-t border-slate-100 dark:border-zinc-800/80 flex items-center justify-between">
+                          <span className="text-[11px] font-mono text-slate-500 dark:text-zinc-500">
+                            {sectionsCount} Bab • Oleh {art.author_name || 'Mentor'}
+                          </span>
+
+                          <Link
+                            to={`/docs/${art.slug}`}
+                            className="inline-flex items-center space-x-1 text-xs font-mono font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-[#10B981] transition-colors"
+                          >
+                            <span>Baca Dokumentasi</span>
+                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                          </Link>
+                        </div>
+                      </article>
+                    );
+                  })}
+              </div>
+            </section>
+          )}
+
           {modulesWithFilteredArticles.map(module => {
             if (module.articles.length === 0) return null;
 

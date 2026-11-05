@@ -36,38 +36,43 @@ export class RoadmapService {
           parsedNodes = [];
         }
 
-        const safeNodes = parsedNodes.map((n, idx) => ({
-          id: n.id || `node-${idx + 1}`,
-          roadmap_id: communityRm.id,
-          title: n.title || 'Modul',
-          summary: n.summary || n.description || (n.content_markdown ? n.content_markdown.replace(/[#*`]/g, '').slice(0, 140) : ''),
-          description: n.description || '',
-          content: n.content_markdown || n.content || '',
-          level: n.level || ((idx % 5) + 1),
-          category: n.category || communityRm.category,
-          importance: n.importance || 'recommended',
-          order_index: idx + 1,
-          parent_node_id: n.parent_node_id !== undefined ? n.parent_node_id : (idx > 0 ? (parsedNodes[idx - 1].id || `node-${idx}`) : null),
-          estimated_hours: n.duration ? parseInt(n.duration) || 2 : 2,
-          status: n.status || (idx === 0 ? 'available' : 'locked'),
-          doc_slug: n.doc_slug || n.id || `doc-${communityRm.slug}-${idx + 1}`,
-          visual_type: n.diagram_type || n.visual_type || 'candlestick-anatomy',
-          illustrationMode: n.illustrationMode || 'preset',
-          diagram_type: n.diagram_type || 'candlestick-anatomy',
-          chartConfig: n.chartConfig || null,
-          snapshotConfig: n.snapshotConfig || null,
-          customChartConfig: n.customChartConfig || null,
-          content_markdown: n.content_markdown || '',
-          posX: typeof n.posX === 'number' ? n.posX : undefined,
-          posY: typeof n.posY === 'number' ? n.posY : undefined,
-          customColor: n.customColor || undefined,
-          customBadge: n.customBadge || undefined,
-          customConnections: Array.isArray(n.customConnections) ? n.customConnections : undefined,
-          customStageBoxes: Array.isArray(n.customStageBoxes) ? n.customStageBoxes : undefined,
-          checklists: n.checklists || [],
-          resources: n.resources || [],
-          quizzes: n.quizzes || []
-        }));
+        const safeNodes = parsedNodes.map((n, idx) => {
+          const docSlug = n.doc_slug || n.slug || `doc-${communityRm.slug}-modul-${idx + 1}`;
+          return {
+            id: n.id || `node-${idx + 1}`,
+            roadmap_id: communityRm.id,
+            title: n.title || 'Modul',
+            slug: docSlug,
+            doc_slug: docSlug,
+            summary: n.docConfig?.summary || n.summary || n.description || (n.content_markdown ? n.content_markdown.replace(/[#*`]/g, '').slice(0, 140) : ''),
+            description: n.description || '',
+            content: n.content_markdown || n.content || '',
+            level: n.level || ((idx % 5) + 1),
+            category: n.category || communityRm.category,
+            importance: n.importance || 'recommended',
+            order_index: idx + 1,
+            parent_node_id: n.parent_node_id !== undefined ? n.parent_node_id : (idx > 0 ? (parsedNodes[idx - 1].id || `node-${idx}`) : null),
+            estimated_hours: n.duration ? parseInt(n.duration) || 2 : 2,
+            status: n.status || (idx === 0 ? 'available' : 'locked'),
+            visual_type: n.diagram_type || n.visual_type || 'candlestick-anatomy',
+            illustrationMode: n.illustrationMode || 'custom_builder',
+            diagram_type: n.diagram_type || 'candlestick-anatomy',
+            chartConfig: n.chartConfig || null,
+            snapshotConfig: n.snapshotConfig || null,
+            customChartConfig: n.customChartConfig || null,
+            content_markdown: n.content_markdown || '',
+            docConfig: n.docConfig || null,
+            posX: typeof n.posX === 'number' ? n.posX : undefined,
+            posY: typeof n.posY === 'number' ? n.posY : undefined,
+            customColor: n.customColor || undefined,
+            customBadge: n.customBadge || undefined,
+            customConnections: Array.isArray(n.customConnections) ? n.customConnections : undefined,
+            customStageBoxes: Array.isArray(n.customStageBoxes) ? n.customStageBoxes : undefined,
+            checklists: n.docConfig?.checklists || n.checklists || [],
+            resources: n.resources || [],
+            quizzes: n.docConfig?.quizzes || n.quizzes || []
+          };
+        });
 
         const firstNodeWithMeta = parsedNodes.find((n: any) => Array.isArray(n.customConnections) || Array.isArray(n.customStageBoxes));
 
@@ -208,6 +213,10 @@ export class RoadmapService {
     return this.repo.getCommunityArticle(slug);
   }
 
+  getAllCommunityArticles() {
+    return this.repo.getAllCommunityArticles();
+  }
+
   saveArticle(data: {
     slug: string;
     title: string;
@@ -229,7 +238,8 @@ export class RoadmapService {
     creator_name: string;
     description: string;
     category: string;
-    nodes: Array<{ title: string; level: number; duration: string }>;
+    difficulty?: string;
+    nodes: Array<any>;
   }) {
     if (!data.title || !data.creator_name || !data.description) {
       throw new Error('Title, Creator Name, dan Description wajib diisi');
@@ -242,6 +252,50 @@ export class RoadmapService {
 
     const id = 'comm-' + Date.now();
 
+    const enrichedNodes = (data.nodes || []).map((n: any, idx: number) => {
+      const nodeSlugPart = (n.title || `modul-${idx + 1}`)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '')
+        .slice(0, 36);
+      const docSlug = n.doc_slug || `doc-${slug}-${idx + 1}-${nodeSlugPart}`;
+      const nodeId = n.id || `node-${idx + 1}`;
+
+      // Save full documentation article in community_articles table
+      const payloadJson = JSON.stringify({
+        roadmapId: id,
+        roadmapSlug: slug,
+        roadmapTitle: data.title,
+        category: data.category || 'Community Trading',
+        difficulty: data.difficulty || 'Intermediate',
+        level: n.level || idx + 1,
+        nodeId,
+        orderIndex: idx + 1,
+        illustrationMode: n.illustrationMode || 'custom_builder',
+        customChartConfig: n.customChartConfig || null,
+        snapshotConfig: n.snapshotConfig || null,
+        docConfig: n.docConfig || null
+      });
+
+      this.repo.saveCommunityArticle({
+        slug: docSlug,
+        title: n.title || `Modul #${idx + 1}`,
+        content_markdown: n.content_markdown || `### ${n.title}\nMateri dokumentasi lengkap.`,
+        illustration_mode: n.illustrationMode || 'custom_builder',
+        illustration_payload: payloadJson,
+        author_name: data.creator_name,
+        roadmap_id: id,
+        node_id: nodeId
+      });
+
+      return {
+        ...n,
+        id: nodeId,
+        slug: docSlug,
+        doc_slug: docSlug
+      };
+    });
+
     this.repo.createCommunityRoadmap({
       id,
       slug,
@@ -249,7 +303,7 @@ export class RoadmapService {
       creator_name: data.creator_name,
       description: data.description,
       category: data.category || 'Community Trading',
-      nodes_json: JSON.stringify(data.nodes || [])
+      nodes_json: JSON.stringify(enrichedNodes)
     });
 
     return { success: true, id, slug, data: { id, slug } };

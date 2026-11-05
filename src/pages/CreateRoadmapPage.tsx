@@ -43,6 +43,7 @@ import {
   LANE_CENTER_X,
   LANE_RIGHT_X
 } from '../types/roadmapStudioTypes';
+import { ModuleDocStudioModal, ModuleDocConfig } from '../components/docs-builder/ModuleDocStudioModal';
 
 export interface NodeDraft {
   id?: string;
@@ -56,6 +57,7 @@ export interface NodeDraft {
   snapshot_url: string;
   content_markdown: string;
   custom_chart_config?: CustomChartConfig;
+  doc_config?: ModuleDocConfig;
   posX?: number;
   posY?: number;
   customColor?: string;
@@ -152,6 +154,7 @@ export const CreateRoadmapPage: React.FC = () => {
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
   const [chartBuilderTargetIndex, setChartBuilderTargetIndex] = useState<number | null>(null);
+  const [docStudioTargetIndex, setDocStudioTargetIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingTemplate, setLoadingTemplate] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -344,6 +347,7 @@ export const CreateRoadmapPage: React.FC = () => {
               caption: n.title
             } : null,
             customChartConfig: n.illustration_mode === 'custom_builder' ? n.custom_chart_config : null,
+            docConfig: n.doc_config || null,
             content_markdown: n.content_markdown,
             posX: typeof n.posX === 'number' ? n.posX : (idx === 0 ? LANE_CENTER_X : idx % 2 === 1 ? LANE_LEFT_X : LANE_RIGHT_X),
             posY: typeof n.posY === 'number' ? n.posY : 80 + idx * 165,
@@ -1008,15 +1012,42 @@ export const CreateRoadmapPage: React.FC = () => {
                           )}
                         </div>
 
-                        {/* WYSIWYG Rich Markdown Lesson Content Editor */}
-                        <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-zinc-800">
+                        {/* WYSIWYG Rich Markdown Lesson Content Editor & Full Documentation Studio */}
+                        <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-zinc-800">
+                          <div className="p-3.5 rounded-xl bg-gradient-to-r from-indigo-500/10 via-emerald-500/10 to-sky-500/10 border border-indigo-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                            <div>
+                              <div className="flex items-center space-x-2">
+                                <BookOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                <span className="text-xs font-extrabold text-slate-900 dark:text-white">
+                                  Dokumentasi Lengkap Modul (/docs Builder)
+                                </span>
+                                {node.doc_config && (
+                                  <span className="px-2 py-0.5 rounded-md bg-emerald-500 text-black text-[10px] font-mono font-bold">
+                                    ✓ {node.doc_config.sections.length} Bab • {node.doc_config.quizzes.length} Kuis
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[11px] text-slate-600 dark:text-zinc-300 mt-1 leading-relaxed">
+                                Susun artikel dokumentasi multi-bab, studi kasus finansial nyata, kesalahan umum vs koreksi, checklist praktik, &amp; kuis pemahaman untuk halaman <strong>/docs</strong>.
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setDocStudioTargetIndex(index)}
+                              className="flex-shrink-0 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-mono text-xs font-extrabold flex items-center space-x-1.5 shadow-sm transition-colors"
+                            >
+                              <BookOpen className="w-3.5 h-3.5" />
+                              <span>{node.doc_config ? 'Sunting Studio Docs 📚' : 'Buka Studio Docs 📚'}</span>
+                            </button>
+                          </div>
+
                           <label className="font-mono text-xs font-bold text-slate-900 dark:text-white flex items-center justify-between mb-1">
                             <span className="flex items-center space-x-1.5">
                               <Code2 className="w-3.5 h-3.5 text-emerald-500" />
-                              <span>Materi Inti &amp; Panduan Praktik (WYSIWYG Rich Editor):</span>
+                              <span>Materi Inti &amp; Panduan Praktik Cepat (WYSIWYG Rich Editor):</span>
                             </span>
                             <span className="text-[10px] text-slate-400 font-normal">
-                              Mendukung Toolbar Visual, Callout Pro-Tip/Risiko &amp; Tabel
+                              Ditampilkan langsung di Drawer Roadmap &amp; Bab 1 Dokumentasi
                             </span>
                           </label>
 
@@ -1091,6 +1122,25 @@ export const CreateRoadmapPage: React.FC = () => {
           onSave={(config) => {
             handleUpdateNode(chartBuilderTargetIndex, 'custom_chart_config', config);
             handleUpdateNode(chartBuilderTargetIndex, 'illustration_mode', 'custom_builder');
+          }}
+        />
+      )}
+
+      {/* Full-Screen Module Documentation Studio Modal (/docs Builder) */}
+      {docStudioTargetIndex !== null && nodes[docStudioTargetIndex] && (
+        <ModuleDocStudioModal
+          isOpen={true}
+          moduleTitle={nodes[docStudioTargetIndex].title || `Modul #${docStudioTargetIndex + 1}`}
+          moduleDuration={nodes[docStudioTargetIndex].duration || '2 jam'}
+          initialMarkdown={nodes[docStudioTargetIndex].content_markdown}
+          initialChartConfig={nodes[docStudioTargetIndex].custom_chart_config}
+          initialConfig={nodes[docStudioTargetIndex].doc_config}
+          onClose={() => setDocStudioTargetIndex(null)}
+          onSave={(docConfig) => {
+            handleUpdateNode(docStudioTargetIndex, 'doc_config', docConfig);
+            if (docConfig.sections.length > 0 && docConfig.sections[0].contentMarkdown.trim()) {
+              handleUpdateNode(docStudioTargetIndex, 'content_markdown', docConfig.sections[0].contentMarkdown);
+            }
           }}
         />
       )}

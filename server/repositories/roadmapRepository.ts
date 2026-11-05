@@ -162,6 +162,10 @@ export class RoadmapRepository {
     return db.prepare('SELECT * FROM community_articles WHERE slug = ?').get(slug);
   }
 
+  getAllCommunityArticles() {
+    return db.prepare('SELECT * FROM community_articles ORDER BY updated_at DESC').all();
+  }
+
   saveCommunityArticle(article: {
     id?: string;
     slug: string;
