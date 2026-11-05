@@ -15,6 +15,7 @@ import { getSmartRecommendations } from '../utils/recommendationEngine';
 import { VisualDiagram } from './VisualDiagram';
 import { InteractiveTradingChart } from './illustration/InteractiveTradingChart';
 import { ChartSnapshotViewer } from './illustration/ChartSnapshotViewer';
+import { CustomChartRenderer } from './illustration/CustomChartRenderer';
 import confetti from 'canvas-confetti';
 import { 
   ArrowLeft, 
@@ -631,6 +632,13 @@ export const DocReader: React.FC<DocReaderProps> = ({
                 {section.visualType ? (
                   <div className="my-6">
                     <VisualDiagram type={section.visualType} />
+                  </div>
+                ) : section.illustrationMode === 'custom_builder' && (section as any).customChartConfig ? (
+                  <div className="my-6">
+                    <CustomChartRenderer
+                      config={(section as any).customChartConfig}
+                      title={section.title}
+                    />
                   </div>
                 ) : section.illustrationMode === 'interactive_chart' ? (
                   <div className="my-6">

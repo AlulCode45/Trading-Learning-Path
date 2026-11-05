@@ -34,17 +34,22 @@ import { PRESET_SVG_ITEMS } from '../components/illustration/PresetSvgCatalog';
 import { VisualDiagram } from '../components/VisualDiagram';
 import { InteractiveTradingChart } from '../components/illustration/InteractiveTradingChart';
 import { ChartSnapshotViewer } from '../components/illustration/ChartSnapshotViewer';
+import { WysiwygMarkdownEditor } from '../components/editor/WysiwygMarkdownEditor';
+import { CustomChartBuilderModal } from '../components/chart-builder/CustomChartBuilderModal';
+import { CustomChartRenderer } from '../components/illustration/CustomChartRenderer';
+import { CustomChartConfig } from '../types/chartBuilderTypes';
 
 export interface NodeDraft {
   title: string;
   duration: string;
   level: number;
   importance: 'essential' | 'recommended' | 'optional';
-  illustration_mode: 'preset' | 'interactive_chart' | 'snapshot';
+  illustration_mode: 'preset' | 'interactive_chart' | 'snapshot' | 'custom_builder';
   preset_type: string;
   chart_symbol: string;
   snapshot_url: string;
   content_markdown: string;
+  custom_chart_config?: CustomChartConfig;
 }
 
 export const CreateRoadmapPage: React.FC = () => {
@@ -99,7 +104,7 @@ export const CreateRoadmapPage: React.FC = () => {
   ]);
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
-  const [markdownPreviewTab, setMarkdownPreviewTab] = useState<Record<number, 'edit' | 'preview'>>({});
+  const [chartBuilderTargetIndex, setChartBuilderTargetIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingTemplate, setLoadingTemplate] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -256,6 +261,7 @@ export const CreateRoadmapPage: React.FC = () => {
               src: n.snapshot_url,
               caption: n.title
             } : null,
+            customChartConfig: n.illustration_mode === 'custom_builder' ? n.custom_chart_config : null,
             content_markdown: n.content_markdown
           }))
         })
@@ -730,8 +736,8 @@ export const CreateRoadmapPage: React.FC = () => {
                             </label>
                           </div>
 
-                          {/* 3 Mode Radio Cards */}
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                          {/* 4-Mode Illustration Engine Selector */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
                             <button
                               type="button"
                               onClick={() => handleUpdateNode(index, 'illustration_mode', 'preset')}
@@ -779,10 +785,31 @@ export const CreateRoadmapPage: React.FC = () => {
                             >
                               <div className="flex items-center space-x-1.5 mb-1 text-[11px] font-mono">
                                 <ImageIcon className="w-3.5 h-3.5 text-purple-500" />
-                                <span>Mode 3: Snapshot &amp; Anotasi</span>
+                                <span>Mode 3: Snapshot</span>
                               </div>
                               <p className="text-[10px] text-slate-500 dark:text-zinc-400 leading-snug">
                                 Link URL TradingView snapshot atau upload gambar custom.
+                              </p>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleUpdateNode(index, 'illustration_mode', 'custom_builder');
+                                setChartBuilderTargetIndex(index);
+                              }}
+                              className={`p-3 rounded-xl border text-left transition-all ${
+                                node.illustration_mode === 'custom_builder'
+                                  ? 'bg-emerald-500/10 border-emerald-500 text-slate-950 dark:text-white font-bold ring-2 ring-emerald-500/20'
+                                  : 'bg-white dark:bg-[#121722] border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:border-slate-400'
+                              }`}
+                            >
+                              <div className="flex items-center space-x-1.5 mb-1 text-[11px] font-mono">
+                                <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+                                <span>Mode 4: Chart Studio 🎨</span>
+                              </div>
+                              <p className="text-[10px] text-slate-500 dark:text-zinc-400 leading-snug">
+                                Susun candle, tarik Fibonacci Retracement &amp; kotak OB/FVG.
                               </p>
                             </button>
                           </div>
@@ -865,57 +892,68 @@ export const CreateRoadmapPage: React.FC = () => {
                               </div>
                             </div>
                           )}
-                        </div>
 
-                        {/* Markdown Lesson Content Editor */}
-                        <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-zinc-800">
-                          <div className="flex items-center justify-between">
-                            <label className="font-mono text-xs font-bold text-slate-900 dark:text-white flex items-center space-x-1.5">
-                              <Code2 className="w-3.5 h-3.5 text-emerald-500" />
-                              <span>Materi Inti &amp; Panduan Praktik (Markdown Tutorial):</span>
-                            </label>
+                          {/* Mode 4: Custom Candle Chart Builder Studio */}
+                          {node.illustration_mode === 'custom_builder' && (
+                            <div className="space-y-3 pt-2">
+                              <div className="flex items-center justify-between">
+                                <span className="font-mono text-[11px] text-slate-600 dark:text-zinc-400">
+                                  Konfigurasi Chart Drag &amp; Drop Interaktif:
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => setChartBuilderTargetIndex(index)}
+                                  className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold rounded-lg text-xs font-mono flex items-center space-x-1 shadow-sm transition-colors"
+                                >
+                                  <Sparkles className="w-3.5 h-3.5" />
+                                  <span>{node.custom_chart_config ? 'Sunting di Chart Studio 🎨' : 'Rancang di Chart Studio 🎨'}</span>
+                                </button>
+                              </div>
 
-                            <div className="flex rounded-lg bg-slate-200 dark:bg-zinc-800 p-0.5 text-[11px] font-mono">
-                              <button
-                                type="button"
-                                onClick={() => setMarkdownPreviewTab(prev => ({ ...prev, [index]: 'edit' }))}
-                                className={`px-2.5 py-1 rounded-md transition-colors ${
-                                  tab === 'edit'
-                                    ? 'bg-white dark:bg-black font-bold text-black dark:text-white shadow-2xs'
-                                    : 'text-slate-600 dark:text-zinc-400'
-                                }`}
-                              >
-                                Tulis
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => setMarkdownPreviewTab(prev => ({ ...prev, [index]: 'preview' }))}
-                                className={`px-2.5 py-1 rounded-md transition-colors ${
-                                  tab === 'preview'
-                                    ? 'bg-white dark:bg-black font-bold text-black dark:text-white shadow-2xs'
-                                    : 'text-slate-600 dark:text-zinc-400'
-                                }`}
-                              >
-                                Pratinjau
-                              </button>
-                            </div>
-                          </div>
-
-                          {tab === 'edit' ? (
-                            <textarea
-                              rows={6}
-                              placeholder="### Judul Sub-Topik&#10;Jelaskan konsep teknikal, formula matematika risiko, atau langkah validasi entry..."
-                              value={node.content_markdown}
-                              onChange={(e) => handleUpdateNode(index, 'content_markdown', e.target.value)}
-                              className="w-full bg-white dark:bg-[#121722] border border-slate-300 dark:border-zinc-700 rounded-xl p-3.5 text-xs text-slate-900 dark:text-white outline-none focus:border-black dark:focus:border-white transition-all font-mono leading-relaxed"
-                            />
-                          ) : (
-                            <div className="p-4 rounded-xl bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-zinc-800 text-xs leading-relaxed prose prose-sm dark:prose-invert max-w-none">
-                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {node.content_markdown || '*Belum ada materi tertulis.*'}
-                              </ReactMarkdown>
+                              {node.custom_chart_config ? (
+                                <div className="p-3 rounded-xl bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-zinc-800">
+                                  <div className="text-[10px] font-mono text-slate-400 mb-2">Pratinjau Chart Kustom Anda:</div>
+                                  <CustomChartRenderer 
+                                    config={node.custom_chart_config}
+                                    title={node.title || 'Interactive Custom Candlestick Model'}
+                                  />
+                                </div>
+                              ) : (
+                                <div 
+                                  onClick={() => setChartBuilderTargetIndex(index)}
+                                  className="p-6 rounded-xl border-2 border-dashed border-emerald-500/40 hover:border-emerald-500 bg-emerald-500/5 hover:bg-emerald-500/10 cursor-pointer flex flex-col items-center justify-center text-center transition-all group"
+                                >
+                                  <Sparkles className="w-8 h-8 text-emerald-500 mb-2 group-hover:scale-110 transition-transform" />
+                                  <span className="text-xs font-mono font-bold text-slate-900 dark:text-white mb-1">
+                                    Klik untuk Membuka Canvas Chart Studio
+                                  </span>
+                                  <p className="text-[11px] text-slate-500 dark:text-zinc-400 max-w-sm leading-relaxed">
+                                    Gunakan template candle (FVG, Order Block, Hammer), drag &amp; drop candle, tarik Fibonacci Retracement, dan pasang badge BOS/CHoCH.
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           )}
+                        </div>
+
+                        {/* WYSIWYG Rich Markdown Lesson Content Editor */}
+                        <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-zinc-800">
+                          <label className="font-mono text-xs font-bold text-slate-900 dark:text-white flex items-center justify-between mb-1">
+                            <span className="flex items-center space-x-1.5">
+                              <Code2 className="w-3.5 h-3.5 text-emerald-500" />
+                              <span>Materi Inti &amp; Panduan Praktik (WYSIWYG Rich Editor):</span>
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-normal">
+                              Mendukung Toolbar Visual, Callout Pro-Tip/Risiko &amp; Tabel
+                            </span>
+                          </label>
+
+                          <WysiwygMarkdownEditor
+                            value={node.content_markdown}
+                            onChange={(val) => handleUpdateNode(index, 'content_markdown', val)}
+                            placeholder="### Judul Sub-Topik&#10;Tulis konsep teknikal, langkah validasi konfirmasi body candle, atau aturan manajemen risiko di sini..."
+                            onOpenChartBuilder={() => setChartBuilderTargetIndex(index)}
+                          />
                         </div>
 
                       </div>
@@ -971,6 +1009,19 @@ export const CreateRoadmapPage: React.FC = () => {
         </form>
 
       </div>
+
+      {/* Interactive Custom Candlestick & Drawing Studio Modal */}
+      {chartBuilderTargetIndex !== null && (
+        <CustomChartBuilderModal
+          isOpen={true}
+          onClose={() => setChartBuilderTargetIndex(null)}
+          initialConfig={nodes[chartBuilderTargetIndex]?.custom_chart_config}
+          onSave={(config) => {
+            handleUpdateNode(chartBuilderTargetIndex, 'custom_chart_config', config);
+            handleUpdateNode(chartBuilderTargetIndex, 'illustration_mode', 'custom_builder');
+          }}
+        />
+      )}
     </div>
   );
 };

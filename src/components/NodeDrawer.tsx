@@ -5,6 +5,7 @@ import { RoadmapNode } from '../types';
 import { VisualDiagram } from './VisualDiagram';
 import { InteractiveTradingChart } from './illustration/InteractiveTradingChart';
 import { ChartSnapshotViewer } from './illustration/ChartSnapshotViewer';
+import { CustomChartRenderer } from './illustration/CustomChartRenderer';
 import confetti from 'canvas-confetti';
 import { 
   X, 
@@ -101,7 +102,12 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
 
         {/* Visual Technical Diagram or Chart Illustration */}
         <div className="pt-2">
-          {(node as any).illustrationMode === 'interactive_chart' ? (
+          {(node as any).illustrationMode === 'custom_builder' && (node as any).customChartConfig ? (
+            <CustomChartRenderer
+              config={(node as any).customChartConfig}
+              title={node.title}
+            />
+          ) : (node as any).illustrationMode === 'interactive_chart' ? (
             <InteractiveTradingChart
               title={(node as any).chartConfig?.title || node.title}
               timeframe={(node as any).chartConfig?.timeframe || '15m'}
