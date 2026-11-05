@@ -6,12 +6,15 @@ import {
   PositionDrawing, 
   TrendlineDrawing, 
   PolylineDrawing, 
+  ArrowDrawing,
+  InfoCardDrawing,
   TextBadgeAnnotation, 
+  ChartLegendItem,
   CustomChartConfig, 
   CandleTemplatePreset 
 } from '../../types/chartBuilderTypes';
 import { CandleTemplateTray } from './CandleTemplateTray';
-import { ChartCanvas } from './ChartCanvas';
+import { ChartCanvas, ChartObjectType, ActiveChartTool } from './ChartCanvas';
 import { 
   X, 
   Sparkles, 
@@ -27,7 +30,11 @@ import {
   CheckCircle2,
   Sun,
   Moon,
-  RotateCcw
+  RotateCcw,
+  Activity,
+  FileText,
+  CornerDownRight,
+  Plus
 } from 'lucide-react';
 
 interface CustomChartBuilderModalProps {
@@ -68,6 +75,14 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
     initialConfig?.candleSpacing || 'normal'
   );
 
+  // Header Title & Subtitle Tag
+  const [chartTitle, setChartTitle] = useState<string>(
+    initialConfig?.title || 'Setup Chart & Skematik Analisis Teknikal'
+  );
+  const [chartSubtitle, setChartSubtitle] = useState<string>(
+    initialConfig?.subtitle || 'Macro Bias (HTF) ➔ Structure (MTF) ➔ Execution (LTF)'
+  );
+
   // Chart Elements State
   const [candles, setCandles] = useState<CustomCandle[]>(initialConfig?.candles || [
     { id: 'c-1', index: 0, open: 100, high: 115, low: 95, close: 110, volume: 1200, label: 'C1' },
@@ -81,16 +96,20 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
   const [positions, setPositions] = useState<PositionDrawing[]>(initialConfig?.positions || []);
   const [trendlines, setTrendlines] = useState<TrendlineDrawing[]>(initialConfig?.trendlines || []);
   const [polylines, setPolylines] = useState<PolylineDrawing[]>(initialConfig?.polylines || []);
+  const [arrows, setArrows] = useState<ArrowDrawing[]>(initialConfig?.arrows || []);
+  const [infoCards, setInfoCards] = useState<InfoCardDrawing[]>(initialConfig?.infoCards || []);
   const [badges, setBadges] = useState<TextBadgeAnnotation[]>(initialConfig?.badges || []);
+  const [legends, setLegends] = useState<ChartLegendItem[]>(initialConfig?.legends || []);
 
   // Display Overlays State
+  const [showCandles, setShowCandles] = useState<boolean>(initialConfig?.showCandles !== false);
   const [showVolume, setShowVolume] = useState<boolean>(initialConfig?.showVolume !== false);
   const [showEma, setShowEma] = useState<boolean>(initialConfig?.showEma !== false);
   const [emaPeriod, setEmaPeriod] = useState<number>(initialConfig?.emaPeriod || 9);
 
   // Active Tool & Selection State
-  const [activeTool, setActiveTool] = useState<'select' | 'candle' | 'fibonacci' | 'box' | 'position-long' | 'position-short' | 'trendline' | 'polyline' | 'badge'>('select');
-  const [selectedItem, setSelectedItem] = useState<{ id: string; type: 'candle' | 'fib' | 'box' | 'position' | 'trendline' | 'polyline' | 'badge' } | null>(null);
+  const [activeTool, setActiveTool] = useState<ActiveChartTool>('select');
+  const [selectedItem, setSelectedItem] = useState<{ id: string; type: ChartObjectType } | null>(null);
   const [copyFeedback, setCopyFeedback] = useState(false);
 
   // Keyboard Shortcuts (Delete, Esc)
@@ -113,6 +132,7 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
 
   // Add Blank Candle
   const handleAddBlankCandle = (isBullish: boolean) => {
+    setShowCandles(true);
     const lastCandle = candles[candles.length - 1];
     const prevClose = lastCandle ? lastCandle.close : 100;
     const height = 25;
@@ -130,13 +150,91 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
     setSelectedItem({ id: newCandle.id, type: 'candle' });
   };
 
-  // Add Preset Formation with Suggested Boxes & Badges
-  const handleAddPreset = (preset: CandleTemplatePreset) => {
-    const baseIndex = candles.length;
+  // Quick Add Wave (Zigzag or Smooth Macro Curve)
+  const handleQuickAddWave = (curveType: 'zigzag' | 'smooth') => {
+    const maxIdx = Math.max(8, candles.length - 1);
+    const newPoly: PolylineDrawing = {
+      id: `poly-${Date.now()}`,
+      label: curveType === 'smooth' ? 'Daily Macro Wave (HTF Bias)' : 'MTF Structure Wave (H1)',
+      color: curveType === 'smooth' ? '#FACC15' : '#38BDF8',
+      strokeWidth: curveType === 'smooth' ? 3.5 : 2.5,
+      lineStyle: curveType === 'smooth' ? 'dashed' : 'solid',
+      curveType,
+      showDots: curveType === 'zigzag',
+      points: curveType === 'smooth'
+        ? [
+            { index: 0, price: 95 },
+            { index: Math.round(maxIdx * 0.3), price: 155 },
+            { index: Math.round(maxIdx * 0.65), price: 98 },
+            { index: maxIdx, price: 160 }
+          ]
+        : [
+            { index: 0, price: 95 },
+            { index: 1, price: 130 },
+            { index: 2, price: 112 },
+            { index: 4, price: 155 },
+            { index: 5, price: 128 },
+            { index: 7, price: 168 }
+          ]
+    };
+    setPolylines(prev => [...prev, newPoly]);
+    setSelectedItem({ id: newPoly.id, type: 'polyline' });
+  };
+
+  // Quick Add Info Card
+  const handleQuickAddInfoCard = () => {
+    const newCard: InfoCardDrawing = {
+      id: `card-${Date.now()}`,
+      candleIndex: Math.min(2, Math.max(0, candles.length - 1)),
+      price: 135,
+      width: 155,
+      stepBadge: '1',
+      title: 'STRONG LOW (HL)',
+      lines: ['Dilindungi Institusi', 'Tempat Aman Stop Loss'],
+      footerBadge: '✓ Protected Zone',
+      color: '#10B981',
+      bgOpacity: 0.15
+    };
+    setInfoCards(prev => [...prev, newCard]);
+    setSelectedItem({ id: newCard.id, type: 'infocard' });
+  };
+
+  // Quick Add Curved Arrow
+  const handleQuickAddArrow = () => {
+    const newArr: ArrowDrawing = {
+      id: `arr-${Date.now()}`,
+      startIndex: 1,
+      startPrice: 145,
+      endIndex: Math.min(5, Math.max(3, candles.length - 1)),
+      endPrice: 115,
+      color: '#FACC15',
+      strokeWidth: 2.2,
+      curved: true,
+      curveOffset: 25,
+      label: 'Pullback Retest'
+    };
+    setArrows(prev => [...prev, newArr]);
+    setSelectedItem({ id: newArr.id, type: 'arrow' });
+  };
+
+  // Add Preset or Load Full Blueprint
+  const handleAddPreset = (preset: CandleTemplatePreset, replaceAll: boolean = false) => {
+    const baseIndex = replaceAll ? 0 : candles.length;
     const lastCandle = candles[candles.length - 1];
-    const basePrice = lastCandle ? lastCandle.close : 100;
+    const basePrice = replaceAll ? 100 : (lastCandle ? lastCandle.close : 100);
     const firstPresetOpen = preset.candles[0]?.open || 100;
-    const offset = basePrice - firstPresetOpen;
+    const offset = replaceAll ? 0 : (basePrice - firstPresetOpen);
+
+    if (replaceAll) {
+      if (preset.title) setChartTitle(preset.title);
+      if (preset.subtitle) setChartSubtitle(preset.subtitle);
+      setShowCandles(preset.showCandles !== false);
+      if (preset.showVolume !== undefined) setShowVolume(preset.showVolume);
+      if (preset.showEma !== undefined) setShowEma(preset.showEma);
+      setFibonaccis([]);
+      setPositions([]);
+      setTrendlines([]);
+    }
 
     const newCandles: CustomCandle[] = preset.candles.map((c, idx) => ({
       id: `c-${Date.now()}-${idx}`,
@@ -149,9 +247,9 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
       label: c.label || `${preset.name.slice(0, 3)} ${idx + 1}`
     }));
 
-    setCandles(prev => [...prev, ...newCandles]);
+    setCandles(prev => replaceAll ? newCandles : [...prev, ...newCandles]);
 
-    // Attach suggested boxes if available
+    // Boxes
     if (preset.suggestedBoxes) {
       const newBoxes: BoxDrawing[] = preset.suggestedBoxes.map((b, idx) => ({
         id: `box-sug-${Date.now()}-${idx}`,
@@ -163,13 +261,16 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
         color: b.color,
         textColor: b.color,
         borderColor: b.color,
-        opacity: 0.18,
+        borderStyle: b.borderStyle || 'dashed',
+        opacity: 0.14,
         showMidLine: b.showMidLine
       }));
-      setBoxes(prev => [...prev, ...newBoxes]);
+      setBoxes(prev => replaceAll ? newBoxes : [...prev, ...newBoxes]);
+    } else if (replaceAll) {
+      setBoxes([]);
     }
 
-    // Attach suggested badges if available
+    // Badges
     if (preset.suggestedBadges) {
       const newBadges: TextBadgeAnnotation[] = preset.suggestedBadges.map((badge, idx) => ({
         id: `badge-sug-${Date.now()}-${idx}`,
@@ -178,13 +279,84 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
         text: badge.text,
         color: badge.color || '#10B981',
         bgColor: badge.color || '#10B981',
-        textColor: '#000000',
+        textColor: badge.textColor || '#000000',
         borderColor: '#000000',
         borderWidth: 1,
         fontSize: 9.5,
-        style: 'badge'
+        style: badge.style || 'badge'
       }));
-      setBadges(prev => [...prev, ...newBadges]);
+      setBadges(prev => replaceAll ? newBadges : [...prev, ...newBadges]);
+    } else if (replaceAll) {
+      setBadges([]);
+    }
+
+    // Polylines / Waves
+    if (preset.suggestedPolylines) {
+      const newPolys: PolylineDrawing[] = preset.suggestedPolylines.map((poly, idx) => ({
+        id: `poly-sug-${Date.now()}-${idx}`,
+        color: poly.color,
+        strokeWidth: poly.strokeWidth || 2.5,
+        lineStyle: poly.lineStyle || 'solid',
+        curveType: poly.curveType || 'zigzag',
+        showDots: poly.showDots,
+        label: poly.label,
+        points: poly.points.map(pt => ({
+          index: baseIndex + pt.index,
+          price: Math.round(pt.price + offset)
+        }))
+      }));
+      setPolylines(prev => replaceAll ? newPolys : [...prev, ...newPolys]);
+    } else if (replaceAll) {
+      setPolylines([]);
+    }
+
+    // Info Cards
+    if (preset.suggestedInfoCards) {
+      const newCards: InfoCardDrawing[] = preset.suggestedInfoCards.map((c, idx) => ({
+        id: `card-sug-${Date.now()}-${idx}`,
+        candleIndex: baseIndex + c.candleIndex,
+        price: Math.round(c.price + offset),
+        width: c.width || 155,
+        stepBadge: c.stepBadge,
+        title: c.title,
+        lines: c.lines,
+        footerBadge: c.footerBadge,
+        color: c.color,
+        bgOpacity: 0.14
+      }));
+      setInfoCards(prev => replaceAll ? newCards : [...prev, ...newCards]);
+    } else if (replaceAll) {
+      setInfoCards([]);
+    }
+
+    // Arrows
+    if (preset.suggestedArrows) {
+      const newArrows: ArrowDrawing[] = preset.suggestedArrows.map((a, idx) => ({
+        id: `arr-sug-${Date.now()}-${idx}`,
+        startIndex: baseIndex + a.startIndex,
+        startPrice: Math.round(a.startPrice + offset),
+        endIndex: baseIndex + a.endIndex,
+        endPrice: Math.round(a.endPrice + offset),
+        color: a.color,
+        curved: a.curved !== false,
+        curveOffset: a.curveOffset ?? 25,
+        label: a.label
+      }));
+      setArrows(prev => replaceAll ? newArrows : [...prev, ...newArrows]);
+    } else if (replaceAll) {
+      setArrows([]);
+    }
+
+    // Legends
+    if (preset.suggestedLegends) {
+      const newLegends: ChartLegendItem[] = preset.suggestedLegends.map((l, idx) => ({
+        id: `leg-sug-${Date.now()}-${idx}`,
+        label: l.label,
+        color: l.color
+      }));
+      setLegends(prev => replaceAll ? newLegends : [...prev, ...newLegends]);
+    } else if (replaceAll) {
+      setLegends([]);
     }
   };
 
@@ -207,6 +379,18 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
       const newTrend: TrendlineDrawing = { id, ...payload };
       setTrendlines(prev => [...prev, newTrend]);
       setSelectedItem({ id, type: 'trendline' });
+    } else if (type === 'polyline') {
+      const newPoly: PolylineDrawing = { id, ...payload };
+      setPolylines(prev => [...prev, newPoly]);
+      setSelectedItem({ id, type: 'polyline' });
+    } else if (type === 'arrow') {
+      const newArr: ArrowDrawing = { id, ...payload };
+      setArrows(prev => [...prev, newArr]);
+      setSelectedItem({ id, type: 'arrow' });
+    } else if (type === 'infocard') {
+      const newCard: InfoCardDrawing = { id, ...payload };
+      setInfoCards(prev => [...prev, newCard]);
+      setSelectedItem({ id, type: 'infocard' });
     } else if (type === 'badge') {
       const newBadge: TextBadgeAnnotation = { id, ...payload };
       setBadges(prev => [...prev, newBadge]);
@@ -232,6 +416,12 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
       setPositions(prev => prev.filter(p => p.id !== id));
     } else if (type === 'trendline') {
       setTrendlines(prev => prev.filter(t => t.id !== id));
+    } else if (type === 'polyline') {
+      setPolylines(prev => prev.filter(p => p.id !== id));
+    } else if (type === 'arrow') {
+      setArrows(prev => prev.filter(a => a.id !== id));
+    } else if (type === 'infocard') {
+      setInfoCards(prev => prev.filter(c => c.id !== id));
     } else if (type === 'badge') {
       setBadges(prev => prev.filter(b => b.id !== id));
     }
@@ -247,13 +437,18 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
       positions,
       trendlines,
       polylines,
+      arrows,
+      infoCards,
       badges,
+      legends,
+      showCandles,
       showVolume,
       showEma,
       emaPeriod,
       candleSpacing,
       isDarkMode,
-      title: 'Setup Chart Kustom',
+      title: chartTitle,
+      subtitle: chartSubtitle,
       timeframe: '15m'
     };
     onSave(finalConfig);
@@ -263,12 +458,19 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
   // Copy JSON Template
   const handleCopyJson = () => {
     const jsonStr = JSON.stringify({
+      title: chartTitle,
+      subtitle: chartSubtitle,
       candles,
+      polylines,
+      infoCards,
+      arrows,
       fibonaccis,
       boxes,
       positions,
       trendlines,
       badges,
+      legends,
+      showCandles,
       candleSpacing,
       isDarkMode
     }, null, 2);
@@ -283,6 +485,9 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
   const activePosition = selectedItem?.type === 'position' ? positions.find(p => p.id === selectedItem.id) : null;
   const activeBadge = selectedItem?.type === 'badge' ? badges.find(b => b.id === selectedItem.id) : null;
   const activeTrendline = selectedItem?.type === 'trendline' ? trendlines.find(t => t.id === selectedItem.id) : null;
+  const activePolyline = selectedItem?.type === 'polyline' ? polylines.find(p => p.id === selectedItem.id) : null;
+  const activeArrow = selectedItem?.type === 'arrow' ? arrows.find(a => a.id === selectedItem.id) : null;
+  const activeInfoCard = selectedItem?.type === 'infocard' ? infoCards.find(c => c.id === selectedItem.id) : null;
   const activeFib = selectedItem?.type === 'fib' ? fibonaccis.find(f => f.id === selectedItem.id) : null;
 
   const inputClass = `w-full rounded-lg px-2.5 py-1.5 outline-none border text-xs font-mono transition-colors focus:border-emerald-500 ${
@@ -338,15 +543,15 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
   );
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-      <div className={`border-2 rounded-2xl w-full max-w-7xl max-h-[96vh] flex flex-col overflow-hidden my-auto animate-in fade-in duration-200 transition-colors shadow-2xl ${
+    <div className="fixed inset-0 z-50 w-screen h-screen flex flex-col overflow-hidden animate-in fade-in duration-150">
+      <div className={`w-full h-full flex flex-col overflow-hidden transition-colors ${
         isDarkMode 
-          ? 'bg-[#090D16] border-zinc-700 text-white shadow-[12px_12px_0px_#000]' 
-          : 'bg-white border-slate-300 text-slate-900 shadow-xl'
+          ? 'bg-[#090D16] text-white' 
+          : 'bg-white text-slate-900'
       }`}>
         
-        {/* Studio Header */}
-        <div className={`border-b px-5 py-3 flex flex-wrap items-center justify-between gap-3 select-none ${
+        {/* Studio Full-Screen Header */}
+        <div className={`border-b px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 select-none flex-shrink-0 ${
           isDarkMode ? 'bg-[#050811] border-slate-800' : 'bg-slate-50 border-slate-200'
         }`}>
           <div className="flex items-center space-x-3">
@@ -355,13 +560,13 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-black tracking-tight flex items-center space-x-2">
-                <span>Interactive Chart Canvas &amp; Analysis Studio</span>
+                <span>Interactive Chart &amp; Schematic Studio</span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500 text-black font-extrabold uppercase">
-                  Pro Engine
+                  Full-Screen Pro Engine
                 </span>
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
-                Kustomisasi penuh setiap elemen: teks, warna font, background, opasitas, border, &amp; koordinat.
+                Rancang ilustrasi sekelas BTC.D &amp; Altseason Index: Multi-Wave Curve, Kartu Fase, Panah Lengkung, FVG/OB, &amp; Candlestick.
               </p>
             </div>
           </div>
@@ -440,30 +645,33 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
           </div>
         </div>
 
-        {/* Studio Workspace Layout */}
-        <div className={`flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x ${
+        {/* Full-Screen 3-Column Studio Workspace */}
+        <div className={`flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x overflow-hidden ${
           isDarkMode ? 'divide-slate-800' : 'divide-slate-200'
         }`}>
           
-          {/* Left Panel: Tools & Candle Templates (3 Cols) */}
-          <div className={`lg:col-span-3 p-4 space-y-4 overflow-y-auto max-h-[78vh] ${
+          {/* Left Panel: Tools, Layers & Blueprint Templates (3 Cols) */}
+          <div className={`lg:col-span-3 p-4 space-y-4 overflow-y-auto h-full ${
             isDarkMode ? 'bg-[#0A0E18]' : 'bg-slate-50'
           }`}>
             {/* Tool Selection Palette */}
             <div>
               <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 flex items-center space-x-1.5">
                 <Sliders className="w-3.5 h-3.5 text-[#0284C7]" />
-                <span>Peralatan Analisa (Tools):</span>
+                <span>Peralatan Gambar &amp; Skematik:</span>
               </div>
               <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
                 {[
                   { id: 'select', label: 'Pilih & Geser', icon: MousePointer },
+                  { id: 'polyline', label: 'Gambar Wave', icon: Activity },
+                  { id: 'infocard', label: 'Kartu Info', icon: FileText },
+                  { id: 'arrow', label: 'Panah Lengkung', icon: CornerDownRight },
+                  { id: 'box', label: 'Kotak OB / Zoom', icon: Box },
+                  { id: 'badge', label: 'Badge / Callout', icon: Tag },
                   { id: 'fibonacci', label: 'Fibonacci OTE', icon: TrendingUp },
-                  { id: 'box', label: 'Kotak OB / FVG', icon: Box },
-                  { id: 'position-long', label: 'Long Pos (R:R)', icon: TrendingUp },
-                  { id: 'position-short', label: 'Short Pos (R:R)', icon: TrendingDown },
                   { id: 'trendline', label: 'Trendline Ray', icon: Sliders },
-                  { id: 'badge', label: 'Badge / Callout', icon: Tag }
+                  { id: 'position-long', label: 'Long Pos (R:R)', icon: TrendingUp },
+                  { id: 'position-short', label: 'Short Pos (R:R)', icon: TrendingDown }
                 ].map((tool) => {
                   const Icon = tool.icon;
                   const isActive = activeTool === tool.id;
@@ -471,7 +679,7 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                     <button
                       key={tool.id}
                       type="button"
-                      onClick={() => setActiveTool(tool.id as any)}
+                      onClick={() => setActiveTool(tool.id as ActiveChartTool)}
                       className={`p-2 rounded-xl flex items-center space-x-2 transition-all border ${
                         isActive
                           ? 'bg-emerald-500 text-black font-extrabold border-emerald-400 shadow-2xs'
@@ -488,93 +696,131 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
               </div>
             </div>
 
-            {/* Overlays Toggle */}
+            {/* Layer Visibility Toggles */}
             <div className={`p-3 rounded-xl border space-y-2 ${
               isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
             }`}>
               <span className="text-[11px] font-mono font-bold block text-slate-700 dark:text-slate-300">
-                Indikator Overlay:
+                Layer &amp; Indikator Aktif:
               </span>
-              <div className="flex items-center justify-between text-xs font-mono text-slate-700 dark:text-slate-300">
-                <label className="flex items-center space-x-2 cursor-pointer">
+              <div className="grid grid-cols-3 gap-1.5 text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                <label className="flex items-center space-x-1.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showCandles}
+                    onChange={(e) => setShowCandles(e.target.checked)}
+                    className="accent-emerald-500 rounded"
+                  />
+                  <span>Candles</span>
+                </label>
+                <label className="flex items-center space-x-1.5 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={showVolume}
                     onChange={(e) => setShowVolume(e.target.checked)}
                     className="accent-emerald-500 rounded"
                   />
-                  <span>Volume VSA</span>
+                  <span>Volume</span>
                 </label>
-                <label className="flex items-center space-x-2 cursor-pointer">
+                <label className="flex items-center space-x-1.5 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={showEma}
                     onChange={(e) => setShowEma(e.target.checked)}
                     className="accent-[#0284C7] rounded"
                   />
-                  <span>EMA Curve ({emaPeriod})</span>
+                  <span>EMA ({emaPeriod})</span>
                 </label>
               </div>
             </div>
 
-            {/* Candle Templates Tray */}
+            {/* Candle & Blueprint Templates Tray */}
             <CandleTemplateTray
               onAddPreset={handleAddPreset}
               onAddBlankCandle={handleAddBlankCandle}
+              onQuickAddWave={handleQuickAddWave}
+              onQuickAddInfoCard={handleQuickAddInfoCard}
+              onQuickAddArrow={handleQuickAddArrow}
             />
           </div>
 
-          {/* Center Panel: Interactive Canvas & Canvas Toolbar (6 Cols) */}
-          <div className="lg:col-span-6 p-4 sm:p-5 flex flex-col justify-between space-y-3 overflow-y-auto">
-            {/* Canvas Quick Actions Bar */}
-            <div className={`flex flex-wrap items-center justify-between gap-2 border p-2.5 rounded-xl text-xs font-mono ${
-              isDarkMode ? 'bg-[#0E131F] border-slate-800' : 'bg-slate-100 border-slate-200'
+          {/* Center Panel: Interactive Canvas & Header/Legend Bar (6 Cols) */}
+          <div className="lg:col-span-6 p-4 sm:p-5 flex flex-col justify-between space-y-3 overflow-y-auto h-full">
+            {/* Editable Illustration Header Banner (Like BTC.D & Altseason Index Header) */}
+            <div className={`p-3 rounded-xl border space-y-2 ${
+              isDarkMode ? 'bg-[#0B1120] border-slate-800' : 'bg-slate-50 border-slate-200'
             }`}>
-              <div className="flex items-center space-x-2">
-                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Tool:</span>
-                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-extrabold uppercase text-[10px]">
-                  {activeTool.replace('-', ' ')}
-                </span>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400">| {candles.length} Bar</span>
-                {boxes.length > 0 && <span className="text-sky-500 font-bold">• {boxes.length} Zona</span>}
-                {badges.length > 0 && <span className="text-amber-500 font-bold">• {badges.length} Badge</span>}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] font-mono text-slate-400 uppercase mb-0.5">
+                    Judul Ilustrasi Kiri Atas:
+                  </label>
+                  <input
+                    type="text"
+                    value={chartTitle}
+                    onChange={(e) => setChartTitle(e.target.value)}
+                    placeholder="Contoh: Fraktalitas Multi-Timeframe / BTC.D Rotation"
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-mono text-slate-400 uppercase mb-0.5">
+                    Badge Alur Kanan Atas:
+                  </label>
+                  <input
+                    type="text"
+                    value={chartSubtitle}
+                    onChange={(e) => setChartSubtitle(e.target.value)}
+                    placeholder="Contoh: Macro Bias (Daily) ➔ Structure (H1) ➔ Execution"
+                    className={inputClass}
+                  />
+                </div>
               </div>
 
-              <div className="flex items-center space-x-1.5">
-                {selectedItem && (
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/60 text-xs font-mono">
+                <div className="flex items-center space-x-2">
+                  <span className="text-[11px] font-bold text-emerald-500 uppercase">{ chartTitle }</span>
+                </div>
+                <div className="flex items-center space-x-1.5">
+                  {selectedItem && (
+                    <button
+                      type="button"
+                      onClick={handleDeleteSelected}
+                      className="px-2.5 py-1 bg-rose-500/15 hover:bg-rose-500/25 text-rose-500 border border-rose-500/30 rounded-lg text-[11px] font-mono flex items-center space-x-1 transition-colors"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span>Hapus Elemen</span>
+                    </button>
+                  )}
                   <button
                     type="button"
-                    onClick={handleDeleteSelected}
-                    className="px-2.5 py-1 bg-rose-500/15 hover:bg-rose-500/25 text-rose-500 border border-rose-500/30 rounded-lg text-xs font-mono flex items-center space-x-1 transition-colors"
+                    onClick={() => {
+                      setCandles([]);
+                      setFibonaccis([]);
+                      setBoxes([]);
+                      setPositions([]);
+                      setTrendlines([]);
+                      setPolylines([]);
+                      setArrows([]);
+                      setInfoCards([]);
+                      setBadges([]);
+                      setLegends([]);
+                      setSelectedItem(null);
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-colors border ${
+                      isDarkMode 
+                        ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' 
+                        : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-300 shadow-2xs'
+                    }`}
                   >
-                    <Trash2 className="w-3 h-3" />
-                    <span>Hapus Item</span>
+                    Clear All
                   </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCandles([]);
-                    setFibonaccis([]);
-                    setBoxes([]);
-                    setPositions([]);
-                    setTrendlines([]);
-                    setBadges([]);
-                    setSelectedItem(null);
-                  }}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors border ${
-                    isDarkMode 
-                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' 
-                      : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-300 shadow-2xs'
-                  }`}
-                >
-                  Clear All
-                </button>
+                </div>
               </div>
             </div>
 
             {/* The SVG Canvas Component */}
-            <div className="w-full flex-1">
+            <div className="w-full flex-1 flex flex-col justify-center">
               <ChartCanvas
                 candles={candles}
                 fibonaccis={fibonaccis}
@@ -582,7 +828,11 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                 positions={positions}
                 trendlines={trendlines}
                 polylines={polylines}
+                arrows={arrows}
+                infoCards={infoCards}
                 badges={badges}
+                legends={legends}
+                showCandles={showCandles}
                 showVolume={showVolume}
                 showEma={showEma}
                 emaPeriod={emaPeriod}
@@ -596,24 +846,82 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                 onUpdateBadge={(updated) => {
                   setBadges(prev => prev.map(b => b.id === updated.id ? updated : b));
                 }}
+                onUpdateInfoCard={(updated) => {
+                  setInfoCards(prev => prev.map(c => c.id === updated.id ? updated : c));
+                }}
+                onUpdatePolyline={(updated) => {
+                  setPolylines(prev => prev.map(p => p.id === updated.id ? updated : p));
+                }}
                 activeTool={activeTool}
                 onAddAnnotation={handleAddAnnotation}
               />
             </div>
 
-            {/* Crosshair & Shortcuts Info Footer */}
-            <div className={`p-2.5 border rounded-xl text-[11px] font-mono flex flex-wrap items-center justify-between gap-2 ${
+            {/* Legend Manager & Shortcuts Bar */}
+            <div className={`p-3 border rounded-xl text-[11px] font-mono space-y-2 ${
               isDarkMode ? 'bg-slate-900/60 border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
             }`}>
-              <div className="flex items-center space-x-3">
-                <span>⌨️ <kbd className="px-1.5 py-0.5 rounded text-[10px] bg-slate-200 dark:bg-black font-bold">Esc</kbd> Batalkan tool • <kbd className="px-1.5 py-0.5 rounded text-[10px] bg-slate-200 dark:bg-black font-bold">Del</kbd> Hapus item • Klik elemen apa pun untuk kustomisasi</span>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-bold text-slate-700 dark:text-slate-300">
+                  Legend Bawah Chart ({legends.length} Item):
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLegends(prev => [
+                      ...prev,
+                      { id: `leg-${Date.now()}`, label: 'Indikator / Siklus Baru', color: '#38BDF8' }
+                    ]);
+                  }}
+                  className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-500 font-bold flex items-center space-x-1 hover:bg-emerald-500/30"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>Tambah Legend</span>
+                </button>
               </div>
-              <span className="text-emerald-500 font-bold">Full Element Customizer</span>
+              {legends.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {legends.map((leg) => (
+                    <div
+                      key={leg.id}
+                      className={`flex items-center space-x-1.5 px-2 py-1 rounded-lg border ${
+                        isDarkMode ? 'bg-[#050811] border-slate-700' : 'bg-white border-slate-300'
+                      }`}
+                    >
+                      <input
+                        type="color"
+                        value={leg.color}
+                        onChange={(e) => {
+                          const col = e.target.value;
+                          setLegends(prev => prev.map(l => l.id === leg.id ? { ...l, color: col } : l));
+                        }}
+                        className="w-4 h-4 rounded cursor-pointer border-0 bg-transparent p-0"
+                      />
+                      <input
+                        type="text"
+                        value={leg.label}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setLegends(prev => prev.map(l => l.id === leg.id ? { ...l, label: val } : l));
+                        }}
+                        className="bg-transparent outline-none text-[10px] w-36 font-mono text-slate-800 dark:text-slate-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setLegends(prev => prev.filter(l => l.id !== leg.id))}
+                        className="text-rose-500 hover:text-rose-400"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
           {/* Right Panel: Full Properties Inspector (3 Cols) */}
-          <div className={`lg:col-span-3 p-4 space-y-4 overflow-y-auto max-h-[78vh] ${
+          <div className={`lg:col-span-3 p-4 space-y-4 overflow-y-auto h-full ${
             isDarkMode ? 'bg-[#0A0E18]' : 'bg-slate-50'
           }`}>
             <div className={`text-[11px] font-mono font-bold uppercase tracking-wider flex items-center justify-between pb-2 border-b ${
@@ -635,8 +943,371 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
               )}
             </div>
 
-            {/* 1. ACTIVE CANDLE INSPECTOR */}
-            {activeCandle ? (
+            {/* 1. ACTIVE WAVE / POLYLINE INSPECTOR */}
+            {activePolyline ? (
+              <div className="space-y-3.5 text-xs font-mono">
+                <div className={`p-2.5 border rounded-xl ${
+                  isDarkMode ? 'bg-[#121724] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+                }`}>
+                  <div className="text-slate-500 text-[10px] uppercase mb-0.5">Elemen Terpilih:</div>
+                  <div className="font-bold text-sm text-sky-400">Wave / Multi-Point Curve</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">Geser titik bulat di kanvas untuk mengubah bentuk gelombang.</div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Label Gelombang / Siklus:</label>
+                  <input
+                    type="text"
+                    value={activePolyline.label || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPolylines(prev => prev.map(p => p.id === activePolyline.id ? { ...p, label: val } : p));
+                    }}
+                    placeholder="Contoh: Daily Macro Wave (HTF Bias)..."
+                    className={inputClass}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Tipe Gelombang:</label>
+                    <select
+                      value={activePolyline.curveType || 'zigzag'}
+                      onChange={(e) => {
+                        const val = e.target.value as 'zigzag' | 'smooth';
+                        setPolylines(prev => prev.map(p => p.id === activePolyline.id ? { ...p, curveType: val } : p));
+                      }}
+                      className={inputClass}
+                    >
+                      <option value="zigzag">Zigzag Struktur (Tajam)</option>
+                      <option value="smooth">Kurva Siklus (Smooth)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Gaya Garis:</label>
+                    <select
+                      value={activePolyline.lineStyle || 'solid'}
+                      onChange={(e) => {
+                        const val = e.target.value as any;
+                        setPolylines(prev => prev.map(p => p.id === activePolyline.id ? { ...p, lineStyle: val } : p));
+                      }}
+                      className={inputClass}
+                    >
+                      <option value="solid">Utuh (Solid)</option>
+                      <option value="dashed">Putus-putus (Dashed)</option>
+                      <option value="dotted">Titik-titik (Dotted)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {renderColorControl(
+                  'Warna Garis Gelombang:',
+                  activePolyline.color || '#38BDF8',
+                  (color) => setPolylines(prev => prev.map(p => p.id === activePolyline.id ? { ...p, color } : p))
+                )}
+
+                {renderColorControl(
+                  'Warna Teks Label:',
+                  activePolyline.textColor || activePolyline.color || '#38BDF8',
+                  (textColor) => setPolylines(prev => prev.map(p => p.id === activePolyline.id ? { ...p, textColor } : p))
+                )}
+
+                <div>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Ketebalan Garis ({activePolyline.strokeWidth || 2.5}px):</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="6"
+                    step="0.5"
+                    value={activePolyline.strokeWidth || 2.5}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setPolylines(prev => prev.map(p => p.id === activePolyline.id ? { ...p, strokeWidth: val } : p));
+                    }}
+                    className="w-full accent-emerald-500"
+                  />
+                </div>
+
+                <label className="flex items-center space-x-2 cursor-pointer text-slate-700 dark:text-slate-300">
+                  <input
+                    type="checkbox"
+                    checked={activePolyline.showDots !== false}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setPolylines(prev => prev.map(p => p.id === activePolyline.id ? { ...p, showDots: checked } : p));
+                    }}
+                    className="accent-emerald-500"
+                  />
+                  <span>Tampilkan Titik Sudut (Vertex Dots)</span>
+                </label>
+
+                <div className="pt-1 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const lastPt = activePolyline.points[activePolyline.points.length - 1] || { index: 0, price: 100 };
+                      const nextPt = { index: lastPt.index + 2, price: lastPt.price > 130 ? lastPt.price - 25 : lastPt.price + 25 };
+                      setPolylines(prev => prev.map(p => p.id === activePolyline.id ? { ...p, points: [...p.points, nextPt] } : p));
+                    }}
+                    className="flex-1 py-1.5 px-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-500 border border-emerald-500/30 font-bold text-[11px]"
+                  >
+                    + Tambah Titik Gelombang
+                  </button>
+                  {activePolyline.points.length > 2 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPolylines(prev => prev.map(p => p.id === activePolyline.id ? { ...p, points: p.points.slice(0, -1) } : p));
+                      }}
+                      className="py-1.5 px-2 rounded-lg bg-rose-500/15 text-rose-500 border border-rose-500/30 font-bold text-[11px]"
+                    >
+                      - Kurangi
+                    </button>
+                  )}
+                </div>
+              </div>
+
+            /* 2. ACTIVE INFO CARD INSPECTOR */
+            ) : activeInfoCard ? (
+              <div className="space-y-3.5 text-xs font-mono">
+                <div className={`p-2.5 border rounded-xl ${
+                  isDarkMode ? 'bg-[#121724] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+                }`}>
+                  <div className="text-slate-500 text-[10px] uppercase mb-0.5">Elemen Terpilih:</div>
+                  <div className="font-bold text-sm text-purple-400">Kartu Penjelasan (Info Card)</div>
+                  <div className="text-[10px] text-slate-400 mt-0.5">Drag kartu di kanvas untuk memindahkan posisinya.</div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Badge No:</label>
+                    <input
+                      type="text"
+                      value={activeInfoCard.stepBadge || ''}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setInfoCards(prev => prev.map(c => c.id === activeInfoCard.id ? { ...c, stepBadge: val } : c));
+                      }}
+                      placeholder="1 / ✓ / $"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Judul Kartu:</label>
+                    <input
+                      type="text"
+                      value={activeInfoCard.title}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setInfoCards(prev => prev.map(c => c.id === activeInfoCard.id ? { ...c, title: val } : c));
+                      }}
+                      placeholder="STRONG LOW (HL)"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Isi Penjelasan (1 Baris per Enter):</label>
+                  <textarea
+                    rows={3}
+                    value={(activeInfoCard.lines || []).join('\n')}
+                    onChange={(e) => {
+                      const lines = e.target.value.split('\n');
+                      setInfoCards(prev => prev.map(c => c.id === activeInfoCard.id ? { ...c, lines } : c));
+                    }}
+                    placeholder="Baris 1&#10;Baris 2"
+                    className={inputClass}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Badge Kesimpulan Bawah (Footer):</label>
+                  <input
+                    type="text"
+                    value={activeInfoCard.footerBadge || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setInfoCards(prev => prev.map(c => c.id === activeInfoCard.id ? { ...c, footerBadge: val } : c));
+                    }}
+                    placeholder="Contoh: ✓ Akumulasi Institusi"
+                    className={inputClass}
+                  />
+                </div>
+
+                {renderColorControl(
+                  'Warna Aksen, Judul & Border:',
+                  activeInfoCard.color || '#10B981',
+                  (color) => setInfoCards(prev => prev.map(c => c.id === activeInfoCard.id ? { ...c, color } : c))
+                )}
+
+                {renderColorControl(
+                  'Warna Teks Isi:',
+                  activeInfoCard.textColor || (isDarkMode ? '#E2E8F0' : '#1E293B'),
+                  (textColor) => setInfoCards(prev => prev.map(c => c.id === activeInfoCard.id ? { ...c, textColor } : c))
+                )}
+
+                {renderColorControl(
+                  'Warna Background Kartu:',
+                  activeInfoCard.bgColor || activeInfoCard.color || '#10B981',
+                  (bgColor) => setInfoCards(prev => prev.map(c => c.id === activeInfoCard.id ? { ...c, bgColor } : c))
+                )}
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Lebar Kartu ({activeInfoCard.width || 155}px):</label>
+                    <input
+                      type="range"
+                      min="120"
+                      max="240"
+                      step="5"
+                      value={activeInfoCard.width || 155}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setInfoCards(prev => prev.map(c => c.id === activeInfoCard.id ? { ...c, width: val } : c));
+                      }}
+                      className="w-full accent-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Opasitas ({Math.round((activeInfoCard.bgOpacity ?? 0.14) * 100)}%):</label>
+                    <input
+                      type="range"
+                      min="0.05"
+                      max="0.6"
+                      step="0.05"
+                      value={activeInfoCard.bgOpacity ?? 0.14}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setInfoCards(prev => prev.map(c => c.id === activeInfoCard.id ? { ...c, bgOpacity: val } : c));
+                      }}
+                      className="w-full accent-emerald-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+            /* 3. ACTIVE ARROW INSPECTOR */
+            ) : activeArrow ? (
+              <div className="space-y-3.5 text-xs font-mono">
+                <div className={`p-2.5 border rounded-xl ${
+                  isDarkMode ? 'bg-[#121724] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+                }`}>
+                  <div className="text-slate-500 text-[10px] uppercase mb-0.5">Elemen Terpilih:</div>
+                  <div className="font-bold text-sm text-pink-400">Panah Penunjuk (Curved / Flow Arrow)</div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Label Teks Panah:</label>
+                  <input
+                    type="text"
+                    value={activeArrow.label || ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setArrows(prev => prev.map(a => a.id === activeArrow.id ? { ...a, label: val } : a));
+                    }}
+                    placeholder="Contoh: Pullback Retest / Rotasi Modal..."
+                    className={inputClass}
+                  />
+                </div>
+
+                <label className="flex items-center space-x-2 cursor-pointer text-slate-700 dark:text-slate-300">
+                  <input
+                    type="checkbox"
+                    checked={activeArrow.curved !== false}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setArrows(prev => prev.map(a => a.id === activeArrow.id ? { ...a, curved: checked } : a));
+                    }}
+                    className="accent-emerald-500"
+                  />
+                  <span className="font-bold">Gunakan Lengkungan (Curved Arc)</span>
+                </label>
+
+                {activeArrow.curved !== false && (
+                  <div>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Derajat Lengkungan ({activeArrow.curveOffset ?? 25}):</label>
+                    <input
+                      type="range"
+                      min="-80"
+                      max="80"
+                      step="5"
+                      value={activeArrow.curveOffset ?? 25}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setArrows(prev => prev.map(a => a.id === activeArrow.id ? { ...a, curveOffset: val } : a));
+                      }}
+                      className="w-full accent-emerald-500"
+                    />
+                  </div>
+                )}
+
+                {renderColorControl(
+                  'Warna Panah:',
+                  activeArrow.color || '#FACC15',
+                  (color) => setArrows(prev => prev.map(a => a.id === activeArrow.id ? { ...a, color } : a))
+                )}
+
+                {renderColorControl(
+                  'Warna Teks Label:',
+                  activeArrow.textColor || activeArrow.color || '#FACC15',
+                  (textColor) => setArrows(prev => prev.map(a => a.id === activeArrow.id ? { ...a, textColor } : a))
+                )}
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Bar Awal (X1):</label>
+                    <input
+                      type="number"
+                      value={activeArrow.startIndex}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setArrows(prev => prev.map(a => a.id === activeArrow.id ? { ...a, startIndex: val } : a));
+                      }}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Harga Awal (Y1):</label>
+                    <input
+                      type="number"
+                      value={activeArrow.startPrice}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setArrows(prev => prev.map(a => a.id === activeArrow.id ? { ...a, startPrice: val } : a));
+                      }}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Bar Tujuan (X2):</label>
+                    <input
+                      type="number"
+                      value={activeArrow.endIndex}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setArrows(prev => prev.map(a => a.id === activeArrow.id ? { ...a, endIndex: val } : a));
+                      }}
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Harga Tujuan (Y2):</label>
+                    <input
+                      type="number"
+                      value={activeArrow.endPrice}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        setArrows(prev => prev.map(a => a.id === activeArrow.id ? { ...a, endPrice: val } : a));
+                      }}
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+              </div>
+
+            /* 4. ACTIVE CANDLE INSPECTOR */
+            ) : activeCandle ? (
               <div className="space-y-3.5 text-xs font-mono">
                 <div className={`p-2.5 border rounded-xl ${
                   isDarkMode ? 'bg-[#121724] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
@@ -752,14 +1423,14 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                 )}
               </div>
 
-            /* 2. ACTIVE ZONE BOX INSPECTOR (OB / FVG / Supply / Demand) */
+            /* 5. ACTIVE ZONE BOX INSPECTOR */
             ) : activeBox ? (
               <div className="space-y-3.5 text-xs font-mono">
                 <div className={`p-2.5 border rounded-xl ${
                   isDarkMode ? 'bg-[#121724] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
                 }`}>
                   <div className="text-slate-500 text-[10px] uppercase mb-0.5">Elemen Terpilih:</div>
-                  <div className="font-bold text-sm text-sky-400">Zona Kotak (OB / FVG / Supply)</div>
+                  <div className="font-bold text-sm text-sky-400">Zona Kotak (OB / FVG / Zoom LTF)</div>
                 </div>
 
                 <div>
@@ -771,11 +1442,11 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                       const val = e.target.value;
                       setBoxes(prev => prev.map(b => b.id === activeBox.id ? { ...b, label: val } : b));
                     }}
-                    placeholder="Order Block (OB) / FVG..."
+                    placeholder="Order Block (OB) / Zoom LTF..."
                     className={inputClass}
                   />
                   <div className="flex flex-wrap gap-1 mt-1.5">
-                    {['Order Block (OB)', 'Fair Value Gap (FVG)', 'Demand Zone', 'Supply Zone', 'Liquidity Pool'].map(preset => (
+                    {['Order Block (OB)', 'Fair Value Gap (FVG)', 'Zoom LTF (M5/M1 Shift)', 'Demand Zone', 'Supply Zone'].map(preset => (
                       <button
                         key={preset}
                         type="button"
@@ -848,14 +1519,14 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                 <div>
                   <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
                     <span>Opasitas Background:</span>
-                    <span className="font-bold">{Math.round((activeBox.opacity ?? 0.18) * 100)}%</span>
+                    <span className="font-bold">{Math.round((activeBox.opacity ?? 0.14) * 100)}%</span>
                   </div>
                   <input
                     type="range"
-                    min="0.05"
+                    min="0.04"
                     max="0.75"
-                    step="0.05"
-                    value={activeBox.opacity ?? 0.18}
+                    step="0.04"
+                    value={activeBox.opacity ?? 0.14}
                     onChange={(e) => {
                       const val = Number(e.target.value);
                       setBoxes(prev => prev.map(b => b.id === activeBox.id ? { ...b, opacity: val } : b));
@@ -917,49 +1588,10 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                     />
                     <span className="font-bold">Tampilkan Garis Tengah 50% (EQ)</span>
                   </label>
-                  {activeBox.showMidLine && (
-                    <input
-                      type="text"
-                      value={activeBox.midLineLabel ?? '50% EQ'}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setBoxes(prev => prev.map(b => b.id === activeBox.id ? { ...b, midLineLabel: val } : b));
-                      }}
-                      placeholder="Label garis tengah (50% EQ / CE)"
-                      className={inputClass}
-                    />
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 pt-1">
-                  <div>
-                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Harga Atas:</label>
-                    <input
-                      type="number"
-                      value={activeBox.topPrice}
-                      onChange={(e) => {
-                        const val = Number(e.target.value);
-                        setBoxes(prev => prev.map(b => b.id === activeBox.id ? { ...b, topPrice: val } : b));
-                      }}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Harga Bawah:</label>
-                    <input
-                      type="number"
-                      value={activeBox.bottomPrice}
-                      onChange={(e) => {
-                        const val = Number(e.target.value);
-                        setBoxes(prev => prev.map(b => b.id === activeBox.id ? { ...b, bottomPrice: val } : b));
-                      }}
-                      className={inputClass}
-                    />
-                  </div>
                 </div>
               </div>
 
-            /* 3. ACTIVE BADGE / TEXT CALLOUT INSPECTOR */
+            /* 6. ACTIVE BADGE / TEXT CALLOUT INSPECTOR */
             ) : activeBadge ? (
               <div className="space-y-3.5 text-xs font-mono">
                 <div className={`p-2.5 border rounded-xl ${
@@ -982,7 +1614,7 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                     className={inputClass}
                   />
                   <div className="flex flex-wrap gap-1 mt-1.5">
-                    {['BOS', 'CHoCH', 'BSL $$$', 'SSL $$$', 'IDM', 'Sweep', 'Entry', 'Stop Loss', 'TP 1:3'].map(badgeText => (
+                    {['BOS', 'CHoCH!', 'BSL $$$', 'SSL $$$', 'BTC.D Peak', 'Altseason', 'Entry', 'Stop Loss'].map(badgeText => (
                       <button
                         key={badgeText}
                         type="button"
@@ -1072,38 +1704,9 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                   activeBadge.borderColor || '#000000',
                   (borderColor) => setBadges(prev => prev.map(b => b.id === activeBadge.id ? { ...b, borderColor } : b))
                 )}
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Bar Ke- (X):</label>
-                    <input
-                      type="number"
-                      min="0"
-                      max={Math.max(0, candles.length - 1)}
-                      value={activeBadge.candleIndex}
-                      onChange={(e) => {
-                        const val = Number(e.target.value);
-                        setBadges(prev => prev.map(b => b.id === activeBadge.id ? { ...b, candleIndex: val } : b));
-                      }}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Level Harga (Y):</label>
-                    <input
-                      type="number"
-                      value={activeBadge.price}
-                      onChange={(e) => {
-                        const val = Number(e.target.value);
-                        setBadges(prev => prev.map(b => b.id === activeBadge.id ? { ...b, price: val } : b));
-                      }}
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
               </div>
 
-            /* 4. ACTIVE TRENDLINE INSPECTOR */
+            /* 7. ACTIVE TRENDLINE INSPECTOR */
             ) : activeTrendline ? (
               <div className="space-y-3.5 text-xs font-mono">
                 <div className={`p-2.5 border rounded-xl ${
@@ -1125,53 +1728,6 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                     placeholder="Contoh: BOS, CHoCH, EQH, Trendline..."
                     className={inputClass}
                   />
-                  <div className="flex flex-wrap gap-1 mt-1.5">
-                    {['BOS', 'CHoCH', 'EQH (BSL)', 'EQL (SSL)', 'Trendline', 'Inducement'].map(preset => (
-                      <button
-                        key={preset}
-                        type="button"
-                        onClick={() => setTrendlines(prev => prev.map(t => t.id === activeTrendline.id ? { ...t, label: preset } : t))}
-                        className={`text-[9px] px-1.5 py-0.5 rounded border ${
-                          isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
-                        }`}
-                      >
-                        {preset}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Posisi Label:</label>
-                    <select
-                      value={activeTrendline.labelAlignment || 'center'}
-                      onChange={(e) => {
-                        const val = e.target.value as any;
-                        setTrendlines(prev => prev.map(t => t.id === activeTrendline.id ? { ...t, labelAlignment: val } : t));
-                      }}
-                      className={inputClass}
-                    >
-                      <option value="start">Ujung Kiri</option>
-                      <option value="center">Tengah Garis</option>
-                      <option value="end">Ujung Kanan</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Gaya Garis:</label>
-                    <select
-                      value={activeTrendline.lineStyle || 'solid'}
-                      onChange={(e) => {
-                        const val = e.target.value as any;
-                        setTrendlines(prev => prev.map(t => t.id === activeTrendline.id ? { ...t, lineStyle: val } : t));
-                      }}
-                      className={inputClass}
-                    >
-                      <option value="solid">Utuh (Solid)</option>
-                      <option value="dashed">Putus-putus (Dashed)</option>
-                      <option value="dotted">Titik-titik (Dotted)</option>
-                    </select>
-                  </div>
                 </div>
 
                 {renderColorControl(
@@ -1186,44 +1742,14 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                   (textColor) => setTrendlines(prev => prev.map(t => t.id === activeTrendline.id ? { ...t, textColor } : t))
                 )}
 
-                <div className="space-y-2">
-                  <label className="flex items-center space-x-2 cursor-pointer text-slate-700 dark:text-slate-300">
-                    <input
-                      type="checkbox"
-                      checked={activeTrendline.showTextBg !== false}
-                      onChange={(e) => {
-                        const checked = e.target.checked;
-                        setTrendlines(prev => prev.map(t => t.id === activeTrendline.id ? { ...t, showTextBg: checked } : t));
-                      }}
-                      className="accent-emerald-500"
-                    />
-                    <span>Gunakan Background Kotak pada Teks</span>
-                  </label>
-                  {activeTrendline.showTextBg !== false && renderColorControl(
-                    'Warna Background Teks:',
-                    activeTrendline.textBgColor || (isDarkMode ? '#090D16' : '#FFFFFF'),
-                    (textBgColor) => setTrendlines(prev => prev.map(t => t.id === activeTrendline.id ? { ...t, textBgColor } : t))
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Ketebalan Garis ({activeTrendline.strokeWidth || 2}px):</label>
-                  <input
-                    type="range"
-                    min="1"
-                    max="5"
-                    step="0.5"
-                    value={activeTrendline.strokeWidth || 2}
-                    onChange={(e) => {
-                      const val = Number(e.target.value);
-                      setTrendlines(prev => prev.map(t => t.id === activeTrendline.id ? { ...t, strokeWidth: val } : t));
-                    }}
-                    className="w-full accent-emerald-500"
-                  />
-                </div>
+                {renderColorControl(
+                  'Warna Background Teks:',
+                  activeTrendline.textBgColor || (isDarkMode ? '#090D16' : '#FFFFFF'),
+                  (textBgColor) => setTrendlines(prev => prev.map(t => t.id === activeTrendline.id ? { ...t, textBgColor } : t))
+                )}
               </div>
 
-            /* 5. ACTIVE FIBONACCI INSPECTOR */
+            /* 8. ACTIVE FIBONACCI INSPECTOR */
             ) : activeFib ? (
               <div className="space-y-3.5 text-xs font-mono">
                 <div className={`p-2.5 border rounded-xl ${
@@ -1247,33 +1773,6 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Swing Awal (0%):</label>
-                    <input
-                      type="number"
-                      value={activeFib.startPrice}
-                      onChange={(e) => {
-                        const val = Number(e.target.value);
-                        setFibonaccis(prev => prev.map(f => f.id === activeFib.id ? { ...f, startPrice: val } : f));
-                      }}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Swing Akhir (100%):</label>
-                    <input
-                      type="number"
-                      value={activeFib.endPrice}
-                      onChange={(e) => {
-                        const val = Number(e.target.value);
-                        setFibonaccis(prev => prev.map(f => f.id === activeFib.id ? { ...f, endPrice: val } : f));
-                      }}
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-
                 <button
                   type="button"
                   onClick={() => {
@@ -1291,76 +1790,14 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                   <span>Balik Arah Level (0% ⇄ 100%)</span>
                 </button>
 
-                <label className="flex items-center space-x-2 cursor-pointer text-slate-700 dark:text-slate-300">
-                  <input
-                    type="checkbox"
-                    checked={activeFib.showFill !== false}
-                    onChange={(e) => {
-                      const checked = e.target.checked;
-                      setFibonaccis(prev => prev.map(f => f.id === activeFib.id ? { ...f, showFill: checked } : f));
-                    }}
-                    className="accent-emerald-500"
-                  />
-                  <span className="font-bold">Highlight Area Golden Zone (OTE)</span>
-                </label>
-
-                {activeFib.showFill !== false && (
-                  <>
-                    {renderColorControl(
-                      'Warna Background Golden Zone:',
-                      activeFib.fillColor || '#10B981',
-                      (fillColor) => setFibonaccis(prev => prev.map(f => f.id === activeFib.id ? { ...f, fillColor } : f))
-                    )}
-                    <div>
-                      <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
-                        <span>Opasitas OTE Zone:</span>
-                        <span className="font-bold">{Math.round((activeFib.fillOpacity ?? 0.16) * 100)}%</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0.05"
-                        max="0.6"
-                        step="0.05"
-                        value={activeFib.fillOpacity ?? 0.16}
-                        onChange={(e) => {
-                          const val = Number(e.target.value);
-                          setFibonaccis(prev => prev.map(f => f.id === activeFib.id ? { ...f, fillOpacity: val } : f));
-                        }}
-                        className="w-full accent-emerald-500"
-                      />
-                    </div>
-                  </>
-                )}
-
                 {renderColorControl(
-                  'Warna Garis Level (Seragam):',
-                  activeFib.lineColor || '#10B981',
-                  (lineColor) => setFibonaccis(prev => prev.map(f => f.id === activeFib.id ? { ...f, lineColor } : f)),
-                  () => setFibonaccis(prev => prev.map(f => f.id === activeFib.id ? { ...f, lineColor: undefined } : f))
+                  'Warna Background Golden Zone:',
+                  activeFib.fillColor || '#10B981',
+                  (fillColor) => setFibonaccis(prev => prev.map(f => f.id === activeFib.id ? { ...f, fillColor } : f))
                 )}
-
-                {renderColorControl(
-                  'Warna Teks Level:',
-                  activeFib.textColor || '#10B981',
-                  (textColor) => setFibonaccis(prev => prev.map(f => f.id === activeFib.id ? { ...f, textColor } : f)),
-                  () => setFibonaccis(prev => prev.map(f => f.id === activeFib.id ? { ...f, textColor: undefined } : f))
-                )}
-
-                <label className="flex items-center space-x-2 cursor-pointer text-slate-700 dark:text-slate-300">
-                  <input
-                    type="checkbox"
-                    checked={activeFib.showPrices !== false}
-                    onChange={(e) => {
-                      const checked = e.target.checked;
-                      setFibonaccis(prev => prev.map(f => f.id === activeFib.id ? { ...f, showPrices: checked } : f));
-                    }}
-                    className="accent-emerald-500"
-                  />
-                  <span>Tampilkan Nominal Harga di Tiap Level</span>
-                </label>
               </div>
 
-            /* 6. ACTIVE POSITION (R:R TOOL) INSPECTOR */
+            /* 9. ACTIVE POSITION (R:R TOOL) INSPECTOR */
             ) : activePosition ? (
               <div className="space-y-3.5 text-xs font-mono">
                 <div className={`p-2.5 border rounded-xl ${
@@ -1389,45 +1826,6 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                   />
                 </div>
 
-                <div className="grid grid-cols-3 gap-1.5">
-                  <div>
-                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Entry:</label>
-                    <input
-                      type="number"
-                      value={activePosition.entryPrice}
-                      onChange={(e) => {
-                        const val = Number(e.target.value);
-                        setPositions(prev => prev.map(p => p.id === activePosition.id ? { ...p, entryPrice: val } : p));
-                      }}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-emerald-500 mb-1 font-bold">Target TP:</label>
-                    <input
-                      type="number"
-                      value={activePosition.targetPrice}
-                      onChange={(e) => {
-                        const val = Number(e.target.value);
-                        setPositions(prev => prev.map(p => p.id === activePosition.id ? { ...p, targetPrice: val } : p));
-                      }}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-rose-500 mb-1 font-bold">Stop SL:</label>
-                    <input
-                      type="number"
-                      value={activePosition.stopPrice}
-                      onChange={(e) => {
-                        const val = Number(e.target.value);
-                        setPositions(prev => prev.map(p => p.id === activePosition.id ? { ...p, stopPrice: val } : p));
-                      }}
-                      className={inputClass}
-                    />
-                  </div>
-                </div>
-
                 {renderColorControl(
                   'Warna Area Profit (TP Background):',
                   activePosition.targetColor || '#10B981',
@@ -1439,24 +1837,12 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                   activePosition.stopColor || '#EF4444',
                   (stopColor) => setPositions(prev => prev.map(p => p.id === activePosition.id ? { ...p, stopColor, stopTextColor: stopColor } : p))
                 )}
-
-                {renderColorControl(
-                  'Warna Background Badge R:R:',
-                  activePosition.badgeBgColor || (isDarkMode ? '#020617' : '#FFFFFF'),
-                  (badgeBgColor) => setPositions(prev => prev.map(p => p.id === activePosition.id ? { ...p, badgeBgColor } : p))
-                )}
-
-                {renderColorControl(
-                  'Warna Teks Badge R:R:',
-                  activePosition.badgeTextColor || '#0284C7',
-                  (badgeTextColor) => setPositions(prev => prev.map(p => p.id === activePosition.id ? { ...p, badgeTextColor } : p))
-                )}
               </div>
             ) : (
-              <div className="h-52 flex flex-col items-center justify-center text-center p-4 text-slate-400 dark:text-slate-500 font-mono text-xs space-y-2">
+              <div className="h-60 flex flex-col items-center justify-center text-center p-4 text-slate-400 dark:text-slate-500 font-mono text-xs space-y-2.5">
                 <Sliders className="w-8 h-8 opacity-40" />
-                <div className="font-bold text-slate-600 dark:text-slate-300">Belum Ada Elemen Terpilih</div>
-                <span>Klik objek <strong>Candle</strong>, <strong>Kotak Zona (OB/FVG)</strong>, <strong>Badge Teks</strong>, <strong>Trendline</strong>, <strong>Fibonacci</strong>, atau <strong>Posisi R:R</strong> pada kanvas untuk mengkustomisasi teks, warna font, background, dan border.</span>
+                <div className="font-bold text-slate-600 dark:text-slate-300">Pilih Elemen di Kanvas</div>
+                <span>Klik objek <strong>Gelombang (Wave)</strong>, <strong>Kartu Info</strong>, <strong>Panah</strong>, <strong>Candle</strong>, <strong>Kotak Zona</strong>, atau <strong>Badge</strong> untuk mengkustomisasi teks, warna font, background, dan border.</span>
               </div>
             )}
           </div>

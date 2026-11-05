@@ -6,8 +6,14 @@ import {
   TrendlineDrawing, 
   TextBadgeAnnotation,
   PositionDrawing,
-  PolylineDrawing
+  PolylineDrawing,
+  ArrowDrawing,
+  InfoCardDrawing,
+  ChartLegendItem
 } from '../../types/chartBuilderTypes';
+
+export type ChartObjectType = 'candle' | 'fib' | 'box' | 'position' | 'trendline' | 'polyline' | 'arrow' | 'infocard' | 'badge';
+export type ActiveChartTool = 'select' | 'candle' | 'fibonacci' | 'box' | 'position-long' | 'position-short' | 'trendline' | 'polyline' | 'arrow' | 'infocard' | 'badge';
 
 interface ChartCanvasProps {
   candles: CustomCandle[];
@@ -16,18 +22,47 @@ interface ChartCanvasProps {
   positions: PositionDrawing[];
   trendlines: TrendlineDrawing[];
   polylines: PolylineDrawing[];
+  arrows?: ArrowDrawing[];
+  infoCards?: InfoCardDrawing[];
   badges: TextBadgeAnnotation[];
+  legends?: ChartLegendItem[];
+  showCandles?: boolean;
   showVolume?: boolean;
   showEma?: boolean;
   emaPeriod?: number;
   isDarkMode?: boolean;
   candleSpacing?: 'compact' | 'normal' | 'wide';
   selectedId: string | null;
-  onSelectId: (id: string | null, type: 'candle' | 'fib' | 'box' | 'position' | 'trendline' | 'polyline' | 'badge') => void;
+  onSelectId: (id: string | null, type: ChartObjectType) => void;
   onUpdateCandle: (candle: CustomCandle) => void;
   onUpdateBadge?: (badge: TextBadgeAnnotation) => void;
-  activeTool: 'select' | 'candle' | 'fibonacci' | 'box' | 'position-long' | 'position-short' | 'trendline' | 'polyline' | 'badge';
+  onUpdateInfoCard?: (card: InfoCardDrawing) => void;
+  onUpdatePolyline?: (poly: PolylineDrawing) => void;
+  activeTool: ActiveChartTool;
   onAddAnnotation: (type: string, payload: any) => void;
+}
+
+// Helper to build smooth SVG cubic/quadratic curve path through points
+export function buildSmoothCurvePath(pts: Array<{ x: number; y: number }>): string {
+  if (pts.length === 0) return '';
+  if (pts.length === 1) return `M ${pts[0].x},${pts[0].y}`;
+  if (pts.length === 2) return `M ${pts[0].x},${pts[0].y} L ${pts[1].x},${pts[1].y}`;
+
+  let d = `M ${pts[0].x},${pts[0].y}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i === 0 ? i : i - 1];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2 < pts.length ? i + 2 : i + 1];
+
+    const cp1x = p1.x + (p2.x - p0.x) / 6;
+    const cp1y = p1.y + (p2.y - p0.y) / 6;
+    const cp2x = p2.x - (p3.x - p1.x) / 6;
+    const cp2y = p2.y - (p3.y - p1.y) / 6;
+
+    d += ` C ${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+  }
+  return d;
 }
 
 export const ChartCanvas: React.FC<ChartCanvasProps> = ({
@@ -37,7 +72,11 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   positions,
   trendlines,
   polylines,
+  arrows = [],
+  infoCards = [],
   badges,
+  legends = [],
+  showCandles = true,
   showVolume = true,
   showEma = true,
   emaPeriod = 9,
@@ -47,6 +86,8 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   onSelectId,
   onUpdateCandle,
   onUpdateBadge,
+  onUpdateInfoCard,
+  onUpdatePolyline,
   activeTool,
   onAddAnnotation
 }) => {
@@ -56,35 +97,61 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   // Crosshair state
   const [crosshair, setCrosshair] = useState<{ x: number; y: number; price: number; index: number } | null>(null);
 
-  // Tool drawing state (for 2-point tools like Fib, Box, Trendline, Position)
+  // Tool drawing state (for 2-point tools like Fib, Box, Trendline, Position, Arrow)
   const [drawingStart, setDrawingStart] = useState<{ xIndex: number; price: number } | null>(null);
 
+  // Multi-point Polyline drawing state
+  const [draftPoints, setDraftPoints] = useState<Array<{ index: number; price: number }>>([]);
+
   // Spacing Configuration: Proporsional & Rapat seperti TradingView
-  const candleStep = candleSpacing === 'compact' ? 26 : candleSpacing === 'wide' ? 44 : 34;
+  const candleStep = candleSpacing === 'compact' ? 30 : candleSpacing === 'wide' ? 54 : 42;
   const candleWidth = candleSpacing === 'compact' ? 14 : candleSpacing === 'wide' ? 24 : 18;
 
-  // Coordinate Calculation & Bounds
-  const padding = { top: 40, right: 85, bottom: showVolume ? 105 : 45, left: 45 };
-  const totalHeight = 480;
+  const hasLegend = legends.length > 0;
+  const legendHeight = hasLegend ? 28 : 0;
   const volumeHeight = showVolume ? 65 : 0;
+  const padding = {
+    top: 40,
+    right: 85,
+    bottom: 45 + volumeHeight + legendHeight,
+    left: 45
+  };
+  const totalHeight = 520;
 
   // Lebar kanvas bertambah secara dinamis seiring bertambahnya candle tanpa menggeser posisi scroll otomatis
-  const width = Math.max(580, padding.left + candles.length * candleStep + padding.right + 30);
+  const maxBarIndex = useMemo(() => {
+    let maxIdx = Math.max(12, candles.length);
+    polylines.forEach(p => p.points.forEach(pt => { if (pt.index + 2 > maxIdx) maxIdx = pt.index + 2; }));
+    infoCards.forEach(c => { if (c.candleIndex + 4 > maxIdx) maxIdx = c.candleIndex + 4; });
+    return maxIdx;
+  }, [candles.length, polylines, infoCards]);
+
+  const width = Math.max(680, padding.left + maxBarIndex * candleStep + padding.right + 30);
 
   const { minPrice, maxPrice } = useMemo(() => {
-    if (candles.length === 0) return { minPrice: 60, maxPrice: 180 };
     let min = Infinity;
     let max = -Infinity;
     for (const c of candles) {
       if (c.low < min) min = c.low;
       if (c.high > max) max = c.high;
     }
+    for (const p of polylines) {
+      for (const pt of p.points) {
+        if (pt.price < min) min = pt.price;
+        if (pt.price > max) max = pt.price;
+      }
+    }
+    for (const b of boxes) {
+      if (b.bottomPrice < min) min = b.bottomPrice;
+      if (b.topPrice > max) max = b.topPrice;
+    }
+    if (!isFinite(min) || !isFinite(max)) return { minPrice: 60, maxPrice: 180 };
     const range = Math.max(20, max - min);
     return {
-      minPrice: Math.floor(min - range * 0.15),
-      maxPrice: Math.ceil(max + range * 0.15)
+      minPrice: Math.floor(min - range * 0.16),
+      maxPrice: Math.ceil(max + range * 0.16)
     };
-  }, [candles]);
+  }, [candles, polylines, boxes]);
 
   const maxVolume = useMemo(() => {
     if (candles.length === 0) return 1000;
@@ -109,7 +176,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
 
   const xToIndex = (x: number): number => {
     const raw = (x - padding.left) / candleStep;
-    return Math.max(0, Math.min(candles.length - 1, Math.floor(raw)));
+    return Math.max(0, Math.floor(raw));
   };
 
   // Price Grid Levels
@@ -143,9 +210,25 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   const candleBorderStroke = isDarkMode ? '#000000' : '#1E293B';
 
   const getDashArray = (style?: 'solid' | 'dashed' | 'dotted' | 'none') => {
-    if (style === 'dashed') return '5 3';
-    if (style === 'dotted') return '2 2';
+    if (style === 'dashed') return '6 4';
+    if (style === 'dotted') return '2 3';
     return 'none';
+  };
+
+  // Commit multi-point wave
+  const handleFinishDraftWave = () => {
+    if (draftPoints.length >= 2) {
+      onAddAnnotation('polyline', {
+        points: draftPoints,
+        color: '#38BDF8',
+        strokeWidth: 2.5,
+        lineStyle: 'solid',
+        curveType: 'zigzag',
+        showDots: true,
+        label: 'Structure Wave'
+      });
+    }
+    setDraftPoints([]);
   };
 
   // Handle Mouse Move for Crosshair
@@ -196,6 +279,26 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
       return;
     }
 
+    if (activeTool === 'infocard') {
+      onAddAnnotation('infocard', {
+        candleIndex: xIdx,
+        price: clickedPrice,
+        width: 155,
+        stepBadge: '1',
+        title: 'STRONG POI ZONE',
+        lines: ['Konfirmasi Struktur', 'Area Akumulasi Institusi'],
+        footerBadge: '✓ Valid Setup',
+        color: '#10B981',
+        bgOpacity: 0.15
+      });
+      return;
+    }
+
+    if (activeTool === 'polyline') {
+      setDraftPoints(prev => [...prev, { index: xIdx, price: clickedPrice }]);
+      return;
+    }
+
     if (!drawingStart) {
       setDrawingStart({ xIndex: xIdx, price: clickedPrice });
     } else {
@@ -229,6 +332,18 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           opacity: 0.18,
           showMidLine: true,
           midLineLabel: '50% EQ'
+        });
+      } else if (activeTool === 'arrow') {
+        onAddAnnotation('arrow', {
+          startIndex: drawingStart.xIndex,
+          startPrice: drawingStart.price,
+          endIndex: xIdx,
+          endPrice: clickedPrice,
+          color: '#FACC15',
+          strokeWidth: 2.2,
+          curved: true,
+          curveOffset: 15,
+          label: 'Target Flow'
         });
       } else if (activeTool === 'position-long') {
         const entry = drawingStart.price;
@@ -293,9 +408,9 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   const handleScroll = (direction: 'left' | 'right' | 'end' | 'start') => {
     if (!containerRef.current) return;
     if (direction === 'left') {
-      containerRef.current.scrollBy({ left: -220, behavior: 'smooth' });
+      containerRef.current.scrollBy({ left: -240, behavior: 'smooth' });
     } else if (direction === 'right') {
-      containerRef.current.scrollBy({ left: 220, behavior: 'smooth' });
+      containerRef.current.scrollBy({ left: 240, behavior: 'smooth' });
     } else if (direction === 'end') {
       containerRef.current.scrollTo({ left: containerRef.current.scrollWidth, behavior: 'smooth' });
     } else {
@@ -305,11 +420,29 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
 
   return (
     <div className="w-full flex flex-col space-y-2">
-      {/* Scroll Navigation Header Bar */}
-      <div className="flex items-center justify-between text-xs font-mono px-1">
-        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-          Kanvas ({candles.length} Bar • Lebar: {width}px)
-        </span>
+      {/* Scroll & Active Multi-point Wave Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono px-1">
+        <div className="flex items-center space-x-2">
+          <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+            Kanvas ({candles.length} Bar • {polylines.length} Wave • {infoCards.length} Kartu • Lebar: {width}px)
+          </span>
+          {activeTool === 'polyline' && (
+            <div className="flex items-center space-x-2 bg-sky-500/15 border border-sky-500/40 text-sky-400 px-2.5 py-0.5 rounded-lg">
+              <span className="text-[10px] font-bold">
+                Mode Gambar Wave: Klik titik-titik pada chart ({draftPoints.length} titik dipilih)
+              </span>
+              {draftPoints.length >= 2 && (
+                <button
+                  type="button"
+                  onClick={handleFinishDraftWave}
+                  className="px-2 py-0.5 rounded bg-emerald-500 text-black font-extrabold text-[10px]"
+                >
+                  ✓ Selesai Gambar Wave
+                </button>
+              )}
+            </div>
+          )}
+        </div>
         <div className="flex items-center space-x-1">
           <button
             type="button"
@@ -339,9 +472,9 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             type="button"
             onClick={() => handleScroll('end')}
             className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/30 font-bold text-[10px]"
-            title="Ke Candle Terbaru"
+            title="Ke Ujung Kanan"
           >
-            Terbaru ⏭
+            Ujung Kanan ⏭
           </button>
         </div>
       </div>
@@ -359,6 +492,11 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           viewBox={`0 0 ${width} ${totalHeight}`}
           style={{ width: `${width}px`, minWidth: `${width}px`, height: `${totalHeight}px` }}
           onClick={handleSvgClick}
+          onDoubleClick={() => {
+            if (activeTool === 'polyline' && draftPoints.length >= 2) {
+              handleFinishDraftWave();
+            }
+          }}
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setCrosshair(null)}
           className="cursor-crosshair block"
@@ -429,7 +567,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             );
           })}
 
-          {/* LAYER: Box Drawings (Order Block, FVG, Supply/Demand with Full Customization) */}
+          {/* LAYER: Box Drawings (Order Block, FVG, Zoom LTF Focus Box) */}
           {boxes.map((b) => {
             const x1 = indexToX(b.startIndex) - 12;
             const x2 = indexToX(b.endIndex) + 12;
@@ -448,7 +586,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             const borderW = isSelected ? 2.5 : (b.borderWidth ?? 1.2);
             const midColor = b.midLineColor || strokeColor;
 
-            // Label positioning
             let labelX = x1 + 6;
             let labelY = yTop + fontSize + 4;
             let anchor: 'start' | 'middle' | 'end' = 'start';
@@ -490,11 +627,11 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   width={boxW}
                   height={boxHeight}
                   fill={fillColor}
-                  fillOpacity={b.opacity ?? 0.18}
+                  fillOpacity={b.opacity ?? 0.14}
                   stroke={borderStyle === 'none' && !isSelected ? 'none' : strokeColor}
                   strokeWidth={borderW}
                   strokeDasharray={isSelected ? 'none' : getDashArray(borderStyle)}
-                  rx="3"
+                  rx="5"
                 />
                 {b.showMidLine && (
                   <g>
@@ -546,6 +683,103 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             );
           })}
 
+          {/* LAYER: Multi-Point Waves & Smooth Macro Curves (Polylines) */}
+          {polylines.map((poly) => {
+            if (poly.points.length < 2) return null;
+            const coords = poly.points.map(pt => ({ x: indexToX(pt.index), y: priceToY(pt.price) }));
+            const isSelected = selectedId === poly.id;
+            const lineColor = poly.color || '#38BDF8';
+            const strokeW = isSelected ? (poly.strokeWidth || 2.5) + 1 : (poly.strokeWidth || 2.5);
+            const dash = getDashArray(poly.lineStyle || 'solid');
+            const isSmooth = poly.curveType === 'smooth';
+            const pathD = isSmooth
+              ? buildSmoothCurvePath(coords)
+              : `M ${coords.map(c => `${c.x},${c.y}`).join(' L ')}`;
+
+            const firstPt = coords[0];
+
+            return (
+              <g
+                key={poly.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectId(poly.id, 'polyline');
+                }}
+                className="cursor-pointer"
+              >
+                <path
+                  d={pathD}
+                  fill="none"
+                  stroke={lineColor}
+                  strokeWidth={strokeW}
+                  strokeDasharray={dash}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                {poly.label && (
+                  <text
+                    x={firstPt.x + 6}
+                    y={firstPt.y - 10}
+                    fill={poly.textColor || lineColor}
+                    fontSize={poly.fontSize || 10.5}
+                    fontWeight="bold"
+                    fontFamily="JetBrains Mono, monospace"
+                  >
+                    {poly.label}
+                  </text>
+                )}
+                {(poly.showDots || isSelected) && coords.map((pt, ptIdx) => (
+                  <circle
+                    key={`${poly.id}-pt-${ptIdx}`}
+                    cx={pt.x}
+                    cy={pt.y}
+                    r={isSelected ? 5 : 3.2}
+                    fill={lineColor}
+                    stroke={isDarkMode ? '#000' : '#FFF'}
+                    strokeWidth="1.5"
+                    className={isSelected ? 'cursor-move' : ''}
+                    onMouseDown={(e) => {
+                      if (!isSelected || !onUpdatePolyline) return;
+                      e.stopPropagation();
+                      const handleMove = (moveEvt: MouseEvent) => {
+                        const rect = svgRef.current?.getBoundingClientRect();
+                        if (!rect) return;
+                        const newIdx = xToIndex(moveEvt.clientX - rect.left);
+                        const newPrice = yToPrice(moveEvt.clientY - rect.top);
+                        const nextPts = poly.points.map((p, idx) =>
+                          idx === ptIdx ? { index: newIdx, price: newPrice } : p
+                        );
+                        onUpdatePolyline({ ...poly, points: nextPts });
+                      };
+                      const handleUp = () => {
+                        window.removeEventListener('mousemove', handleMove);
+                        window.removeEventListener('mouseup', handleUp);
+                      };
+                      window.addEventListener('mousemove', handleMove);
+                      window.addEventListener('mouseup', handleUp);
+                    }}
+                  />
+                ))}
+              </g>
+            );
+          })}
+
+          {/* Draft Multi-Point Wave Preview */}
+          {draftPoints.length > 0 && (
+            <g pointerEvents="none">
+              <polyline
+                points={draftPoints.map(pt => `${indexToX(pt.index)},${priceToY(pt.price)}`).join(' ')}
+                fill="none"
+                stroke="#10B981"
+                strokeWidth="2.5"
+                strokeDasharray="4 4"
+              />
+              {draftPoints.map((pt, i) => (
+                <circle key={`draft-${i}`} cx={indexToX(pt.index)} cy={priceToY(pt.price)} r="4" fill="#10B981" />
+              ))}
+            </g>
+          )}
+
           {/* LAYER: Position Tool (TradingView Long / Short Risk:Reward Box) */}
           {positions.map((pos) => {
             const x1 = indexToX(pos.startIndex) - 10;
@@ -586,7 +820,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 }}
                 className="cursor-pointer"
               >
-                {/* Target / Reward Box */}
                 <rect
                   x={x1}
                   y={isLong ? topY : yEntry}
@@ -608,7 +841,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   {pos.label ? `${pos.label} • ` : ''}TP: {pos.targetPrice.toFixed(1)} (+{rewardPips.toFixed(1)})
                 </text>
 
-                {/* Stop / Risk Box */}
                 <rect
                   x={x1}
                   y={isLong ? yEntry : bottomY}
@@ -630,7 +862,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   SL: {pos.stopPrice.toFixed(1)} (-{riskPips.toFixed(1)})
                 </text>
 
-                {/* Center Entry Line */}
                 <line
                   x1={x1}
                   y1={yEntry}
@@ -640,7 +871,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   strokeWidth="2"
                 />
 
-                {/* Risk:Reward Ratio Floating Badge */}
                 <rect
                   x={x2 - 105}
                   y={yEntry - 12}
@@ -695,7 +925,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 }}
                 className="cursor-pointer"
               >
-                {/* OTE Golden Zone Shading */}
                 {showFill && (() => {
                   const y618 = priceToY(fib.startPrice + (fib.endPrice - fib.startPrice) * 0.618);
                   const y786 = priceToY(fib.startPrice + (fib.endPrice - fib.startPrice) * 0.786);
@@ -714,7 +943,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   );
                 })()}
 
-                {/* Optional Fib Header Label */}
                 {fib.label && (
                   <text
                     x={xStart + 4}
@@ -780,7 +1008,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             const fontSize = t.fontSize || 9.5;
             const textColor = t.textColor || lineColor;
 
-            // Label coordinates along the line
             const align = t.labelAlignment || 'center';
             const labelX = align === 'start' ? x1 + 10 : align === 'end' ? x2 - 10 : (x1 + x2) / 2;
             const labelY = align === 'start' ? y1 - 8 : align === 'end' ? y2 - 8 : (y1 + y2) / 2 - 8;
@@ -842,6 +1069,65 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             );
           })}
 
+          {/* LAYER: Curved & Straight Arrows */}
+          {arrows.map((arr) => {
+            const x1 = indexToX(arr.startIndex);
+            const y1 = priceToY(arr.startPrice);
+            const x2 = indexToX(arr.endIndex);
+            const y2 = priceToY(arr.endPrice);
+            const isSelected = selectedId === arr.id;
+            const col = arr.color || '#FACC15';
+
+            const midX = (x1 + x2) / 2;
+            const midY = (y1 + y2) / 2 - (arr.curved !== false ? (arr.curveOffset ?? 30) : 0);
+
+            const pathD = arr.curved !== false
+              ? `M ${x1},${y1} Q ${midX},${midY} ${x2},${y2}`
+              : `M ${x1},${y1} L ${x2},${y2}`;
+
+            // Angle for arrowhead
+            const refX = arr.curved !== false ? midX : x1;
+            const refY = arr.curved !== false ? midY : y1;
+            const angle = Math.atan2(y2 - refY, x2 - refX) * (180 / Math.PI);
+
+            return (
+              <g
+                key={arr.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectId(arr.id, 'arrow');
+                }}
+                className="cursor-pointer"
+              >
+                <path
+                  d={pathD}
+                  fill="none"
+                  stroke={col}
+                  strokeWidth={isSelected ? 3.2 : (arr.strokeWidth || 2.2)}
+                  strokeDasharray={getDashArray(arr.lineStyle || 'dashed')}
+                />
+                <polygon
+                  points="0,0 -9,-5 -9,5"
+                  fill={col}
+                  transform={`translate(${x2},${y2}) rotate(${angle})`}
+                />
+                {arr.label && (
+                  <text
+                    x={midX}
+                    y={midY - 6}
+                    fill={arr.textColor || col}
+                    fontSize="9.5"
+                    fontWeight="bold"
+                    fontFamily="JetBrains Mono, monospace"
+                    textAnchor="middle"
+                  >
+                    {arr.label}
+                  </text>
+                )}
+              </g>
+            );
+          })}
+
           {/* LAYER: Dynamic EMA Overlay Line */}
           {showEma && emaPoints.length > 1 && (
             <path
@@ -855,7 +1141,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           )}
 
           {/* LAYER: Candlesticks & Interactive Wicks */}
-          {candles.map((candle, idx) => {
+          {showCandles && candles.map((candle, idx) => {
             const x = indexToX(idx);
             const isBullish = candle.close >= candle.open;
             const bodyColor = candle.color || (isBullish ? '#10B981' : '#EF4444');
@@ -880,7 +1166,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 }}
                 className="cursor-pointer group"
               >
-                {/* Selection Halo */}
                 {isSelected && (
                   <rect
                     x={x - candleWidth / 2 - 3}
@@ -895,7 +1180,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   />
                 )}
 
-                {/* Upper Wick */}
                 <line
                   x1={x}
                   y1={yHigh}
@@ -905,7 +1189,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   strokeWidth={isSelected ? 2.5 : 1.8}
                 />
 
-                {/* Real Body */}
                 <rect
                   x={x - candleWidth / 2}
                   y={bodyTop}
@@ -917,7 +1200,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   rx="1.5"
                 />
 
-                {/* Lower Wick */}
                 <line
                   x1={x}
                   y1={bodyTop + bodyHeight}
@@ -927,7 +1209,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   strokeWidth={isSelected ? 2.5 : 1.8}
                 />
 
-                {/* Active Resize Handles if selected */}
                 {isSelected && (
                   <g>
                     <circle
@@ -988,9 +1269,155 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             );
           })}
 
+          {/* LAYER: Multi-Line Info Cards / Step Explanation Boxes */}
+          {infoCards.map((card) => {
+            const x = indexToX(card.candleIndex);
+            const y = priceToY(card.price);
+            const isSelected = selectedId === card.id;
+            const cardW = card.width || 155;
+            const lines = card.lines || [];
+            const hasFooter = Boolean(card.footerBadge);
+            const cardH = 30 + lines.length * 14 + (hasFooter ? 24 : 6);
+            const accent = card.color || '#10B981';
+            const bgCol = card.bgColor || accent;
+            const bgOp = card.bgOpacity ?? 0.14;
+            const bodyTextCol = card.textColor || (isDarkMode ? '#E2E8F0' : '#1E293B');
+
+            return (
+              <g
+                key={card.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectId(card.id, 'infocard');
+                }}
+                onMouseDown={(e) => {
+                  if (activeTool !== 'select' || !onUpdateInfoCard) return;
+                  e.stopPropagation();
+                  onSelectId(card.id, 'infocard');
+                  const handleMove = (moveEvt: MouseEvent) => {
+                    const rect = svgRef.current?.getBoundingClientRect();
+                    if (!rect) return;
+                    const newIdx = xToIndex(moveEvt.clientX - rect.left);
+                    const newPrice = yToPrice(moveEvt.clientY - rect.top);
+                    onUpdateInfoCard({ ...card, candleIndex: newIdx, price: newPrice });
+                  };
+                  const handleUp = () => {
+                    window.removeEventListener('mousemove', handleMove);
+                    window.removeEventListener('mouseup', handleUp);
+                  };
+                  window.addEventListener('mousemove', handleMove);
+                  window.addEventListener('mouseup', handleUp);
+                }}
+                className="cursor-move"
+              >
+                {/* Base Card Shadow & Background */}
+                <rect
+                  x={x - cardW / 2}
+                  y={y}
+                  width={cardW}
+                  height={cardH}
+                  fill={isDarkMode ? '#0B1120' : '#FFFFFF'}
+                  fillOpacity={0.92}
+                  rx="6"
+                />
+                <rect
+                  x={x - cardW / 2}
+                  y={y}
+                  width={cardW}
+                  height={cardH}
+                  fill={bgCol}
+                  fillOpacity={bgOp}
+                  stroke={accent}
+                  strokeWidth={isSelected ? 2.5 : 1.5}
+                  strokeDasharray={getDashArray(card.borderStyle || 'solid')}
+                  rx="6"
+                />
+
+                {/* Step Circle Badge + Header Title */}
+                {card.stepBadge ? (
+                  <>
+                    <circle cx={x - cardW / 2 + 16} cy={y + 16} r="8.5" fill={accent} />
+                    <text
+                      x={x - cardW / 2 + 16}
+                      y={y + 19.5}
+                      fill="#000000"
+                      fontSize="9.5"
+                      fontWeight="900"
+                      fontFamily="JetBrains Mono, monospace"
+                      textAnchor="middle"
+                    >
+                      {card.stepBadge}
+                    </text>
+                    <text
+                      x={x - cardW / 2 + 30}
+                      y={y + 19.5}
+                      fill={accent}
+                      fontSize="9.5"
+                      fontWeight="900"
+                      fontFamily="JetBrains Mono, monospace"
+                    >
+                      {card.title}
+                    </text>
+                  </>
+                ) : (
+                  <text
+                    x={x - cardW / 2 + 10}
+                    y={y + 19}
+                    fill={accent}
+                    fontSize="10"
+                    fontWeight="900"
+                    fontFamily="JetBrains Mono, monospace"
+                  >
+                    {card.title}
+                  </text>
+                )}
+
+                {/* Explanation Lines */}
+                {lines.map((lineText, idx) => (
+                  <text
+                    key={`${card.id}-ln-${idx}`}
+                    x={x - cardW / 2 + 10}
+                    y={y + 36 + idx * 13.5}
+                    fill={bodyTextCol}
+                    fontSize="8.8"
+                    fontFamily="JetBrains Mono, monospace"
+                  >
+                    {lineText}
+                  </text>
+                ))}
+
+                {/* Footer Pill Badge */}
+                {card.footerBadge && (
+                  <g>
+                    <rect
+                      x={x - cardW / 2 + 10}
+                      y={y + cardH - 22}
+                      width={cardW - 20}
+                      height={16}
+                      fill={accent}
+                      fillOpacity={0.22}
+                      rx="3"
+                    />
+                    <text
+                      x={x}
+                      y={y + cardH - 11}
+                      fill={accent}
+                      fontSize="8.5"
+                      fontWeight="bold"
+                      fontFamily="JetBrains Mono, monospace"
+                      textAnchor="middle"
+                    >
+                      {card.footerBadge}
+                    </text>
+                  </g>
+                )}
+              </g>
+            );
+          })}
+
           {/* LAYER: Volume Sub-Pane */}
           {showVolume && (
-            <g transform={`translate(0, ${totalHeight - volumeHeight})`}>
+            <g transform={`translate(0, ${totalHeight - volumeHeight - legendHeight})`}>
               <line
                 x1={padding.left}
                 y1={0}
@@ -1036,7 +1463,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             </g>
           )}
 
-          {/* LAYER: Badges & Text Callouts (With Full Text, Background, Border & Style Customization + Drag) */}
+          {/* LAYER: Badges & Text Callouts */}
           {badges.map((badge) => {
             const x = indexToX(badge.candleIndex);
             const y = priceToY(badge.price);
@@ -1080,7 +1507,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 }}
                 className="cursor-move"
               >
-                {/* Callout Pointer Triangle */}
                 {badge.style === 'callout' && (
                   <polygon
                     points={`${x - 5},${y + badgeH / 2 - 1} ${x + 5},${y + badgeH / 2 - 1} ${x},${y + badgeH / 2 + 6}`}
@@ -1115,6 +1541,30 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
               </g>
             );
           })}
+
+          {/* LAYER: Bottom Custom Legend Bar (Like BTC.D & Altseason Index Diagram) */}
+          {hasLegend && (
+            <g transform={`translate(${padding.left}, ${totalHeight - 10})`}>
+              {legends.map((item, idx) => {
+                const offsetX = idx * 210;
+                return (
+                  <g key={item.id} transform={`translate(${offsetX}, 0)`}>
+                    <circle cx="5" cy="-4" r="4.5" fill={item.color} />
+                    <text
+                      x="15"
+                      y="0"
+                      fill={isDarkMode ? '#94A3B8' : '#475569'}
+                      fontSize="10"
+                      fontWeight="bold"
+                      fontFamily="JetBrains Mono, monospace"
+                    >
+                      {item.label}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          )}
 
           {/* Interactive Crosshair Tracking Overlay */}
           {crosshair && (

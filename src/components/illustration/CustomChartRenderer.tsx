@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { CustomChartConfig } from '../../types/chartBuilderTypes';
+import { buildSmoothCurvePath } from '../chart-builder/ChartCanvas';
 
 interface CustomChartRendererProps {
   config: CustomChartConfig;
@@ -17,35 +18,61 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
   const boxes = config.boxes || [];
   const positions = config.positions || [];
   const trendlines = config.trendlines || [];
+  const polylines = config.polylines || [];
+  const arrows = config.arrows || [];
+  const infoCards = config.infoCards || [];
   const badges = config.badges || [];
+  const legends = config.legends || [];
+
+  const showCandles = config.showCandles !== false;
   const showVolume = config.showVolume !== false;
   const showEma = config.showEma !== false;
   const emaPeriod = config.emaPeriod || 9;
   const isDarkMode = config.isDarkMode ?? (typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : true);
   const candleSpacing = config.candleSpacing || 'normal';
 
-  const candleStep = candleSpacing === 'compact' ? 26 : candleSpacing === 'wide' ? 44 : 34;
+  const candleStep = candleSpacing === 'compact' ? 30 : candleSpacing === 'wide' ? 54 : 42;
   const candleWidth = candleSpacing === 'compact' ? 14 : candleSpacing === 'wide' ? 24 : 18;
 
-  const totalHeight = 420;
-  const volumeHeight = showVolume ? 60 : 0;
-  const padding = { top: 35, right: 80, bottom: 35 + volumeHeight, left: 40 };
-  const width = Math.max(580, padding.left + candles.length * candleStep + padding.right + 30);
+  const hasLegend = legends.length > 0;
+  const legendHeight = hasLegend ? 26 : 0;
+  const totalHeight = 440;
+  const volumeHeight = showVolume ? 55 : 0;
+  const padding = { top: 35, right: 80, bottom: 35 + volumeHeight + legendHeight, left: 40 };
+
+  const maxBarIndex = useMemo(() => {
+    let maxIdx = Math.max(10, candles.length);
+    polylines.forEach(p => p.points.forEach(pt => { if (pt.index + 2 > maxIdx) maxIdx = pt.index + 2; }));
+    infoCards.forEach(c => { if (c.candleIndex + 4 > maxIdx) maxIdx = c.candleIndex + 4; });
+    return maxIdx;
+  }, [candles.length, polylines, infoCards]);
+
+  const width = Math.max(580, padding.left + maxBarIndex * candleStep + padding.right + 30);
 
   const { minPrice, maxPrice } = useMemo(() => {
-    if (candles.length === 0) return { minPrice: 60, maxPrice: 180 };
     let min = Infinity;
     let max = -Infinity;
     for (const c of candles) {
       if (c.low < min) min = c.low;
       if (c.high > max) max = c.high;
     }
+    for (const p of polylines) {
+      for (const pt of p.points) {
+        if (pt.price < min) min = pt.price;
+        if (pt.price > max) max = pt.price;
+      }
+    }
+    for (const b of boxes) {
+      if (b.bottomPrice < min) min = b.bottomPrice;
+      if (b.topPrice > max) max = b.topPrice;
+    }
+    if (!isFinite(min) || !isFinite(max)) return { minPrice: 60, maxPrice: 180 };
     const range = Math.max(20, max - min);
     return {
-      minPrice: Math.floor(min - range * 0.15),
-      maxPrice: Math.ceil(max + range * 0.15)
+      minPrice: Math.floor(min - range * 0.16),
+      maxPrice: Math.ceil(max + range * 0.16)
     };
-  }, [candles]);
+  }, [candles, polylines, boxes]);
 
   const maxVolume = useMemo(() => {
     if (candles.length === 0) return 1000;
@@ -90,8 +117,8 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
   const candleBorderStroke = isDarkMode ? '#000000' : '#1E293B';
 
   const getDashArray = (style?: 'solid' | 'dashed' | 'dotted' | 'none') => {
-    if (style === 'dashed') return '5 3';
-    if (style === 'dotted') return '2 2';
+    if (style === 'dashed') return '6 4';
+    if (style === 'dotted') return '2 3';
     return 'none';
   };
 
@@ -101,22 +128,32 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
         ? 'bg-[#070A12] border-black dark:border-[#1E293B] shadow-[4px_4px_0px_#000]'
         : 'bg-white border-slate-300 shadow-sm'
     } ${className}`}>
-      {/* Title Bar */}
-      <div className={`flex items-center justify-between w-full mb-3 pb-2 border-b text-xs font-mono ${
+      {/* Title & Subtitle Header Bar */}
+      <div className={`flex flex-wrap items-center justify-between gap-2 w-full mb-3 pb-2 border-b text-xs font-mono ${
         isDarkMode ? 'border-slate-800' : 'border-slate-200'
       }`}>
         <span className="text-[#10B981] font-bold uppercase tracking-wider flex items-center space-x-1.5">
           <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
-          <span>{title || config.title || 'Interactive Custom Candlestick Model'}</span>
+          <span>{config.title || title || 'Interactive Custom Candlestick & Schematic'}</span>
         </span>
         <div className="flex items-center space-x-2 text-[10px] text-slate-400">
-          {showEma && <span className="text-[#0284C7] font-bold">EMA {emaPeriod}</span>}
-          {showVolume && <span>• Volume VSA</span>}
-          <span className={`px-2 py-0.5 rounded border ${
-            isDarkMode ? 'bg-slate-900 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
-          }`}>
-            {candles.length} Candles
-          </span>
+          {config.subtitle ? (
+            <span className={`px-2 py-0.5 rounded border ${
+              isDarkMode ? 'bg-black/60 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+            }`}>
+              {config.subtitle}
+            </span>
+          ) : (
+            <>
+              {showEma && <span className="text-[#0284C7] font-bold">EMA {emaPeriod}</span>}
+              {showVolume && <span>• Volume VSA</span>}
+              <span className={`px-2 py-0.5 rounded border ${
+                isDarkMode ? 'bg-slate-900 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+              }`}>
+                {candles.length} Bar
+              </span>
+            </>
+          )}
         </div>
       </div>
 
@@ -202,11 +239,11 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
                 width={boxW}
                 height={boxHeight}
                 fill={fillColor}
-                fillOpacity={b.opacity ?? 0.18}
+                fillOpacity={b.opacity ?? 0.14}
                 stroke={borderStyle === 'none' ? 'none' : strokeColor}
                 strokeWidth={borderW}
                 strokeDasharray={getDashArray(borderStyle)}
-                rx="3"
+                rx="4"
               />
               {b.showMidLine && (
                 <g>
@@ -244,6 +281,47 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
                   {b.label}
                 </text>
               )}
+            </g>
+          );
+        })}
+
+        {/* Multi-Point Waves & Smooth Curves */}
+        {polylines.map((poly) => {
+          if (poly.points.length < 2) return null;
+          const coords = poly.points.map(pt => ({ x: indexToX(pt.index), y: priceToY(pt.price) }));
+          const lineColor = poly.color || '#38BDF8';
+          const isSmooth = poly.curveType === 'smooth';
+          const pathD = isSmooth
+            ? buildSmoothCurvePath(coords)
+            : `M ${coords.map(c => `${c.x},${c.y}`).join(' L ')}`;
+          const firstPt = coords[0];
+
+          return (
+            <g key={poly.id}>
+              <path
+                d={pathD}
+                fill="none"
+                stroke={lineColor}
+                strokeWidth={poly.strokeWidth || 2.5}
+                strokeDasharray={getDashArray(poly.lineStyle || 'solid')}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              {poly.label && (
+                <text
+                  x={firstPt.x + 6}
+                  y={firstPt.y - 8}
+                  fill={poly.textColor || lineColor}
+                  fontSize={poly.fontSize || 10}
+                  fontWeight="bold"
+                  fontFamily="JetBrains Mono, monospace"
+                >
+                  {poly.label}
+                </text>
+              )}
+              {poly.showDots && coords.map((pt, idx) => (
+                <circle key={`${poly.id}-pt-${idx}`} cx={pt.x} cy={pt.y} r="3" fill={lineColor} />
+              ))}
             </g>
           );
         })}
@@ -438,8 +516,37 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
           );
         })}
 
+        {/* Curved & Straight Arrows */}
+        {arrows.map((arr) => {
+          const x1 = indexToX(arr.startIndex);
+          const y1 = priceToY(arr.startPrice);
+          const x2 = indexToX(arr.endIndex);
+          const y2 = priceToY(arr.endPrice);
+          const col = arr.color || '#FACC15';
+          const midX = (x1 + x2) / 2;
+          const midY = (y1 + y2) / 2 - (arr.curved !== false ? (arr.curveOffset ?? 25) : 0);
+          const pathD = arr.curved !== false
+            ? `M ${x1},${y1} Q ${midX},${midY} ${x2},${y2}`
+            : `M ${x1},${y1} L ${x2},${y2}`;
+          const refX = arr.curved !== false ? midX : x1;
+          const refY = arr.curved !== false ? midY : y1;
+          const angle = Math.atan2(y2 - refY, x2 - refX) * (180 / Math.PI);
+
+          return (
+            <g key={arr.id}>
+              <path d={pathD} fill="none" stroke={col} strokeWidth={arr.strokeWidth || 2.2} strokeDasharray="4 3" />
+              <polygon points="0,0 -8,-4.5 -8,4.5" fill={col} transform={`translate(${x2},${y2}) rotate(${angle})`} />
+              {arr.label && (
+                <text x={midX} y={midY - 6} fill={arr.textColor || col} fontSize="9" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">
+                  {arr.label}
+                </text>
+              )}
+            </g>
+          );
+        })}
+
         {/* Candlesticks */}
-        {candles.map((candle, idx) => {
+        {showCandles && candles.map((candle, idx) => {
           const x = indexToX(idx);
           const isBullish = candle.close >= candle.open;
           const bodyColor = candle.color || (isBullish ? '#10B981' : '#EF4444');
@@ -485,9 +592,58 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
           );
         })}
 
+        {/* Multi-Line Info Cards */}
+        {infoCards.map((card) => {
+          const x = indexToX(card.candleIndex);
+          const y = priceToY(card.price);
+          const cardW = card.width || 155;
+          const lines = card.lines || [];
+          const hasFooter = Boolean(card.footerBadge);
+          const cardH = 30 + lines.length * 13.5 + (hasFooter ? 22 : 6);
+          const accent = card.color || '#10B981';
+          const bgCol = card.bgColor || accent;
+          const bgOp = card.bgOpacity ?? 0.14;
+          const bodyTextCol = card.textColor || (isDarkMode ? '#E2E8F0' : '#1E293B');
+
+          return (
+            <g key={card.id}>
+              <rect x={x - cardW / 2} y={y} width={cardW} height={cardH} fill={isDarkMode ? '#0B1120' : '#FFFFFF'} fillOpacity={0.92} rx="6" />
+              <rect x={x - cardW / 2} y={y} width={cardW} height={cardH} fill={bgCol} fillOpacity={bgOp} stroke={accent} strokeWidth="1.5" rx="6" />
+              {card.stepBadge ? (
+                <>
+                  <circle cx={x - cardW / 2 + 15} cy={y + 15} r="8" fill={accent} />
+                  <text x={x - cardW / 2 + 15} y={y + 18.5} fill="#000" fontSize="9" fontWeight="900" fontFamily="JetBrains Mono" textAnchor="middle">
+                    {card.stepBadge}
+                  </text>
+                  <text x={x - cardW / 2 + 28} y={y + 18.5} fill={accent} fontSize="9" fontWeight="900" fontFamily="JetBrains Mono">
+                    {card.title}
+                  </text>
+                </>
+              ) : (
+                <text x={x - cardW / 2 + 10} y={y + 18.5} fill={accent} fontSize="9.5" fontWeight="900" fontFamily="JetBrains Mono">
+                  {card.title}
+                </text>
+              )}
+              {lines.map((ln, idx) => (
+                <text key={`${card.id}-l-${idx}`} x={x - cardW / 2 + 10} y={y + 34 + idx * 13} fill={bodyTextCol} fontSize="8.5" fontFamily="JetBrains Mono">
+                  {ln}
+                </text>
+              ))}
+              {card.footerBadge && (
+                <g>
+                  <rect x={x - cardW / 2 + 10} y={y + cardH - 20} width={cardW - 20} height={15} fill={accent} fillOpacity={0.22} rx="3" />
+                  <text x={x} y={y + cardH - 10} fill={accent} fontSize="8" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">
+                    {card.footerBadge}
+                  </text>
+                </g>
+              )}
+            </g>
+          );
+        })}
+
         {/* Volume Sub-Pane */}
         {showVolume && (
-          <g transform={`translate(0, ${totalHeight - volumeHeight})`}>
+          <g transform={`translate(0, ${totalHeight - volumeHeight - legendHeight})`}>
             <line x1={padding.left} y1={0} x2={width - padding.right} y2={0} stroke={gridLineStroke} strokeWidth="1" />
             {candles.map((candle, idx) => {
               const x = indexToX(idx);
@@ -552,6 +708,20 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
             </g>
           );
         })}
+
+        {/* Bottom Custom Legend Bar */}
+        {hasLegend && (
+          <g transform={`translate(${padding.left}, ${totalHeight - 8})`}>
+            {legends.map((item, idx) => (
+              <g key={item.id} transform={`translate(${idx * 200}, 0)`}>
+                <circle cx="5" cy="-4" r="4" fill={item.color} />
+                <text x="14" y="0" fill={isDarkMode ? '#94A3B8' : '#475569'} fontSize="9.5" fontWeight="bold" fontFamily="JetBrains Mono">
+                  {item.label}
+                </text>
+              </g>
+            ))}
+          </g>
+        )}
       </svg>
     </div>
   );
