@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { RoadmapNode } from '../types';
 import { VisualDiagram } from './VisualDiagram';
 import confetti from 'canvas-confetti';
@@ -117,8 +119,75 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
               </button>
             )}
           </div>
-          <div className="text-xs leading-relaxed text-slate-700 dark:text-[#CBD5E1] space-y-3 whitespace-pre-line bg-slate-50 dark:bg-[#090D16] p-4 rounded-xl border border-slate-200 dark:border-[#1E293B]">
-            {node.content}
+          <div className="bg-slate-50 dark:bg-[#090D16] p-4.5 rounded-xl border border-slate-200 dark:border-[#1E293B] shadow-2xs">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                h1: ({ children }) => (
+                  <h1 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mt-3.5 mb-1.5 first:mt-0 tracking-tight">
+                    {children}
+                  </h1>
+                ),
+                h2: ({ children }) => (
+                  <h2 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mt-3 mb-1.5 first:mt-0 tracking-tight">
+                    {children}
+                  </h2>
+                ),
+                h3: ({ children }) => (
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-white mt-2.5 mb-1.5 first:mt-0 tracking-tight flex items-center space-x-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
+                    <span>{children}</span>
+                  </h3>
+                ),
+                p: ({ children }) => (
+                  <p className="text-xs leading-relaxed text-slate-700 dark:text-[#CBD5E1] mb-2.5 last:mb-0">
+                    {children}
+                  </p>
+                ),
+                ul: ({ children }) => (
+                  <ul className="list-disc list-outside ml-4 space-y-1.5 my-2.5 text-xs text-slate-700 dark:text-[#CBD5E1]">
+                    {children}
+                  </ul>
+                ),
+                ol: ({ children }) => (
+                  <ol className="list-decimal list-outside ml-4 space-y-1.5 my-2.5 text-xs text-slate-700 dark:text-[#CBD5E1]">
+                    {children}
+                  </ol>
+                ),
+                li: ({ children }) => (
+                  <li className="text-xs leading-relaxed text-slate-700 dark:text-[#CBD5E1]">
+                    {children}
+                  </li>
+                ),
+                strong: ({ children }) => (
+                  <strong className="font-bold text-slate-950 dark:text-white">
+                    {children}
+                  </strong>
+                ),
+                blockquote: ({ children }) => (
+                  <blockquote className="border-l-3 border-[#FACC15] bg-[#FEF08A]/25 dark:bg-[#FACC15]/10 px-3.5 py-2.5 my-3 rounded-r-lg text-xs text-amber-950 dark:text-amber-200 font-medium">
+                    {children}
+                  </blockquote>
+                ),
+                code: ({ children, className, ...props }: any) => {
+                  const isInline = !className && typeof children === 'string' && !children.includes('\n');
+                  if (isInline) {
+                    return (
+                      <code className="bg-slate-200/80 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-[11px] font-mono text-emerald-700 dark:text-emerald-400 font-semibold" {...props}>
+                        {children}
+                      </code>
+                    );
+                  }
+                  return (
+                    <pre className="bg-zinc-950 text-zinc-100 p-3 rounded-lg font-mono text-[11px] overflow-x-auto my-2 border border-zinc-800">
+                      <code {...props}>{children}</code>
+                    </pre>
+                  );
+                }
+              }}
+            >
+              {node.content}
+            </ReactMarkdown>
           </div>
           {onOpenDocReader && (
             <button
