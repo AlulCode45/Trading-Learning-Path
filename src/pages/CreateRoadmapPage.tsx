@@ -618,7 +618,6 @@ export const CreateRoadmapPage: React.FC = () => {
             <div className="space-y-4">
               {nodes.map((node, index) => {
                 const isExpanded = expandedIndex === index;
-                const tab = markdownPreviewTab[index] || 'edit';
 
                 return (
                   <div
@@ -827,7 +826,7 @@ export const CreateRoadmapPage: React.FC = () => {
                                   className="w-full bg-white dark:bg-[#121722] border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white outline-none"
                                 >
                                   {PRESET_SVG_ITEMS.map(item => (
-                                    <option key={item.id} value={item.id}>
+                                    <option key={item.type} value={item.type}>
                                       [{item.category}] {item.title}
                                     </option>
                                   ))}
