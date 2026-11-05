@@ -4,28 +4,40 @@ import {
   FibonacciDrawing, 
   BoxDrawing, 
   TrendlineDrawing, 
-  TextBadgeAnnotation 
+  TextBadgeAnnotation,
+  PositionDrawing,
+  PolylineDrawing
 } from '../../types/chartBuilderTypes';
 
 interface ChartCanvasProps {
   candles: CustomCandle[];
   fibonaccis: FibonacciDrawing[];
   boxes: BoxDrawing[];
+  positions: PositionDrawing[];
   trendlines: TrendlineDrawing[];
+  polylines: PolylineDrawing[];
   badges: TextBadgeAnnotation[];
+  showVolume?: boolean;
+  showEma?: boolean;
+  emaPeriod?: number;
   selectedId: string | null;
-  onSelectId: (id: string | null, type: 'candle' | 'fib' | 'box' | 'trendline' | 'badge') => void;
+  onSelectId: (id: string | null, type: 'candle' | 'fib' | 'box' | 'position' | 'trendline' | 'polyline' | 'badge') => void;
   onUpdateCandle: (candle: CustomCandle) => void;
-  activeTool: 'select' | 'candle' | 'fibonacci' | 'box' | 'trendline' | 'badge';
-  onAddAnnotation: (type: 'fibonacci' | 'box' | 'trendline' | 'badge', payload: any) => void;
+  activeTool: 'select' | 'candle' | 'fibonacci' | 'box' | 'position-long' | 'position-short' | 'trendline' | 'polyline' | 'badge';
+  onAddAnnotation: (type: string, payload: any) => void;
 }
 
 export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   candles,
   fibonaccis,
   boxes,
+  positions,
   trendlines,
+  polylines,
   badges,
+  showVolume = true,
+  showEma = true,
+  emaPeriod = 9,
   selectedId,
   onSelectId,
   onUpdateCandle,
@@ -34,13 +46,17 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
 
-  // Drawing state for interactive tools (Fibonacci / Trendline / Box)
+  // Crosshair state
+  const [crosshair, setCrosshair] = useState<{ x: number; y: number; price: number; index: number } | null>(null);
+
+  // Tool drawing state (for 2-point tools like Fib, Box, Trendline, Position)
   const [drawingStart, setDrawingStart] = useState<{ xIndex: number; price: number } | null>(null);
 
   // Coordinate Calculation & Bounds
-  const width = Math.max(780, candles.length * 64 + 140);
-  const height = 440;
-  const padding = { top: 40, right: 70, bottom: 50, left: 40 };
+  const width = Math.max(860, candles.length * 64 + 160);
+  const totalHeight = 480;
+  const volumeHeight = showVolume ? 75 : 0;
+  const padding = { top: 40, right: 80, bottom: 45 + volumeHeight, left: 40 };
 
   const { minPrice, maxPrice } = useMemo(() => {
     if (candles.length === 0) return { minPrice: 60, maxPrice: 180 };
@@ -50,7 +66,6 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
       if (c.low < min) min = c.low;
       if (c.high > max) max = c.high;
     }
-    // Expand buffer
     const range = Math.max(20, max - min);
     return {
       minPrice: Math.floor(min - range * 0.15),
@@ -58,15 +73,20 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
     };
   }, [candles]);
 
+  const maxVolume = useMemo(() => {
+    if (candles.length === 0) return 1000;
+    return Math.max(...candles.map(c => c.volume || 1000), 1000);
+  }, [candles]);
+
   const priceToY = (price: number): number => {
-    const usableHeight = height - padding.top - padding.bottom;
+    const usableHeight = totalHeight - padding.top - padding.bottom;
     const ratio = (price - minPrice) / (maxPrice - minPrice || 1);
-    return height - padding.bottom - ratio * usableHeight;
+    return totalHeight - padding.bottom - ratio * usableHeight;
   };
 
   const yToPrice = (y: number): number => {
-    const usableHeight = height - padding.top - padding.bottom;
-    const ratio = (height - padding.bottom - y) / usableHeight;
+    const usableHeight = totalHeight - padding.top - padding.bottom;
+    const ratio = (totalHeight - padding.bottom - y) / usableHeight;
     return Math.round(minPrice + ratio * (maxPrice - minPrice));
   };
 
@@ -90,6 +110,41 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
     return Array.from({ length: count + 1 }, (_, i) => Math.round(minPrice + i * step));
   }, [minPrice, maxPrice]);
 
+  // Exponential Moving Average (EMA) Calculation
+  const emaPoints = useMemo(() => {
+    if (!showEma || candles.length < 2) return [];
+    const k = 2 / (emaPeriod + 1);
+    const points: Array<{ x: number; y: number }> = [];
+    let prevEma = candles[0].close;
+
+    candles.forEach((c, idx) => {
+      const currentEma = c.close * k + prevEma * (1 - k);
+      points.push({ x: indexToX(idx), y: priceToY(currentEma) });
+      prevEma = currentEma;
+    });
+
+    return points;
+  }, [candles, showEma, emaPeriod, minPrice, maxPrice]);
+
+  // Handle Mouse Move for Crosshair
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (x >= padding.left && x <= width - padding.right && y >= padding.top && y <= totalHeight - padding.bottom) {
+      setCrosshair({
+        x,
+        y,
+        price: yToPrice(y),
+        index: xToIndex(x)
+      });
+    } else {
+      setCrosshair(null);
+    }
+  };
+
   // Handle Canvas Click for Tools
   const handleSvgClick = (e: React.MouseEvent<SVGSVGElement>) => {
     if (activeTool === 'select') return;
@@ -106,7 +161,8 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
       onAddAnnotation('badge', {
         candleIndex: xIdx,
         price: clickedPrice,
-        text: 'BOS'
+        text: 'BOS',
+        color: '#FACC15'
       });
       return;
     }
@@ -128,7 +184,32 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           topPrice: Math.max(drawingStart.price, clickedPrice),
           bottomPrice: Math.min(drawingStart.price, clickedPrice),
           label: 'Order Block (OB)',
-          color: '#38BDF8'
+          color: '#38BDF8',
+          showMidLine: true
+        });
+      } else if (activeTool === 'position-long') {
+        const entry = drawingStart.price;
+        const target = Math.max(entry + 25, clickedPrice);
+        const stop = Math.min(entry - 10, clickedPrice < entry ? clickedPrice : entry - 10);
+        onAddAnnotation('position', {
+          type: 'long',
+          entryPrice: entry,
+          targetPrice: target,
+          stopPrice: stop,
+          startIndex: Math.min(drawingStart.xIndex, xIdx),
+          endIndex: Math.max(drawingStart.xIndex + 3, xIdx)
+        });
+      } else if (activeTool === 'position-short') {
+        const entry = drawingStart.price;
+        const target = Math.min(entry - 25, clickedPrice);
+        const stop = Math.max(entry + 10, clickedPrice > entry ? clickedPrice : entry + 10);
+        onAddAnnotation('position', {
+          type: 'short',
+          entryPrice: entry,
+          targetPrice: target,
+          stopPrice: stop,
+          startIndex: Math.min(drawingStart.xIndex, xIdx),
+          endIndex: Math.max(drawingStart.xIndex + 3, xIdx)
         });
       } else if (activeTool === 'trendline') {
         onAddAnnotation('trendline', {
@@ -144,23 +225,25 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   };
 
   return (
-    <div className="w-full overflow-x-auto rounded-2xl border border-slate-300 dark:border-zinc-800 bg-[#060910] shadow-inner select-none">
+    <div className="w-full overflow-x-auto rounded-2xl border border-slate-300 dark:border-zinc-800 bg-[#060910] shadow-2xl select-none relative">
       <svg
         ref={svgRef}
-        viewBox={`0 0 ${width} ${height}`}
-        style={{ width: `${width}px`, height: `${height}px` }}
+        viewBox={`0 0 ${width} ${totalHeight}`}
+        style={{ width: `${width}px`, height: `${totalHeight}px` }}
         onClick={handleSvgClick}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setCrosshair(null)}
         className="cursor-crosshair block"
       >
         <defs>
-          <pattern id="canvas-grid" width="30" height="30" patternUnits="userSpaceOnUse">
-            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" />
+          <pattern id="canvas-grid-pro" width="30" height="30" patternUnits="userSpaceOnUse">
+            <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(255, 255, 255, 0.035)" strokeWidth="1" />
           </pattern>
         </defs>
 
         {/* Background Grid */}
-        <rect width={width} height={height} fill="#060910" />
-        <rect width={width} height={height} fill="url(#canvas-grid)" />
+        <rect width={width} height={totalHeight} fill="#060910" />
+        <rect width={width} height={totalHeight} fill="url(#canvas-grid-pro)" />
 
         {/* Horizontal Price Grid Lines & Labels */}
         {priceGridLevels.map((price) => {
@@ -172,7 +255,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 y1={y}
                 x2={width - padding.right}
                 y2={y}
-                stroke="rgba(148, 163, 184, 0.12)"
+                stroke="rgba(148, 163, 184, 0.1)"
                 strokeDasharray="4 4"
                 strokeWidth="1"
               />
@@ -198,13 +281,13 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 x1={x}
                 y1={padding.top}
                 x2={x}
-                y2={height - padding.bottom}
-                stroke="rgba(148, 163, 184, 0.06)"
+                y2={totalHeight - padding.bottom}
+                stroke="rgba(148, 163, 184, 0.05)"
                 strokeDasharray="2 4"
               />
               <text
                 x={x}
-                y={height - padding.bottom + 18}
+                y={totalHeight - padding.bottom + 16}
                 fill="#64748B"
                 fontSize="10"
                 fontFamily="JetBrains Mono, monospace"
@@ -216,13 +299,14 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           );
         })}
 
-        {/* LAYER: Box Drawings (Order Block, FVG, Supply/Demand) */}
+        {/* LAYER: Box Drawings (Order Block, FVG, Supply/Demand with Mid-line) */}
         {boxes.map((b) => {
-          const x1 = indexToX(b.startIndex) - 20;
-          const x2 = indexToX(b.endIndex) + 20;
+          const x1 = indexToX(b.startIndex) - 18;
+          const x2 = indexToX(b.endIndex) + 18;
           const yTop = priceToY(b.topPrice);
           const yBottom = priceToY(b.bottomPrice);
           const boxHeight = Math.max(4, yBottom - yTop);
+          const yMid = yTop + boxHeight / 2;
           const isSelected = selectedId === b.id;
 
           return (
@@ -232,7 +316,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 e.stopPropagation();
                 onSelectId(b.id, 'box');
               }}
-              className="cursor-pointer"
+              className="cursor-pointer group"
             >
               <rect
                 x={x1}
@@ -246,6 +330,30 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 strokeDasharray={isSelected ? 'none' : '3 3'}
                 rx="3"
               />
+              {/* Optional 50% Mid-Line (Consequent Encroachment / Mean Threshold) */}
+              {b.showMidLine && (
+                <g>
+                  <line
+                    x1={x1}
+                    y1={yMid}
+                    x2={x2}
+                    y2={yMid}
+                    stroke={b.color}
+                    strokeWidth="1.2"
+                    strokeDasharray="4 2"
+                  />
+                  <text
+                    x={x2 - 4}
+                    y={yMid - 3}
+                    fill={b.color}
+                    fontSize="8.5"
+                    fontFamily="JetBrains Mono, monospace"
+                    textAnchor="end"
+                  >
+                    50% EQ
+                  </text>
+                </g>
+              )}
               <text
                 x={x1 + 6}
                 y={yTop + 14}
@@ -260,17 +368,125 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           );
         })}
 
-        {/* LAYER: Fibonacci Retracements */}
+        {/* LAYER: Position Tool (TradingView Long / Short Risk:Reward Box) */}
+        {positions.map((pos) => {
+          const x1 = indexToX(pos.startIndex) - 15;
+          const x2 = indexToX(pos.endIndex) + 25;
+          const yEntry = priceToY(pos.entryPrice);
+          const yTarget = priceToY(pos.targetPrice);
+          const yStop = priceToY(pos.stopPrice);
+
+          const isLong = pos.type === 'long';
+          const rewardPips = Math.abs(pos.targetPrice - pos.entryPrice);
+          const riskPips = Math.abs(pos.entryPrice - pos.stopPrice);
+          const rrRatio = riskPips > 0 ? (rewardPips / riskPips).toFixed(2) : '1.00';
+          const isSelected = selectedId === pos.id;
+
+          const topY = Math.min(yTarget, yEntry);
+          const targetBoxHeight = Math.abs(yEntry - yTarget);
+          const bottomY = Math.min(yEntry, yStop);
+          const stopBoxHeight = Math.abs(yStop - yEntry);
+
+          return (
+            <g
+              key={pos.id}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectId(pos.id, 'position');
+              }}
+              className="cursor-pointer"
+            >
+              {/* Target / Reward Box (Green) */}
+              <rect
+                x={x1}
+                y={isLong ? topY : yEntry}
+                width={x2 - x1}
+                height={targetBoxHeight}
+                fill="rgba(16, 185, 129, 0.22)"
+                stroke="#10B981"
+                strokeWidth={isSelected ? 2 : 1}
+              />
+              <text
+                x={x1 + 6}
+                y={(isLong ? topY : yEntry) + 14}
+                fill="#10B981"
+                fontSize="9.5"
+                fontFamily="JetBrains Mono, monospace"
+                fontWeight="bold"
+              >
+                TP: {pos.targetPrice.toFixed(1)} (+{rewardPips.toFixed(1)} pts)
+              </text>
+
+              {/* Stop / Risk Box (Red) */}
+              <rect
+                x={x1}
+                y={isLong ? yEntry : bottomY}
+                width={x2 - x1}
+                height={stopBoxHeight}
+                fill="rgba(244, 63, 94, 0.22)"
+                stroke="#F43F5E"
+                strokeWidth={isSelected ? 2 : 1}
+              />
+              <text
+                x={x1 + 6}
+                y={(isLong ? yEntry : bottomY) + stopBoxHeight - 6}
+                fill="#F43F5E"
+                fontSize="9.5"
+                fontFamily="JetBrains Mono, monospace"
+                fontWeight="bold"
+              >
+                SL: {pos.stopPrice.toFixed(1)} (-{riskPips.toFixed(1)} pts)
+              </text>
+
+              {/* Center Entry Line */}
+              <line
+                x1={x1}
+                y1={yEntry}
+                x2={x2}
+                y2={yEntry}
+                stroke="#F8FAFC"
+                strokeWidth="2"
+              />
+
+              {/* Risk:Reward Ratio Floating Badge */}
+              <rect
+                x={x2 - 110}
+                y={yEntry - 12}
+                width="105"
+                height="22"
+                fill="#020617"
+                stroke="#38BDF8"
+                strokeWidth="1.2"
+                rx="4"
+              />
+              <text
+                x={x2 - 58}
+                y={yEntry + 3}
+                fill="#38BDF8"
+                fontSize="9.5"
+                fontWeight="900"
+                fontFamily="JetBrains Mono, monospace"
+                textAnchor="middle"
+              >
+                R:R = 1 : {rrRatio}
+              </text>
+            </g>
+          );
+        })}
+
+        {/* LAYER: Fibonacci Retracements & Extensions */}
         {fibonaccis.map((fib) => {
           const xStart = indexToX(fib.startIndex) - 15;
-          const xEnd = indexToX(fib.endIndex) + 40;
+          const xEnd = indexToX(fib.endIndex) + 45;
           const levels = [
             { pct: 0, label: '0.0%', color: '#94A3B8' },
+            { pct: 0.236, label: '23.6%', color: '#64748B' },
             { pct: 0.382, label: '38.2%', color: '#38BDF8' },
             { pct: 0.5, label: '50.0% EQ', color: '#FACC15' },
             { pct: 0.618, label: '61.8% Golden', color: '#10B981' },
             { pct: 0.786, label: '78.6% OTE', color: '#A855F7' },
-            { pct: 1.0, label: '100.0%', color: '#94A3B8' }
+            { pct: 1.0, label: '100.0%', color: '#94A3B8' },
+            { pct: 1.618, label: '161.8% Target', color: '#EC4899' }
           ];
           const isSelected = selectedId === fib.id;
 
@@ -295,7 +511,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                     y={topY}
                     width={xEnd - xStart}
                     height={botY - topY}
-                    fill="rgba(16, 185, 129, 0.15)"
+                    fill="rgba(16, 185, 129, 0.16)"
                     stroke="none"
                   />
                 );
@@ -315,7 +531,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                       stroke={lvl.color}
                       strokeWidth={isSelected ? 1.8 : 1}
                       strokeDasharray={lvl.pct === 0.5 || lvl.pct === 0.618 ? 'none' : '4 3'}
-                      strokeOpacity={0.8}
+                      strokeOpacity={0.85}
                     />
                     <text
                       x={xEnd + 4}
@@ -334,7 +550,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           );
         })}
 
-        {/* LAYER: Trendlines */}
+        {/* LAYER: Trendlines & Rays */}
         {trendlines.map((t) => {
           const x1 = indexToX(t.x1Index);
           const y1 = priceToY(t.y1Price);
@@ -360,11 +576,23 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 strokeWidth={isSelected ? 3.5 : 2}
                 strokeLinecap="round"
               />
-              <circle cx={x1} cy={y1} r={isSelected ? 4 : 3} fill={t.color || '#FACC15'} />
-              <circle cx={x2} cy={y2} r={isSelected ? 4 : 3} fill={t.color || '#FACC15'} />
+              <circle cx={x1} cy={y1} r={isSelected ? 4.5 : 3} fill={t.color || '#FACC15'} />
+              <circle cx={x2} cy={y2} r={isSelected ? 4.5 : 3} fill={t.color || '#FACC15'} />
             </g>
           );
         })}
+
+        {/* LAYER: Dynamic EMA Overlay Line */}
+        {showEma && emaPoints.length > 1 && (
+          <path
+            d={`M ${emaPoints.map(p => `${p.x},${p.y}`).join(' L ')}`}
+            fill="none"
+            stroke="#38BDF8"
+            strokeWidth="2.2"
+            strokeOpacity="0.85"
+            strokeLinecap="round"
+          />
+        )}
 
         {/* LAYER: Candlesticks & Interactive Wicks */}
         {candles.map((candle, idx) => {
@@ -398,7 +626,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   y={yHigh - 6}
                   width={candleWidth + 8}
                   height={yLow - yHigh + 12}
-                  fill="rgba(56, 189, 248, 0.1)"
+                  fill="rgba(56, 189, 248, 0.12)"
                   stroke="#38BDF8"
                   strokeWidth="1.5"
                   strokeDasharray="3 3"
@@ -445,10 +673,10 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   <circle
                     cx={x}
                     cy={yHigh}
-                    r="4"
+                    r="4.5"
                     fill="#38BDF8"
                     stroke="#000"
-                    strokeWidth="1"
+                    strokeWidth="1.2"
                     className="cursor-ns-resize"
                     onMouseDown={(e) => {
                       e.stopPropagation();
@@ -472,10 +700,10 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   <circle
                     cx={x}
                     cy={yLow}
-                    r="4"
+                    r="4.5"
                     fill="#38BDF8"
                     stroke="#000"
-                    strokeWidth="1"
+                    strokeWidth="1.2"
                     className="cursor-ns-resize"
                     onMouseDown={(e) => {
                       e.stopPropagation();
@@ -501,7 +729,53 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           );
         })}
 
-        {/* LAYER: Badges & Text Callouts (BOS, CHoCH, Liquidity) */}
+        {/* LAYER: Volume Sub-Pane (Volume Spread Analysis) */}
+        {showVolume && (
+          <g transform={`translate(0, ${totalHeight - volumeHeight})`}>
+            {/* Divider Line */}
+            <line
+              x1={padding.left}
+              y1={0}
+              x2={width - padding.right}
+              y2={0}
+              stroke="rgba(148, 163, 184, 0.2)"
+              strokeWidth="1.2"
+            />
+            <text
+              x={padding.left}
+              y={12}
+              fill="#64748B"
+              fontSize="8.5"
+              fontFamily="JetBrains Mono, monospace"
+              fontWeight="bold"
+            >
+              VOL (VSA Auction Activity)
+            </text>
+
+            {/* Volume Bars */}
+            {candles.map((candle, idx) => {
+              const x = indexToX(idx);
+              const vol = candle.volume || 1000;
+              const barH = Math.max(4, (vol / maxVolume) * (volumeHeight - 20));
+              const isBull = candle.close >= candle.open;
+              const barColor = isBull ? 'rgba(16, 185, 129, 0.45)' : 'rgba(244, 63, 94, 0.45)';
+
+              return (
+                <rect
+                  key={`vol-${candle.id}`}
+                  x={x - 10}
+                  y={volumeHeight - 8 - barH}
+                  width="20"
+                  height={barH}
+                  fill={barColor}
+                  rx="1"
+                />
+              );
+            })}
+          </g>
+        )}
+
+        {/* LAYER: Badges & Text Callouts (BOS, CHoCH, Liquidity $$$) */}
         {badges.map((badge) => {
           const x = indexToX(badge.candleIndex);
           const y = priceToY(badge.price);
@@ -517,13 +791,13 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
               className="cursor-pointer"
             >
               <rect
-                x={x - 24}
+                x={x - 26}
                 y={y - 12}
-                width="48"
+                width="52"
                 height="22"
                 fill={badge.color || '#FACC15'}
                 stroke="#000"
-                strokeWidth={isSelected ? 2 : 1}
+                strokeWidth={isSelected ? 2.5 : 1}
                 rx="4"
               />
               <text
@@ -540,6 +814,53 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             </g>
           );
         })}
+
+        {/* Interactive Crosshair Tracking Overlay */}
+        {crosshair && (
+          <g pointerEvents="none">
+            {/* Horizontal Crosshair Line */}
+            <line
+              x1={padding.left}
+              y1={crosshair.y}
+              x2={width - padding.right}
+              y2={crosshair.y}
+              stroke="rgba(255, 255, 255, 0.35)"
+              strokeDasharray="3 3"
+              strokeWidth="1"
+            />
+            {/* Price Tag Pill on Right Axis */}
+            <rect
+              x={width - padding.right + 2}
+              y={crosshair.y - 10}
+              width="58"
+              height="20"
+              fill="#38BDF8"
+              rx="3"
+            />
+            <text
+              x={width - padding.right + 31}
+              y={crosshair.y + 3.5}
+              fill="#000"
+              fontSize="9"
+              fontFamily="JetBrains Mono, monospace"
+              fontWeight="bold"
+              textAnchor="middle"
+            >
+              {crosshair.price.toFixed(1)}
+            </text>
+
+            {/* Vertical Crosshair Line */}
+            <line
+              x1={crosshair.x}
+              y1={padding.top}
+              x2={crosshair.x}
+              y2={totalHeight - padding.bottom}
+              stroke="rgba(255, 255, 255, 0.35)"
+              strokeDasharray="3 3"
+              strokeWidth="1"
+            />
+          </g>
+        )}
 
         {/* Active Tool Drawing Preview Prompt */}
         {drawingStart && (

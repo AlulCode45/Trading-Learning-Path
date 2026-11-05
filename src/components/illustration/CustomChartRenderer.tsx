@@ -15,12 +15,17 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
   const candles = config.candles || [];
   const fibonaccis = config.fibonaccis || [];
   const boxes = config.boxes || [];
+  const positions = config.positions || [];
   const trendlines = config.trendlines || [];
   const badges = config.badges || [];
+  const showVolume = config.showVolume !== false;
+  const showEma = config.showEma !== false;
+  const emaPeriod = config.emaPeriod || 9;
 
-  const width = Math.max(680, candles.length * 52 + 120);
-  const height = 360;
-  const padding = { top: 35, right: 65, bottom: 40, left: 35 };
+  const width = Math.max(760, candles.length * 58 + 140);
+  const totalHeight = 420;
+  const volumeHeight = showVolume ? 60 : 0;
+  const padding = { top: 35, right: 75, bottom: 35 + volumeHeight, left: 35 };
 
   const { minPrice, maxPrice } = useMemo(() => {
     if (candles.length === 0) return { minPrice: 60, maxPrice: 180 };
@@ -37,10 +42,15 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
     };
   }, [candles]);
 
+  const maxVolume = useMemo(() => {
+    if (candles.length === 0) return 1000;
+    return Math.max(...candles.map(c => c.volume || 1000), 1000);
+  }, [candles]);
+
   const priceToY = (price: number): number => {
-    const usableHeight = height - padding.top - padding.bottom;
+    const usableHeight = totalHeight - padding.top - padding.bottom;
     const ratio = (price - minPrice) / (maxPrice - minPrice || 1);
-    return height - padding.bottom - ratio * usableHeight;
+    return totalHeight - padding.bottom - ratio * usableHeight;
   };
 
   const indexToX = (index: number): number => {
@@ -55,6 +65,22 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
     return Array.from({ length: count + 1 }, (_, i) => Math.round(minPrice + i * step));
   }, [minPrice, maxPrice]);
 
+  // Exponential Moving Average (EMA) Points
+  const emaPoints = useMemo(() => {
+    if (!showEma || candles.length < 2) return [];
+    const k = 2 / (emaPeriod + 1);
+    const points: Array<{ x: number; y: number }> = [];
+    let prevEma = candles[0].close;
+
+    candles.forEach((c, idx) => {
+      const currentEma = c.close * k + prevEma * (1 - k);
+      points.push({ x: indexToX(idx), y: priceToY(currentEma) });
+      prevEma = currentEma;
+    });
+
+    return points;
+  }, [candles, showEma, emaPeriod, minPrice, maxPrice]);
+
   return (
     <div className={`bg-[#070A12] border-2 border-black dark:border-[#1E293B] shadow-[4px_4px_0px_#000] rounded-xl p-4 my-5 overflow-x-auto ${className}`}>
       {/* Title Bar */}
@@ -63,24 +89,28 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
           <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
           <span>{title || config.title || 'Interactive Custom Candlestick Model'}</span>
         </span>
-        <span className="text-[10px] bg-slate-900 border border-slate-700 text-slate-300 px-2 py-0.5 rounded">
-          Custom Canvas Model ({candles.length} Candles)
-        </span>
+        <div className="flex items-center space-x-2 text-[10px] text-slate-400">
+          {showEma && <span className="text-[#38BDF8] font-bold">EMA {emaPeriod}</span>}
+          {showVolume && <span>• Volume VSA</span>}
+          <span className="bg-slate-900 border border-slate-700 text-slate-300 px-2 py-0.5 rounded">
+            {candles.length} Candles
+          </span>
+        </div>
       </div>
 
       <svg
-        viewBox={`0 0 ${width} ${height}`}
-        style={{ width: `${width}px`, height: `${height}px` }}
+        viewBox={`0 0 ${width} ${totalHeight}`}
+        style={{ width: `${width}px`, height: `${totalHeight}px` }}
         className="block select-none"
       >
         <defs>
-          <pattern id="viewer-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+          <pattern id="viewer-grid-pro" width="28" height="28" patternUnits="userSpaceOnUse">
             <path d="M 28 0 L 0 0 0 28" fill="none" stroke="rgba(255, 255, 255, 0.03)" strokeWidth="1" />
           </pattern>
         </defs>
 
-        <rect width={width} height={height} fill="#070A12" />
-        <rect width={width} height={height} fill="url(#viewer-grid)" />
+        <rect width={width} height={totalHeight} fill="#070A12" />
+        <rect width={width} height={totalHeight} fill="url(#viewer-grid-pro)" />
 
         {/* Horizontal Price Lines & Labels */}
         {priceGridLevels.map((price) => {
@@ -108,19 +138,22 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
           );
         })}
 
-        {/* Box Drawings */}
+        {/* Box Drawings with Optional 50% Midline */}
         {boxes.map((b) => {
           const x1 = indexToX(b.startIndex) - 16;
           const x2 = indexToX(b.endIndex) + 16;
           const yTop = priceToY(b.topPrice);
           const yBottom = priceToY(b.bottomPrice);
+          const boxHeight = Math.max(3, yBottom - yTop);
+          const yMid = yTop + boxHeight / 2;
+
           return (
             <g key={b.id}>
               <rect
                 x={x1}
                 y={yTop}
                 width={Math.max(25, x2 - x1)}
-                height={Math.max(3, yBottom - yTop)}
+                height={boxHeight}
                 fill={b.color}
                 fillOpacity={b.opacity || 0.18}
                 stroke={b.color}
@@ -128,6 +161,17 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
                 strokeDasharray="3 3"
                 rx="3"
               />
+              {b.showMidLine && (
+                <line
+                  x1={x1}
+                  y1={yMid}
+                  x2={x2}
+                  y2={yMid}
+                  stroke={b.color}
+                  strokeWidth="1"
+                  strokeDasharray="3 2"
+                />
+              )}
               <text
                 x={x1 + 6}
                 y={yTop + 13}
@@ -142,10 +186,57 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
           );
         })}
 
+        {/* Position Tool (Long/Short Box) */}
+        {positions.map((pos) => {
+          const x1 = indexToX(pos.startIndex) - 12;
+          const x2 = indexToX(pos.endIndex) + 20;
+          const yEntry = priceToY(pos.entryPrice);
+          const yTarget = priceToY(pos.targetPrice);
+          const yStop = priceToY(pos.stopPrice);
+
+          const isLong = pos.type === 'long';
+          const rewardPips = Math.abs(pos.targetPrice - pos.entryPrice);
+          const riskPips = Math.abs(pos.entryPrice - pos.stopPrice);
+          const rrRatio = riskPips > 0 ? (rewardPips / riskPips).toFixed(2) : '1.00';
+
+          const topY = Math.min(yTarget, yEntry);
+          const targetBoxHeight = Math.abs(yEntry - yTarget);
+          const bottomY = Math.min(yEntry, yStop);
+          const stopBoxHeight = Math.abs(yStop - yEntry);
+
+          return (
+            <g key={pos.id}>
+              <rect
+                x={x1}
+                y={isLong ? topY : yEntry}
+                width={x2 - x1}
+                height={targetBoxHeight}
+                fill="rgba(16, 185, 129, 0.22)"
+                stroke="#10B981"
+                strokeWidth="1"
+              />
+              <rect
+                x={x1}
+                y={isLong ? yEntry : bottomY}
+                width={x2 - x1}
+                height={stopBoxHeight}
+                fill="rgba(244, 63, 94, 0.22)"
+                stroke="#F43F5E"
+                strokeWidth="1"
+              />
+              <line x1={x1} y1={yEntry} x2={x2} y2={yEntry} stroke="#F8FAFC" strokeWidth="1.5" />
+              <rect x={x2 - 95} y={yEntry - 10} width="90" height="18" fill="#020617" stroke="#38BDF8" rx="3" />
+              <text x={x2 - 50} y={yEntry + 2.5} fill="#38BDF8" fontSize="8.5" fontWeight="900" fontFamily="JetBrains Mono" textAnchor="middle">
+                R:R = 1 : {rrRatio}
+              </text>
+            </g>
+          );
+        })}
+
         {/* Fibonacci Retracements */}
         {fibonaccis.map((fib) => {
           const xStart = indexToX(fib.startIndex) - 10;
-          const xEnd = indexToX(fib.endIndex) + 30;
+          const xEnd = indexToX(fib.endIndex) + 35;
           const levels = [
             { pct: 0, label: '0.0%', color: '#94A3B8' },
             { pct: 0.382, label: '38.2%', color: '#38BDF8' },
@@ -160,7 +251,6 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
 
           return (
             <g key={fib.id}>
-              {/* Golden Pocket Shade */}
               <rect
                 x={xStart}
                 y={Math.min(y618, y786)}
@@ -198,6 +288,18 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
             </g>
           );
         })}
+
+        {/* Dynamic EMA Line */}
+        {showEma && emaPoints.length > 1 && (
+          <path
+            d={`M ${emaPoints.map(p => `${p.x},${p.y}`).join(' L ')}`}
+            fill="none"
+            stroke="#38BDF8"
+            strokeWidth="2"
+            strokeOpacity="0.8"
+            strokeLinecap="round"
+          />
+        )}
 
         {/* Trendlines */}
         {trendlines.map((t) => {
@@ -239,9 +341,7 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
 
           return (
             <g key={candle.id}>
-              {/* Upper Wick */}
               <line x1={x} y1={yHigh} x2={x} y2={bodyTop} stroke={bodyColor} strokeWidth="1.8" />
-              {/* Real Body */}
               <rect
                 x={x - candleWidth / 2}
                 y={bodyTop}
@@ -252,15 +352,13 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
                 strokeWidth="1.2"
                 rx="2"
               />
-              {/* Lower Wick */}
               <line x1={x} y1={bodyTop + bodyHeight} x2={x} y2={yLow} stroke={bodyColor} strokeWidth="1.8" />
-              {/* Label */}
               {candle.label && (
                 <text
                   x={x}
-                  y={height - padding.bottom + 16}
+                  y={totalHeight - padding.bottom + 15}
                   fill="#94A3B8"
-                  fontSize="9"
+                  fontSize="8.5"
                   fontFamily="JetBrains Mono, monospace"
                   textAnchor="middle"
                 >
@@ -270,6 +368,23 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
             </g>
           );
         })}
+
+        {/* Volume Sub-Pane */}
+        {showVolume && (
+          <g transform={`translate(0, ${totalHeight - volumeHeight})`}>
+            <line x1={padding.left} y1={0} x2={width - padding.right} y2={0} stroke="rgba(148, 163, 184, 0.18)" strokeWidth="1" />
+            {candles.map((candle, idx) => {
+              const x = indexToX(idx);
+              const vol = candle.volume || 1000;
+              const barH = Math.max(3, (vol / maxVolume) * (volumeHeight - 16));
+              const isBull = candle.close >= candle.open;
+              const barColor = isBull ? 'rgba(16, 185, 129, 0.45)' : 'rgba(244, 63, 94, 0.45)';
+              return (
+                <rect key={`v-${candle.id}`} x={x - 8} y={volumeHeight - 6 - barH} width="16" height={barH} fill={barColor} rx="1" />
+              );
+            })}
+          </g>
+        )}
 
         {/* Badges */}
         {badges.map((badge) => {
