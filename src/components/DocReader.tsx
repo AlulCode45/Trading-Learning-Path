@@ -13,7 +13,8 @@ import {
 } from '../data/articles';
 import { getSmartRecommendations } from '../utils/recommendationEngine';
 import { VisualDiagram } from './VisualDiagram';
-import { UnifiedIllustrationEngine } from './illustration/UnifiedIllustrationEngine';
+import { InteractiveTradingChart } from './illustration/InteractiveTradingChart';
+import { ChartSnapshotViewer } from './illustration/ChartSnapshotViewer';
 import confetti from 'canvas-confetti';
 import { 
   ArrowLeft, 
@@ -626,18 +627,26 @@ export const DocReader: React.FC<DocReaderProps> = ({
                   </ReactMarkdown>
                 </div>
 
-                {/* Unified 3-Mode Illustration Engine (Preset SVG / Interactive Candlestick / Snapshot Image) */}
-                {(section.visualType || section.illustrationMode) && (
+                {/* Visual Technical Diagram or Chart Illustration */}
+                {section.visualType ? (
                   <div className="my-6">
-                    <UnifiedIllustrationEngine
-                      initialMode={section.illustrationMode || 'preset'}
-                      presetType={section.visualType || 'candlestick_anatomy'}
-                      chartConfig={section.chartConfig}
-                      snapshotConfig={section.snapshotConfig}
-                      allowModeSwitch={true}
+                    <VisualDiagram type={section.visualType} />
+                  </div>
+                ) : section.illustrationMode === 'interactive_chart' ? (
+                  <div className="my-6">
+                    <InteractiveTradingChart
+                      title={section.chartConfig?.title || `${section.title} Setup Chart`}
+                      timeframe={section.chartConfig?.timeframe || '15m'}
                     />
                   </div>
-                )}
+                ) : section.illustrationMode === 'snapshot' && section.snapshotConfig?.src ? (
+                  <div className="my-6">
+                    <ChartSnapshotViewer
+                      initialImageUrl={section.snapshotConfig.src}
+                      title={section.snapshotConfig.caption || section.title}
+                    />
+                  </div>
+                ) : null}
 
                 {/* Optional Context Callout */}
                 {section.callout && (

@@ -3,7 +3,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { RoadmapNode } from '../types';
 import { VisualDiagram } from './VisualDiagram';
-import { UnifiedIllustrationEngine } from './illustration/UnifiedIllustrationEngine';
+import { InteractiveTradingChart } from './illustration/InteractiveTradingChart';
+import { ChartSnapshotViewer } from './illustration/ChartSnapshotViewer';
 import confetti from 'canvas-confetti';
 import { 
   X, 
@@ -98,15 +99,21 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
           <p className="text-xs text-slate-600 dark:text-[#94A3B8] mt-2 leading-relaxed">{node.summary}</p>
         </div>
 
-        {/* Unified 3-Mode Illustration Engine */}
+        {/* Visual Technical Diagram or Chart Illustration */}
         <div className="pt-2">
-          <UnifiedIllustrationEngine
-            mode={(node as any).illustrationMode || 'preset'}
-            diagramType={(node as any).diagram_type || node.visual_type || 'candlestick-anatomy'}
-            chartConfig={(node as any).chartConfig}
-            snapshotConfig={(node as any).snapshotConfig}
-            title={node.title}
-          />
+          {(node as any).illustrationMode === 'interactive_chart' ? (
+            <InteractiveTradingChart
+              title={(node as any).chartConfig?.title || node.title}
+              timeframe={(node as any).chartConfig?.timeframe || '15m'}
+            />
+          ) : (node as any).illustrationMode === 'snapshot' && (node as any).snapshotConfig?.src ? (
+            <ChartSnapshotViewer
+              initialImageUrl={(node as any).snapshotConfig.src}
+              title={(node as any).snapshotConfig.caption || node.title}
+            />
+          ) : (
+            <VisualDiagram type={(node as any).diagram_type || node.visual_type || 'candlestick-anatomy'} />
+          )}
         </div>
 
         {/* Lesson Theory & Detailed Content */}
