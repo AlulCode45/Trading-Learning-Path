@@ -129,93 +129,113 @@ const LANE_LEFT_X = 140;
 const LANE_CENTER_X = 375;
 const LANE_RIGHT_X = 610;
 
-// Signature roadmap.sh Group Enclosure Containers
-const STAGE_BOXES: StageGroupBox[] = [
-  {
-    level: 1,
-    title: '1. FONDASI LELANG & ANATOMI HARGA',
-    subtitle: 'Anatomi candlestick, order flow lelang pembeli vs penjual, dan fraktalitas MTF',
-    tag: 'Prasyarat Wajib',
-    x: 40,
-    y: 35,
-    width: 920,
-    height: 340,
-    badgeBg: 'bg-black text-[#FACC15] dark:bg-white dark:text-black',
-    badgeText: 'FASE 1'
-  },
-  {
-    level: 2,
-    title: '2. STRUKTUR PASAR & KONFIRMASI TREN',
-    subtitle: 'Pemetaan swing highs/lows mekanis, validasi BOS vs CHoCH, dan order flow',
-    tag: 'Arsitektur Tren',
-    x: 40,
-    y: 420,
-    width: 920,
-    height: 410,
-    badgeBg: 'bg-black text-[#38BDF8] dark:bg-white dark:text-black',
-    badgeText: 'FASE 2'
-  },
-  {
-    level: 3,
-    title: '3. ZONA NILAI INSTITUSI & IMBALANCE',
-    subtitle: 'Fair Value Gaps (FVG), mitigasi Supply & Demand, serta diskon equilibrium 50%',
-    tag: 'Area Nilai',
-    x: 40,
-    y: 875,
-    width: 920,
-    height: 230,
-    badgeBg: 'bg-black text-[#C084FC] dark:bg-white dark:text-black',
-    badgeText: 'FASE 3'
-  },
-  {
-    level: 4,
-    title: '4. KOLAM LIKUIDITAS & JEBAKAN PASAR',
-    subtitle: 'Pemetaan Buy-side & Sell-side Liquidity, Equal Highs, dan Liquidity Sweeps',
-    tag: 'Smart Money Pool',
-    x: 40,
-    y: 1145,
-    width: 920,
-    height: 230,
-    badgeBg: 'bg-black text-[#4ADE80] dark:bg-white dark:text-black',
-    badgeText: 'FASE 4'
-  },
-  {
-    level: 5,
-    title: '5. PROTOKOL EKSEKUSI & MANAJEMEN RISIKO',
-    subtitle: 'Trigger konfirmasi LTF, aturan risiko 1% modal, dan audit jurnal trading',
-    tag: 'Final Capstone',
-    x: 40,
-    y: 1415,
-    width: 920,
-    height: 425,
-    badgeBg: 'bg-black text-[#FB7185] dark:bg-white dark:text-black',
-    badgeText: 'FASE 5'
-  }
-];
+// Signature roadmap.sh Group Enclosure Containers by Roadmap Slug
+const ROADMAP_STAGE_BOXES: Record<string, StageGroupBox[]> = {
+  'price-action-market-structure': [
+    { level: 1, title: '1. FONDASI LELANG & ANATOMI HARGA', subtitle: 'Anatomi candlestick, order flow lelang pembeli vs penjual, dan fraktalitas MTF', tag: 'Prasyarat Wajib', x: 40, y: 35, width: 920, height: 340, badgeBg: 'bg-black text-[#FACC15] dark:bg-white dark:text-black', badgeText: 'FASE 1' },
+    { level: 2, title: '2. STRUKTUR PASAR & KONFIRMASI TREN', subtitle: 'Pemetaan swing highs/lows mekanis, validasi BOS vs CHoCH, dan order flow', tag: 'Arsitektur Tren', x: 40, y: 420, width: 920, height: 410, badgeBg: 'bg-black text-[#38BDF8] dark:bg-white dark:text-black', badgeText: 'FASE 2' },
+    { level: 3, title: '3. ZONA NILAI INSTITUSI & IMBALANCE', subtitle: 'Fair Value Gaps (FVG), mitigasi Supply & Demand, serta diskon equilibrium 50%', tag: 'Area Nilai', x: 40, y: 875, width: 920, height: 230, badgeBg: 'bg-black text-[#C084FC] dark:bg-white dark:text-black', badgeText: 'FASE 3' },
+    { level: 4, title: '4. KOLAM LIKUIDITAS & JEBAKAN PASAR', subtitle: 'Pemetaan Buy-side & Sell-side Liquidity, Equal Highs, dan Liquidity Sweeps', tag: 'Smart Money Pool', x: 40, y: 1145, width: 920, height: 230, badgeBg: 'bg-black text-[#4ADE80] dark:bg-white dark:text-black', badgeText: 'FASE 4' },
+    { level: 5, title: '5. PROTOKOL EKSEKUSI & MANAJEMEN RISIKO', subtitle: 'Trigger konfirmasi LTF, aturan risiko 1% modal, dan audit jurnal trading', tag: 'Final Capstone', x: 40, y: 1415, width: 920, height: 425, badgeBg: 'bg-black text-[#FB7185] dark:bg-white dark:text-black', badgeText: 'FASE 5' }
+  ],
+  'smart-money-concepts-ict': [
+    { level: 1, title: '1. LIKUIDITAS INSTITUSI & INEFFICIENCY', subtitle: 'Inducement (IDM), Fair Value Gap (FVG), dan Balanced Price Range', tag: 'Arsitektur IPDA', x: 40, y: 35, width: 920, height: 340, badgeBg: 'bg-black text-[#38BDF8] dark:bg-white dark:text-black', badgeText: 'FASE 1' },
+    { level: 2, title: '2. ORDER BLOCKS & MITIGASI LANJUTAN', subtitle: 'Mean Threshold, Breaker Blocks, dan Volume Imbalance Voids', tag: 'Footprint Bank', x: 40, y: 420, width: 920, height: 410, badgeBg: 'bg-black text-[#C084FC] dark:bg-white dark:text-black', badgeText: 'FASE 2' },
+    { level: 3, title: '3. WAKTU & HARGA: INTERBANK KILLZONES', subtitle: 'Asian Range Judas Swing, London/NY Killzones, dan Siklus AMD Harian', tag: 'Time & Price', x: 40, y: 875, width: 920, height: 410, badgeBg: 'bg-black text-[#FACC15] dark:bg-white dark:text-black', badgeText: 'FASE 3' },
+    { level: 4, title: '4. SMT DIVERGENCE & PD ARRAY MATRIX', subtitle: 'Korelasi intermarket DXY vs Pasangan Mata Uang dan Dealing Ranges', tag: 'Konfirmasi Tingkat Tinggi', x: 40, y: 1330, width: 920, height: 230, badgeBg: 'bg-black text-[#4ADE80] dark:bg-white dark:text-black', badgeText: 'FASE 4' },
+    { level: 5, title: '5. MODEL EKSEKUSI SILVER BULLET', subtitle: 'ICT Silver Bullet 60-menit, aturan Scale-Out, dan Invalidasi Institusi', tag: 'Protokol Eksekusi', x: 40, y: 1600, width: 920, height: 230, badgeBg: 'bg-black text-[#FB7185] dark:bg-white dark:text-black', badgeText: 'FASE 5' }
+  ],
+  'wyckoff-method-vsa': [
+    { level: 1, title: '1. TIGA HUKUM FUNDAMENTAL & VSA', subtitle: 'Supply/Demand, Cause/Effect, Effort vs Result, dan Anatomi Volume Spread', tag: 'Hukum Abadi', x: 40, y: 35, width: 920, height: 340, badgeBg: 'bg-black text-[#C084FC] dark:bg-white dark:text-black', badgeText: 'FASE 1' },
+    { level: 2, title: '2. SKEMATIK AKUMULASI (FASE A - E)', subtitle: 'Selling Climax, Automatic Rally, Spring Fase C, dan LPS Markup', tag: 'Akumulasi Institusi', x: 40, y: 420, width: 920, height: 410, badgeBg: 'bg-black text-[#38BDF8] dark:bg-white dark:text-black', badgeText: 'FASE 2' },
+    { level: 3, title: '3. SKEMATIK DISTRIBUSI & UTAD', subtitle: 'Buying Climax, Upthrust After Distribution (UTAD), dan Markdown', tag: 'Distribusi Institusi', x: 40, y: 875, width: 920, height: 230, badgeBg: 'bg-black text-[#FACC15] dark:bg-white dark:text-black', badgeText: 'FASE 3' },
+    { level: 4, title: '4. PROYEKSI P&F & REAKUMULASI', subtitle: 'Hitungan Horisontal Point & Figure dan Struktur Reakumulasi Tren', tag: 'Kalkulasi Sebab-Akibat', x: 40, y: 1145, width: 920, height: 230, badgeBg: 'bg-black text-[#4ADE80] dark:bg-white dark:text-black', badgeText: 'FASE 4' },
+    { level: 5, title: '5. PROTOKOL EKSEKUSI CREEK & TESTS', subtitle: 'Jump Across the Creek (JAC), BUEC, dan Ujian No Demand / No Supply', tag: 'Setup Klasik', x: 40, y: 1415, width: 920, height: 230, badgeBg: 'bg-black text-[#FB7185] dark:bg-white dark:text-black', badgeText: 'FASE 5' }
+  ],
+  'risk-management-psychology': [
+    { level: 1, title: '1. MATEMATIKA BERTAHAN HIDUP MODAL', subtitle: 'Risk of Ruin, Drawdown Geometris, dan Model Fixed Fractional Sizing', tag: 'Survival Math', x: 40, y: 35, width: 920, height: 340, badgeBg: 'bg-black text-[#FB7185] dark:bg-white dark:text-black', badgeText: 'FASE 1' },
+    { level: 2, title: '2. EKSPEKTANSI POSITIF & ASIMETRI R:R', subtitle: 'Expected Value (EV), Edge Statistik, dan Mengapa Win Rate 40% Menang', tag: 'Probabilistic Edge', x: 40, y: 420, width: 920, height: 230, badgeBg: 'bg-black text-[#FACC15] dark:bg-white dark:text-black', badgeText: 'FASE 2' },
+    { level: 3, title: '3. RISIKO PORTOFOLIO & CIRCUIT BREAKERS', subtitle: 'Korelasi Tersembunyi, Portfolio Heat Limit, dan Max Daily Drawdown Lock', tag: 'Shield Proteksi', x: 40, y: 690, width: 920, height: 230, badgeBg: 'bg-black text-[#38BDF8] dark:bg-white dark:text-black', badgeText: 'FASE 3' },
+    { level: 4, title: '4. NEUROBIOLOGI TILT & BIAS KOGNITIF', subtitle: 'Disposition Effect, Amygdala Hijack, dan Protokol Reset Fisiologis', tag: 'Mind Mastery', x: 40, y: 960, width: 920, height: 230, badgeBg: 'bg-black text-[#C084FC] dark:bg-white dark:text-black', badgeText: 'FASE 4' },
+    { level: 5, title: '5. THINK IN BETS & TRADING PLAN SOP', subtitle: 'Pola Pikir Probabilistik Mark Douglas dan Checklist Kesiapan Harian', tag: 'Master Operator', x: 40, y: 1230, width: 920, height: 230, badgeBg: 'bg-black text-[#4ADE80] dark:bg-white dark:text-black', badgeText: 'FASE 5' }
+  ],
+  'quantitative-algo-trading': [
+    { level: 1, title: '1. DERET WAKTU FINANSIAL & PYTHON', subtitle: 'Stasioneritas, Uji ADF, Log Returns, dan Vektorisasi NumPy/Pandas', tag: 'Fondasi Kuantitatif', x: 40, y: 35, width: 920, height: 340, badgeBg: 'bg-black text-[#38BDF8] dark:bg-white dark:text-black', badgeText: 'FASE 1' },
+    { level: 2, title: '2. STRATEGI MOMENTUM & MIKROSTRUKTUR', subtitle: 'Time-Series Momentum, Mean-Reversion Z-Score, dan LOB Level 2/3 OBI', tag: 'Model Alfa', x: 40, y: 420, width: 920, height: 410, badgeBg: 'bg-black text-[#C084FC] dark:bg-white dark:text-black', badgeText: 'FASE 2' },
+    { level: 3, title: '3. ENGINE BACKTESTING & ELIMINASI BIAS', subtitle: 'Event-Driven Simulation, Lookahead Bias, dan Walk-Forward Monte Carlo', tag: 'Validasi Rigor', x: 40, y: 875, width: 920, height: 410, badgeBg: 'bg-black text-[#FACC15] dark:bg-white dark:text-black', badgeText: 'FASE 3' },
+    { level: 4, title: '4. METRIK KINERJA & RISIKO EKOR (VaR)', subtitle: 'Sharpe/Sortino/Calmar Ratio dan Conditional Value at Risk (CVaR)', tag: 'Risk Analytics', x: 40, y: 1330, width: 920, height: 230, badgeBg: 'bg-black text-[#4ADE80] dark:bg-white dark:text-black', badgeText: 'FASE 4' },
+    { level: 5, title: '5. DEPLOYMENT PINE SCRIPT & LIVE API', subtitle: 'TradingView Pine Script v5 State Machine, Webhook JSON, dan WebSocket', tag: 'Automasi Produksi', x: 40, y: 1600, width: 920, height: 425, badgeBg: 'bg-black text-[#FB7185] dark:bg-white dark:text-black', badgeText: 'FASE 5' }
+  ]
+};
 
-// Presets for the core 12 price-action nodes inside their group boxes
+// Comprehensive presets for all 57 nodes across all 5 official roadmaps
 const POSITION_PRESETS: Record<string, { posX: number; posY: number }> = {
-  // Box 1 (y: 35, h: 340)
+  // --- Roadmap 1: Price Action & Market Structure ---
   'node-1-1': { posX: LANE_CENTER_X, posY: 80 },
   'node-1-2': { posX: LANE_CENTER_X, posY: 235 },
-
-  // Box 2 (y: 420, h: 410)
   'node-2-1': { posX: LANE_CENTER_X, posY: 465 },
   'node-2-2': { posX: LANE_LEFT_X,   posY: 670 },
   'node-2-3': { posX: LANE_RIGHT_X,  posY: 670 },
-
-  // Box 3 (y: 875, h: 230)
   'node-3-1': { posX: LANE_LEFT_X,   posY: 935 },
   'node-3-2': { posX: LANE_RIGHT_X,  posY: 935 },
-
-  // Box 4 (y: 1145, h: 230)
   'node-4-1': { posX: LANE_LEFT_X,   posY: 1205 },
   'node-4-2': { posX: LANE_RIGHT_X,  posY: 1205 },
-
-  // Box 5 (y: 1415, h: 425)
   'node-5-1': { posX: LANE_LEFT_X,   posY: 1475 },
   'node-5-2': { posX: LANE_RIGHT_X,  posY: 1475 },
   'node-5-3': { posX: LANE_CENTER_X, posY: 1675 },
+
+  // --- Roadmap 2: Smart Money Concepts (SMC) & ICT ---
+  'smc-1-1': { posX: LANE_CENTER_X, posY: 80 },
+  'smc-1-2': { posX: LANE_CENTER_X, posY: 235 },
+  'smc-2-1': { posX: LANE_CENTER_X, posY: 465 },
+  'smc-2-2': { posX: LANE_LEFT_X,   posY: 670 },
+  'smc-2-3': { posX: LANE_RIGHT_X,  posY: 670 },
+  'smc-3-1': { posX: LANE_LEFT_X,   posY: 935 },
+  'smc-3-2': { posX: LANE_RIGHT_X,  posY: 935 },
+  'smc-3-3': { posX: LANE_CENTER_X, posY: 1130 },
+  'smc-4-1': { posX: LANE_LEFT_X,   posY: 1390 },
+  'smc-4-2': { posX: LANE_RIGHT_X,  posY: 1390 },
+  'smc-5-1': { posX: LANE_LEFT_X,   posY: 1660 },
+  'smc-5-2': { posX: LANE_RIGHT_X,  posY: 1660 },
+
+  // --- Roadmap 3: Wyckoff Method & VSA ---
+  'wyk-1-1': { posX: LANE_CENTER_X, posY: 80 },
+  'wyk-1-2': { posX: LANE_CENTER_X, posY: 235 },
+  'wyk-2-1': { posX: LANE_LEFT_X,   posY: 465 },
+  'wyk-2-2': { posX: LANE_RIGHT_X,  posY: 465 },
+  'wyk-2-3': { posX: LANE_CENTER_X, posY: 670 },
+  'wyk-3-1': { posX: LANE_LEFT_X,   posY: 935 },
+  'wyk-3-2': { posX: LANE_RIGHT_X,  posY: 935 },
+  'wyk-4-1': { posX: LANE_LEFT_X,   posY: 1205 },
+  'wyk-4-2': { posX: LANE_RIGHT_X,  posY: 1205 },
+  'wyk-5-1': { posX: LANE_LEFT_X,   posY: 1475 },
+  'wyk-5-2': { posX: LANE_RIGHT_X,  posY: 1475 },
+
+  // --- Roadmap 4: Risk Management & Trading Psychology ---
+  'risk-1-1': { posX: LANE_CENTER_X, posY: 80 },
+  'risk-1-2': { posX: LANE_CENTER_X, posY: 235 },
+  'risk-2-1': { posX: LANE_LEFT_X,   posY: 475 },
+  'risk-2-2': { posX: LANE_RIGHT_X,  posY: 475 },
+  'risk-3-1': { posX: LANE_LEFT_X,   posY: 745 },
+  'risk-3-2': { posX: LANE_RIGHT_X,  posY: 745 },
+  'risk-4-1': { posX: LANE_LEFT_X,   posY: 1015 },
+  'risk-4-2': { posX: LANE_RIGHT_X,  posY: 1015 },
+  'risk-5-1': { posX: LANE_LEFT_X,   posY: 1285 },
+  'risk-5-2': { posX: LANE_RIGHT_X,  posY: 1285 },
+
+  // --- Roadmap 5: Quantitative & Algorithmic Trading ---
+  'quant-1-1': { posX: LANE_CENTER_X, posY: 80 },
+  'quant-1-2': { posX: LANE_CENTER_X, posY: 235 },
+  'quant-2-1': { posX: LANE_LEFT_X,   posY: 465 },
+  'quant-2-2': { posX: LANE_RIGHT_X,  posY: 465 },
+  'quant-2-3': { posX: LANE_CENTER_X, posY: 670 },
+  'quant-3-1': { posX: LANE_LEFT_X,   posY: 935 },
+  'quant-3-2': { posX: LANE_RIGHT_X,  posY: 935 },
+  'quant-3-3': { posX: LANE_CENTER_X, posY: 1130 },
+  'quant-4-1': { posX: LANE_LEFT_X,   posY: 1390 },
+  'quant-4-2': { posX: LANE_RIGHT_X,  posY: 1390 },
+  'quant-5-1': { posX: LANE_LEFT_X,   posY: 1660 },
+  'quant-5-2': { posX: LANE_RIGHT_X,  posY: 1660 }
 };
 
 export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
@@ -233,6 +253,14 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.15, 1.4));
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.15, 0.65));
   const handleResetZoom = () => setZoom(1);
+
+  // Dynamic stage boxes matching the selected roadmap
+  const stageBoxes: StageGroupBox[] = useMemo(() => {
+    if (roadmap?.slug && ROADMAP_STAGE_BOXES[roadmap.slug]) {
+      return ROADMAP_STAGE_BOXES[roadmap.slug];
+    }
+    return ROADMAP_STAGE_BOXES['price-action-market-structure'];
+  }, [roadmap?.slug]);
 
   // Position nodes precisely using presets or dynamic flowchart logic
   const positionedNodes: PositionedNode[] = useMemo(() => {
@@ -494,7 +522,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
             }}
           >
             {/* Stage Group Enclosure Containers (roadmap.sh Section Boxes) */}
-            {STAGE_BOXES.map(box => (
+            {stageBoxes.map(box => (
               <div
                 key={box.level}
                 style={{

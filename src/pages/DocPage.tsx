@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { RoadmapNode } from '../types';
 import { DocReader } from '../components/DocReader';
+import { getRoadmapSlugForArticle } from '../data/articles';
 
 export const DocPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
@@ -9,15 +10,16 @@ export const DocPage: React.FC = () => {
   const currentArticleSlug = slug || 'what-is-trading-fundamentals';
 
   const [nodes, setNodes] = useState<RoadmapNode[]>([]);
+  const currentRoadmapSlug = useMemo(() => getRoadmapSlugForArticle(currentArticleSlug), [currentArticleSlug]);
 
   useEffect(() => {
-    fetch('/api/roadmaps/price-action-market-structure')
+    fetch(`/api/roadmaps/${currentRoadmapSlug}`)
       .then(res => res.json())
       .then(json => {
         if (json.success) setNodes(json.data.nodes);
       })
       .catch(err => console.error('Failed to load nodes for doc progress', err));
-  }, []);
+  }, [currentRoadmapSlug]);
 
   const handleUpdateNodeStatus = async (nodeId: string, status: RoadmapNode['status']) => {
     try {
@@ -27,7 +29,7 @@ export const DocPage: React.FC = () => {
         body: JSON.stringify({ status })
       });
       // refresh nodes
-      const res = await fetch('/api/roadmaps/price-action-market-structure');
+      const res = await fetch(`/api/roadmaps/${currentRoadmapSlug}`);
       const json = await res.json();
       if (json.success) setNodes(json.data.nodes);
     } catch (err) {
@@ -46,7 +48,7 @@ export const DocPage: React.FC = () => {
       articleSlug={currentArticleSlug}
       allNodes={nodes}
       onSelectArticle={(newSlug) => navigate(`/docs/${newSlug}`)}
-      onReturnToRoadmap={() => navigate('/roadmaps/price-action-market-structure')}
+      onReturnToRoadmap={() => navigate(`/roadmaps/${currentRoadmapSlug}`)}
       onUpdateNodeStatus={handleUpdateNodeStatus}
       nodeStatus={nodeStatusMap}
     />

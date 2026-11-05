@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { EducationalArticle, RoadmapNode } from '../types';
-import { EDUCATIONAL_ARTICLES, getAllArticles } from '../data/articles';
+import { EDUCATIONAL_ARTICLES, getAllArticles, getRoadmapSlugForArticle } from '../data/articles';
 import { VisualDiagram } from './VisualDiagram';
 import confetti from 'canvas-confetti';
 import { 
@@ -22,7 +22,8 @@ import {
   Share2, 
   ChevronRight,
   TrendingUp,
-  Check
+  Check,
+  Search
 } from 'lucide-react';
 
 interface DocReaderProps {
@@ -44,9 +45,71 @@ export const DocReader: React.FC<DocReaderProps> = ({
 }) => {
   const [activeSectionId, setActiveSectionId] = useState<string>('');
   const [copiedLink, setCopiedLink] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [sidebarSearch, setSidebarSearch] = useState<string>('');
 
   const article: EducationalArticle | undefined = EDUCATIONAL_ARTICLES[articleSlug] || Object.values(EDUCATIONAL_ARTICLES)[0];
   const allArticlesList = getAllArticles();
+
+  const DOC_CATEGORIES = [
+    { id: 'all', label: 'Semua' },
+    { id: 'price-action', label: 'Price Action' },
+    { id: 'smc', label: 'SMC & ICT' },
+    { id: 'wyckoff', label: 'Wyckoff' },
+    { id: 'risk', label: 'Risiko' },
+    { id: 'quant', label: 'Kuantitatif' }
+  ];
+
+  const filteredArticles = useMemo(() => {
+    return allArticlesList.filter(item => {
+      const matchSearch = item.title.toLowerCase().includes(sidebarSearch.toLowerCase()) ||
+                          item.slug.toLowerCase().includes(sidebarSearch.toLowerCase()) ||
+                          item.category.toLowerCase().includes(sidebarSearch.toLowerCase());
+      if (!matchSearch) return false;
+      if (selectedCategory === 'all') return true;
+      if (selectedCategory === 'price-action') {
+        return item.category === 'Market Fundamentals' || 
+               item.category.includes('Price Action') || 
+               item.category === 'Market Structure' || 
+               item.category === 'Market Dynamics' ||
+               item.category === 'Execution Protocol' ||
+               item.category === 'Trading Operations' ||
+               item.slug.startsWith('candlestick-') ||
+               item.slug.startsWith('valid-') ||
+               item.slug.startsWith('bos-') ||
+               item.slug.startsWith('what-is-');
+      }
+      if (selectedCategory === 'smc') {
+        return item.category === 'Institutional Trading' || item.slug.startsWith('smc-');
+      }
+      if (selectedCategory === 'wyckoff') {
+        return item.category === 'Classical Analysis' || item.slug.startsWith('wyckoff-') || item.slug.startsWith('wyk-');
+      }
+      if (selectedCategory === 'risk') {
+        return item.category === 'Core Foundation' || item.slug.startsWith('risk-') || item.slug.startsWith('psych-');
+      }
+      if (selectedCategory === 'quant') {
+        return item.category === 'Quantitative' || item.slug.startsWith('quant-');
+      }
+      return true;
+    });
+  }, [allArticlesList, sidebarSearch, selectedCategory]);
+
+  const connectedRoadmap = useMemo(() => {
+    const rSlug = getRoadmapSlugForArticle(article);
+    switch (rSlug) {
+      case 'smart-money-concepts-ict':
+        return { title: 'Smart Money Concepts & ICT', slug: rSlug };
+      case 'wyckoff-method-vsa':
+        return { title: 'Wyckoff Method & VSA', slug: rSlug };
+      case 'risk-management-psychology':
+        return { title: 'Risk Management & Trading Psychology', slug: rSlug };
+      case 'quantitative-algo-trading':
+        return { title: 'Quantitative & Algorithmic Trading', slug: rSlug };
+      default:
+        return { title: 'Price Action & Market Structure', slug: 'price-action-market-structure' };
+    }
+  }, [article]);
 
   // Find current index and prev/next
   const currentIndex = allArticlesList.findIndex(a => a.slug === article.slug);
@@ -172,15 +235,50 @@ export const DocReader: React.FC<DocReaderProps> = ({
       {/* Main 3-Column Technical Documentation Layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex gap-8">
         {/* Left Navigation: Topics Directory */}
-        <aside className="hidden lg:block w-64 flex-shrink-0">
-          <div className="sticky top-28 space-y-6">
+        <aside className="hidden lg:block w-72 flex-shrink-0">
+          <div className="sticky top-28 space-y-5">
             <div>
-              <h4 className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-[#94A3B8] mb-3 flex items-center space-x-2 font-bold">
-                <BookOpen className="w-3.5 h-3.5 text-[#10B981]" />
-                <span>Dokumentasi Price Action</span>
-              </h4>
-              <div className="space-y-1">
-                {allArticlesList.map((item, idx) => {
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-[#94A3B8] flex items-center space-x-2 font-bold">
+                  <BookOpen className="w-3.5 h-3.5 text-[#10B981]" />
+                  <span>Katalog Kurikulum</span>
+                </h4>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-200 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 font-bold">
+                  {filteredArticles.length} Materi
+                </span>
+              </div>
+
+              {/* Search input in sidebar */}
+              <div className="relative mb-3">
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Cari materi..."
+                  value={sidebarSearch}
+                  onChange={(e) => setSidebarSearch(e.target.value)}
+                  className="w-full pl-8 pr-3 py-1.5 rounded-lg text-xs bg-slate-100 dark:bg-[#121722] border border-slate-200 dark:border-[#1D2532] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                />
+              </div>
+
+              {/* Category Filter Pills */}
+              <div className="flex flex-wrap gap-1 mb-3">
+                {DOC_CATEGORIES.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`px-2 py-1 rounded text-[10px] font-medium transition-colors ${
+                      selectedCategory === cat.id
+                        ? 'bg-black text-white dark:bg-white dark:text-black font-bold'
+                        : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#121722] dark:hover:bg-[#1D2532] text-slate-600 dark:text-zinc-400'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="space-y-1 max-h-[380px] overflow-y-auto pr-1">
+                {filteredArticles.map((item, idx) => {
                   const isActive = item.slug === article.slug;
                   const itemCompleted = item.nodeId ? nodeStatus[item.nodeId] === 'completed' : false;
 
@@ -213,7 +311,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
                 <span>Roadmap Terhubung</span>
               </div>
               <p className="text-[11px] text-slate-600 dark:text-[#94A3B8] leading-relaxed mb-3">
-                Topik ini adalah simpul dari kurikulum Price Action &amp; Market Structure.
+                Topik ini adalah simpul dari kurikulum <strong>{connectedRoadmap.title}</strong>.
               </p>
               <button
                 onClick={onReturnToRoadmap}
