@@ -75,12 +75,12 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
     initialConfig?.candleSpacing || 'normal'
   );
 
-  // Header Title & Subtitle Tag
+  // Header Title & Subtitle Tag (Default kosong hingga diisi pengguna)
   const [chartTitle, setChartTitle] = useState<string>(
-    initialConfig?.title || 'Setup Chart & Skematik Analisis Teknikal'
+    initialConfig?.title ?? ''
   );
   const [chartSubtitle, setChartSubtitle] = useState<string>(
-    initialConfig?.subtitle || 'Macro Bias (HTF) ➔ Structure (MTF) ➔ Execution (LTF)'
+    initialConfig?.subtitle ?? ''
   );
 
   // Chart Elements State
@@ -779,7 +779,16 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
 
               <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/60 text-xs font-mono">
                 <div className="flex items-center space-x-2">
-                  <span className="text-[11px] font-bold text-emerald-500 uppercase">{ chartTitle }</span>
+                  {chartTitle ? (
+                    <span className="text-[11px] font-bold text-emerald-500 uppercase">{chartTitle}</span>
+                  ) : (
+                    <span className="text-[11px] text-slate-400 italic">Judul &amp; badge kosong (opsional)</span>
+                  )}
+                  {chartSubtitle && (
+                    <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-200 text-[10px]">
+                      {chartSubtitle}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center space-x-1.5">
                   {selectedItem && (
@@ -795,6 +804,8 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                   <button
                     type="button"
                     onClick={() => {
+                      setChartTitle('');
+                      setChartSubtitle('');
                       setCandles([]);
                       setFibonaccis([]);
                       setBoxes([]);

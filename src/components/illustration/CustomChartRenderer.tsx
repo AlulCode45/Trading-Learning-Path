@@ -128,34 +128,28 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
         ? 'bg-[#070A12] border-black dark:border-[#1E293B] shadow-[4px_4px_0px_#000]'
         : 'bg-white border-slate-300 shadow-sm'
     } ${className}`}>
-      {/* Title & Subtitle Header Bar */}
-      <div className={`flex flex-wrap items-center justify-between gap-2 w-full mb-3 pb-2 border-b text-xs font-mono ${
-        isDarkMode ? 'border-slate-800' : 'border-slate-200'
-      }`}>
-        <span className="text-[#10B981] font-bold uppercase tracking-wider flex items-center space-x-1.5">
-          <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
-          <span>{config.title || title || 'Interactive Custom Candlestick & Schematic'}</span>
-        </span>
-        <div className="flex items-center space-x-2 text-[10px] text-slate-400">
-          {config.subtitle ? (
-            <span className={`px-2 py-0.5 rounded border ${
-              isDarkMode ? 'bg-black/60 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
-            }`}>
-              {config.subtitle}
+      {/* Title & Subtitle Header Bar (Hanya tampil jika diisi) */}
+      {(config.title || config.subtitle) && (
+        <div className={`flex flex-wrap items-center justify-between gap-2 w-full mb-3 pb-2 border-b text-xs font-mono ${
+          isDarkMode ? 'border-slate-800' : 'border-slate-200'
+        }`}>
+          {config.title ? (
+            <span className="text-[#10B981] font-bold uppercase tracking-wider flex items-center space-x-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
+              <span>{config.title}</span>
             </span>
-          ) : (
-            <>
-              {showEma && <span className="text-[#0284C7] font-bold">EMA {emaPeriod}</span>}
-              {showVolume && <span>• Volume VSA</span>}
+          ) : <span />}
+          {config.subtitle && (
+            <div className="flex items-center space-x-2 text-[10px] text-slate-400">
               <span className={`px-2 py-0.5 rounded border ${
-                isDarkMode ? 'bg-slate-900 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+                isDarkMode ? 'bg-black/60 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
               }`}>
-                {candles.length} Bar
+                {config.subtitle}
               </span>
-            </>
+            </div>
           )}
         </div>
-      </div>
+      )}
 
       <svg
         viewBox={`0 0 ${width} ${totalHeight}`}
