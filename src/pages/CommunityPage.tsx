@@ -6,6 +6,7 @@ import { CreateRoadmapModal } from '../components/CreateRoadmapModal';
 export const CommunityPage: React.FC = () => {
   const [communityRoadmaps, setCommunityRoadmaps] = useState<CommunityRoadmap[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [forkData, setForkData] = useState<any | null>(null);
 
   const fetchCommunity = async () => {
     try {
@@ -30,17 +31,30 @@ export const CommunityPage: React.FC = () => {
     }
   };
 
+  const handleFork = (roadmap: CommunityRoadmap) => {
+    setForkData(roadmap);
+    setIsCreateModalOpen(true);
+  };
+
   return (
     <>
       <CommunityView
         roadmaps={communityRoadmaps}
         onUpvote={handleUpvote}
-        onOpenCreateModal={() => setIsCreateModalOpen(true)}
+        onOpenCreateModal={() => {
+          setForkData(null);
+          setIsCreateModalOpen(true);
+        }}
+        onForkRoadmap={handleFork}
       />
 
       <CreateRoadmapModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setForkData(null);
+        }}
+        forkInitialData={forkData}
         onCreated={() => {
           fetchCommunity();
         }}

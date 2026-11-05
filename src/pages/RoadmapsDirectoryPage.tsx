@@ -15,15 +15,18 @@ import {
   TrendingUp, 
   Cpu, 
   Users,
-  Award
+  Award,
+  GitFork
 } from 'lucide-react';
 
 interface RoadmapsDirectoryPageProps {
   onOpenCreateModal?: () => void;
+  onForkRoadmap?: (roadmap: any) => void;
 }
 
 export const RoadmapsDirectoryPage: React.FC<RoadmapsDirectoryPageProps> = ({
-  onOpenCreateModal
+  onOpenCreateModal,
+  onForkRoadmap
 }) => {
   const navigate = useNavigate();
   const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
@@ -216,7 +219,7 @@ export const RoadmapsDirectoryPage: React.FC<RoadmapsDirectoryPageProps> = ({
                     return (
                       <div
                         key={rm.id}
-                        className={`rounded-2xl border-2 border-black dark:border-zinc-300 p-6 flex flex-col justify-between transition-all duration-150 ${theme.bgClass} ${theme.shadow} hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_#000]`}
+                        className={`rounded-2xl border-2 border-black dark:border-zinc-300 p-6 flex flex-col justify-between transition-all duration-150 ${theme.bg} ${theme.shadow} hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[6px_6px_0px_#000]`}
                       >
                         <div className="space-y-3">
                           <div className="flex items-center justify-between">
@@ -251,13 +254,26 @@ export const RoadmapsDirectoryPage: React.FC<RoadmapsDirectoryPageProps> = ({
                             </span>
                           </div>
 
-                          <Link
-                            to={`/roadmaps/${rm.slug}`}
-                            className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 font-mono text-xs font-bold transition-all shadow-xs"
-                          >
-                            <span>Buka Peta</span>
-                            <ArrowRight className="w-3.5 h-3.5" />
-                          </Link>
+                          <div className="flex items-center space-x-2">
+                            {onForkRoadmap && (
+                              <button
+                                onClick={() => onForkRoadmap(rm)}
+                                title="Fork kurikulum ini ke Roadmap Builder"
+                                className="inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-black/10 hover:bg-black/20 text-zinc-950 font-mono text-xs font-bold transition-all"
+                              >
+                                <GitFork className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">Fork</span>
+                              </button>
+                            )}
+
+                            <Link
+                              to={`/roadmaps/${rm.slug}`}
+                              className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 font-mono text-xs font-bold transition-all shadow-xs"
+                            >
+                              <span>Buka Peta</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     );
@@ -314,13 +330,25 @@ export const RoadmapsDirectoryPage: React.FC<RoadmapsDirectoryPageProps> = ({
 
                         <div className="pt-4 mt-4 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between text-xs font-mono">
                           <span className="text-slate-500">{nodeCount} Modul Khusus</span>
-                          <Link
-                            to="/community"
-                            className="text-[#10B981] font-bold hover:underline flex items-center space-x-1"
-                          >
-                            <span>Lihat di Komunitas</span>
-                            <ArrowRight className="w-3 h-3" />
-                          </Link>
+                          <div className="flex items-center space-x-2.5">
+                            {onForkRoadmap && (
+                              <button
+                                onClick={() => onForkRoadmap(crm)}
+                                className="text-slate-500 hover:text-black dark:text-zinc-400 dark:hover:text-white flex items-center space-x-1 text-[11px]"
+                                title="Fork kurikulum ini"
+                              >
+                                <GitFork className="w-3 h-3" />
+                                <span>Fork</span>
+                              </button>
+                            )}
+                            <Link
+                              to={`/roadmaps/${crm.slug}`}
+                              className="text-[#10B981] font-bold hover:underline flex items-center space-x-1"
+                            >
+                              <span>Buka Path</span>
+                              <ArrowRight className="w-3 h-3" />
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     );

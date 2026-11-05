@@ -48,8 +48,67 @@ export const DocReader: React.FC<DocReaderProps> = ({
   const [copiedLink, setCopiedLink] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sidebarSearch, setSidebarSearch] = useState<string>('');
+  const [dynamicArticle, setDynamicArticle] = useState<EducationalArticle | null>(null);
 
-  const article: EducationalArticle | undefined = EDUCATIONAL_ARTICLES[articleSlug] || Object.values(EDUCATIONAL_ARTICLES)[0];
+  useEffect(() => {
+    if (!EDUCATIONAL_ARTICLES[articleSlug]) {
+      fetch(`/api/community/articles/${articleSlug}`)
+        .then(res => res.json())
+        .then(json => {
+          if (json.success && json.data) {
+            const row = json.data;
+            let parsedChart = undefined;
+            let parsedSnapshot = undefined;
+            try {
+              if (row.chart_config_json) parsedChart = JSON.parse(row.chart_config_json);
+            } catch (e) {
+              console.error(e);
+            }
+            try {
+              if (row.snapshot_config_json) parsedSnapshot = JSON.parse(row.snapshot_config_json);
+            } catch (e) {
+              console.error(e);
+            }
+
+            const art: EducationalArticle = {
+              id: row.id,
+              slug: row.slug,
+              title: row.title,
+              category: row.category,
+              readingTime: 8,
+              summary: row.content_markdown ? row.content_markdown.slice(0, 150) + '...' : 'Modul Kurikulum Komunitas',
+              difficulty: 'Intermediate',
+              tableOfContents: [
+                { id: 'sec-overview', title: 'Ringkasan & Pengenalan', level: 2 },
+                { id: 'sec-materi', title: 'Materi Lengkap & Studi Kasus', level: 2 }
+              ],
+              keyTakeaways: [
+                'Pahami struktur dan metodologi trading yang disajikan secara sistematis.',
+                'Perhatikan visualisasi diagram, candlestick chart interaktif, atau anotasi snapshot.',
+                'Disiplin dalam manajemen risiko dan validasi sebelum entry.'
+              ],
+              sections: [
+                {
+                  id: 'sec-materi',
+                  title: row.title,
+                  illustrationMode: (row.illustration_mode as any) || 'preset',
+                  diagramType: (row.diagram_type as any) || 'candlestick-anatomy',
+                  chartConfig: parsedChart,
+                  snapshotConfig: parsedSnapshot,
+                  content: row.content_markdown || ''
+                }
+              ]
+            };
+            setDynamicArticle(art);
+          }
+        })
+        .catch(err => console.error('Failed to load community article', err));
+    } else {
+      setDynamicArticle(null);
+    }
+  }, [articleSlug]);
+
+  const article: EducationalArticle | undefined = EDUCATIONAL_ARTICLES[articleSlug] || dynamicArticle || Object.values(EDUCATIONAL_ARTICLES)[0];
   const allArticlesList = getAllArticles();
 
   const DOC_CATEGORIES = [
@@ -121,7 +180,8 @@ export const DocReader: React.FC<DocReaderProps> = ({
   useEffect(() => {
     const handleScroll = () => {
       if (!article) return;
-      const sections = article.tableOfContents.map(toc => document.getElementById(toc.id)).filter(Boolean);
+      const tocs = article.tableOfContents || [];
+      const sections = tocs.map(toc => document.getElementById(toc.id)).filter(Boolean);
       for (let i = sections.length - 1; i >= 0; i--) {
         const el = sections[i];
         if (el) {
@@ -132,8 +192,8 @@ export const DocReader: React.FC<DocReaderProps> = ({
           }
         }
       }
-      if (article.tableOfContents.length > 0) {
-        setActiveSectionId(article.tableOfContents[0].id);
+      if (tocs.length > 0) {
+        setActiveSectionId(tocs[0].id);
       }
     };
 
@@ -661,7 +721,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
             </h4>
 
             <nav className="space-y-1 text-xs">
-              {article.tableOfContents.map(toc => {
+              {(article.tableOfContents || []).map(toc => {
                 const isActive = activeSectionId === toc.id;
                 return (
                   <button

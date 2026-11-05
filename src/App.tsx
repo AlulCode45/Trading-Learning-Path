@@ -15,6 +15,12 @@ export function App() {
     return (localStorage.getItem('tlp-theme') as 'dark' | 'light') || 'dark';
   });
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [forkInitialData, setForkInitialData] = useState<any | null>(null);
+
+  const handleOpenCreateModal = (forkData?: any) => {
+    setForkInitialData(forkData || null);
+    setIsCreateModalOpen(true);
+  };
 
   useEffect(() => {
     localStorage.setItem('tlp-theme', theme);
@@ -30,7 +36,7 @@ export function App() {
       <div className="min-h-screen bg-white dark:bg-[#0A0D14] text-slate-900 dark:text-[#E2E8F0] flex flex-col font-sans transition-colors duration-200">
         {/* Universal Header with Real Navigation Links & Theme Switcher */}
         <Header
-          onOpenCreateModal={() => setIsCreateModalOpen(true)}
+          onOpenCreateModal={() => handleOpenCreateModal()}
           theme={theme}
           setTheme={setTheme}
         />
@@ -39,7 +45,15 @@ export function App() {
         <main className="flex-1 flex flex-col">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/roadmaps" element={<RoadmapsDirectoryPage onOpenCreateModal={() => setIsCreateModalOpen(true)} />} />
+            <Route
+              path="/roadmaps"
+              element={
+                <RoadmapsDirectoryPage
+                  onOpenCreateModal={() => handleOpenCreateModal()}
+                  onForkRoadmap={(rm) => handleOpenCreateModal(rm)}
+                />
+              }
+            />
             <Route path="/roadmaps/:slug" element={<RoadmapPage />} />
             <Route path="/docs" element={<Navigate to="/docs/candlestick-anatomy-wick-dynamics" replace />} />
             <Route path="/docs/:slug" element={<DocPage />} />
@@ -53,7 +67,11 @@ export function App() {
         {/* Global Create Roadmap Modal */}
         <CreateRoadmapModal
           isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
+          onClose={() => {
+            setIsCreateModalOpen(false);
+            setForkInitialData(null);
+          }}
+          forkInitialData={forkInitialData}
           onCreated={() => {
             window.location.href = '/community';
           }}

@@ -26,7 +26,62 @@ export class RoadmapService {
 
   getRoadmapDetails(slug: string) {
     const roadmap = this.repo.getRoadmapBySlug(slug);
-    if (!roadmap) return null;
+    if (!roadmap) {
+      const communityRm = this.repo.getCommunityRoadmapBySlug(slug);
+      if (communityRm) {
+        let parsedNodes: any[] = [];
+        try {
+          parsedNodes = JSON.parse(communityRm.nodes_json || '[]');
+        } catch {
+          parsedNodes = [];
+        }
+
+        const safeNodes = parsedNodes.map((n, idx) => ({
+          id: n.id || `node-${idx + 1}`,
+          roadmap_id: communityRm.id,
+          title: n.title || 'Modul',
+          description: n.description || '',
+          category: n.category || communityRm.category,
+          importance: n.importance || 'recommended',
+          order_index: idx,
+          parent_node_id: n.parent_node_id || null,
+          estimated_hours: n.duration ? parseInt(n.duration) || 2 : 2,
+          status: n.status || (idx === 0 ? 'available' : 'locked'),
+          doc_slug: n.doc_slug || n.id || `doc-${communityRm.slug}-${idx + 1}`,
+          illustrationMode: n.illustrationMode || 'preset',
+          diagram_type: n.diagram_type || 'candlestick-anatomy',
+          chartConfig: n.chartConfig || null,
+          snapshotConfig: n.snapshotConfig || null,
+          content_markdown: n.content_markdown || '',
+          checklists: n.checklists || [],
+          resources: n.resources || [],
+          quizzes: n.quizzes || []
+        }));
+
+        return {
+          roadmap: {
+            id: communityRm.id,
+            title: communityRm.title,
+            slug: communityRm.slug,
+            description: communityRm.description,
+            category: communityRm.category,
+            difficulty: 'Intermediate',
+            estimated_hours: safeNodes.length * 2,
+            is_official: false,
+            creator_name: communityRm.creator_name,
+            forked_from_id: communityRm.forked_from_id
+          },
+          stats: {
+            total_nodes: safeNodes.length,
+            completed_nodes: 0,
+            in_progress_nodes: 0,
+            completion_percentage: 0
+          },
+          nodes: safeNodes
+        };
+      }
+      return null;
+    }
 
     const nodes = this.repo.getNodesForRoadmap(roadmap.id);
     const totalNodes = nodes.length;

@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { CommunityRoadmap } from '../types';
-import { Heart, Search, PlusCircle, CheckCircle, Flame } from 'lucide-react';
+import { Heart, Search, PlusCircle, CheckCircle, Flame, GitFork, ArrowRight } from 'lucide-react';
 
 interface CommunityViewProps {
   roadmaps: CommunityRoadmap[];
   onUpvote: (id: string) => void;
   onOpenCreateModal: () => void;
+  onForkRoadmap?: (roadmap: CommunityRoadmap) => void;
 }
 
 export const CommunityView: React.FC<CommunityViewProps> = ({
   roadmaps,
   onUpvote,
-  onOpenCreateModal
+  onOpenCreateModal,
+  onForkRoadmap
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -129,10 +132,26 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
             </div>
 
             <div className="mt-5 pt-3 border-t border-[#1E293B] flex items-center justify-between">
-              <span className="text-[11px] font-mono text-[#94A3B8]">{item.nodes?.length || 0} Modul Interaktif</span>
-              <span className="text-xs font-mono text-[#10B981] group-hover:translate-x-1 transition-transform">
-                Pelajari Path &rarr;
-              </span>
+              <span className="text-[11px] font-mono text-[#94A3B8]">{item.nodes?.length || 0} Modul</span>
+              <div className="flex items-center space-x-3">
+                {onForkRoadmap && (
+                  <button
+                    onClick={() => onForkRoadmap(item)}
+                    className="flex items-center space-x-1 text-xs font-mono text-[#94A3B8] hover:text-white transition-colors"
+                    title="Fork roadmap komunitas ini"
+                  >
+                    <GitFork className="w-3.5 h-3.5" />
+                    <span>Fork</span>
+                  </button>
+                )}
+                <Link
+                  to={`/roadmaps/${item.slug}`}
+                  className="text-xs font-mono font-bold text-[#10B981] hover:underline flex items-center space-x-1"
+                >
+                  <span>Buka Path</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
           </div>
         ))}
