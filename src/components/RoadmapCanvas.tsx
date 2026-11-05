@@ -496,7 +496,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
             >
               <defs>
                 <filter id="glow-connector" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3.5" result="blur" />
+                  <feGaussianBlur stdDeviation="4" result="blur" />
                   <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
                 {connections.map(conn => (
@@ -513,39 +513,62 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
 
               {connections.map(conn => {
                 const dy = conn.toY - conn.fromY;
-                const pathD = `M ${conn.fromX} ${conn.fromY} C ${conn.fromX} ${conn.fromY + dy * 0.5}, ${conn.toX} ${conn.toY - dy * 0.5}, ${conn.toX} ${conn.toY}`;
+                const pathD = `M ${conn.fromX} ${conn.fromY} C ${conn.fromX} ${conn.fromY + dy * 0.5}, ${conn.toX} ${conn.toY - dy * 0.5}, ${conn.toX} ${conn.toY - 2}`;
                 const gradId = `grad-${conn.id.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
                 return (
                   <g key={conn.id}>
-                    {/* Shadow / Base Line */}
+                    {/* High-contrast halo stroke behind line to make it pop boldly against grid */}
                     <path
                       d={pathD}
                       fill="none"
-                      stroke={conn.isActive ? `url(#${gradId})` : '#94A3B8'}
-                      strokeWidth={conn.isActive ? 2.5 : 1.5}
-                      strokeDasharray={conn.isActive ? 'none' : '4 4'}
-                      strokeOpacity={conn.isActive ? 0.95 : 0.35}
+                      stroke="currentColor"
+                      className="text-white dark:text-[#08090D]"
+                      strokeWidth={7}
+                      strokeLinecap="round"
+                      strokeOpacity={0.95}
+                    />
+
+                    {/* Bold, vibrant chromatic gradient connector line */}
+                    <path
+                      d={pathD}
+                      fill="none"
+                      stroke={`url(#${gradId})`}
+                      strokeWidth={3}
+                      strokeLinecap="round"
+                      strokeOpacity={1}
                       filter={conn.isCompleted ? 'url(#glow-connector)' : undefined}
                     />
 
-                    {/* Midpoint Pulse Indicator */}
-                    {conn.isActive && (
-                      <circle
-                        cx={(conn.fromX + conn.toX) / 2}
-                        cy={(conn.fromY + conn.toY) / 2}
-                        r="3.5"
-                        fill={conn.childColor}
-                        className="animate-pulse"
-                      />
-                    )}
-
-                    {/* Terminal Arrowhead Marker at Child */}
+                    {/* Source node exit anchor port */}
                     <circle
-                      cx={conn.toX}
-                      cy={conn.toY}
-                      r="3"
-                      fill={conn.isActive ? conn.childColor : '#64748B'}
+                      cx={conn.fromX}
+                      cy={conn.fromY}
+                      r={4.5}
+                      fill={conn.parentColor}
+                      stroke="currentColor"
+                      className="text-white dark:text-[#08090D]"
+                      strokeWidth={2}
+                    />
+
+                    {/* Midpoint flow pulse indicator */}
+                    <circle
+                      cx={(conn.fromX + conn.toX) / 2}
+                      cy={(conn.fromY + conn.toY) / 2}
+                      r={4}
+                      fill={conn.childColor}
+                      stroke="currentColor"
+                      className="text-white dark:text-[#08090D] animate-pulse"
+                      strokeWidth={1.5}
+                    />
+
+                    {/* Prominent directional arrowhead pointing into child node */}
+                    <polygon
+                      points={`${conn.toX - 6},${conn.toY - 12} ${conn.toX + 6},${conn.toY - 12} ${conn.toX},${conn.toY - 2}`}
+                      fill={conn.childColor}
+                      stroke="currentColor"
+                      className="text-white dark:text-[#08090D]"
+                      strokeWidth={1.5}
                     />
                   </g>
                 );
