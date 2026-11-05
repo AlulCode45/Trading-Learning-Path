@@ -11,6 +11,7 @@ import {
   getModuleIdForArticle, 
   getArticlesByModule 
 } from '../data/articles';
+import { getSmartRecommendations } from '../utils/recommendationEngine';
 import { VisualDiagram } from './VisualDiagram';
 import { UnifiedIllustrationEngine } from './illustration/UnifiedIllustrationEngine';
 import confetti from 'canvas-confetti';
@@ -36,7 +37,9 @@ import {
   TrendingUp,
   Check,
   Search,
-  GraduationCap
+  GraduationCap,
+  Sparkles,
+  Target
 } from 'lucide-react';
 
 interface DocReaderProps {
@@ -60,6 +63,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
   const [copiedLink, setCopiedLink] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sidebarSearch, setSidebarSearch] = useState<string>('');
+  const [sidebarTab, setSidebarTab] = useState<'syllabus' | 'recommendations'>('syllabus');
   const [dynamicArticle, setDynamicArticle] = useState<EducationalArticle | null>(null);
 
   useEffect(() => {
@@ -190,6 +194,30 @@ export const DocReader: React.FC<DocReaderProps> = ({
   const currentModuleArticles = useMemo(() => {
     return getArticlesByModule(currentModuleId);
   }, [currentModuleId]);
+
+  const moduleCompletedCount = useMemo(() => {
+    return currentModuleArticles.filter(a => a.nodeId && nodeStatus[a.nodeId] === 'completed').length;
+  }, [currentModuleArticles, nodeStatus]);
+
+  const moduleProgressPercent = useMemo(() => {
+    if (currentModuleArticles.length === 0) return 0;
+    return Math.round((moduleCompletedCount / currentModuleArticles.length) * 100);
+  }, [moduleCompletedCount, currentModuleArticles]);
+
+  const filteredCurrentModuleArticles = useMemo(() => {
+    if (!sidebarSearch.trim()) return currentModuleArticles;
+    const q = sidebarSearch.toLowerCase();
+    return currentModuleArticles.filter(item => 
+      item.title.toLowerCase().includes(q) ||
+      item.slug.toLowerCase().includes(q) ||
+      item.category.toLowerCase().includes(q)
+    );
+  }, [currentModuleArticles, sidebarSearch]);
+
+  // Contextual smart recommendations engine
+  const smartRecommendations = useMemo(() => {
+    return getSmartRecommendations(article, 4);
+  }, [article]);
 
   const moduleIndex = currentModuleArticles.findIndex(a => a.slug === article.slug);
   const prevArticle = moduleIndex > 0 ? currentModuleArticles[moduleIndex - 1] : null;
@@ -330,7 +358,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
 
       {/* Main 3-Column Technical Documentation Layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex gap-8">
-        {/* Left Navigation: Topics Directory per Module */}
+        {/* Left Navigation: Focussed on Current Module + Smart Recommendation Engine */}
         <aside className="hidden lg:block w-80 flex-shrink-0">
           <div className="sticky top-28 space-y-4">
             
@@ -346,108 +374,214 @@ export const DocReader: React.FC<DocReaderProps> = ({
               <ArrowLeft className="w-3.5 h-3.5" />
             </Link>
 
-            <div>
-              {/* Search input in sidebar */}
-              <div className="relative mb-2.5">
-                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Cari materi dalam modul..."
-                  value={sidebarSearch}
-                  onChange={(e) => setSidebarSearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 rounded-lg text-xs bg-slate-100 dark:bg-[#121722] border border-slate-200 dark:border-[#1D2532] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+            {/* Current Module Focus Card & Progress */}
+            <div className={`p-4 rounded-2xl border-2 transition-all ${currentModuleInfo.borderClass} bg-white dark:bg-[#0D1017] shadow-xs space-y-2.5`}>
+              <div className="flex items-center justify-between">
+                <span className={`text-[10px] font-mono font-extrabold uppercase px-2 py-0.5 rounded ${currentModuleInfo.badgeBg} ${currentModuleInfo.badgeText}`}>
+                  {currentModuleInfo.badge}
+                </span>
+                <span className="text-[11px] font-mono text-slate-500 dark:text-zinc-400">
+                  {moduleCompletedCount}/{currentModuleArticles.length} Selesai ({moduleProgressPercent}%)
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white leading-tight">
+                  {currentModuleInfo.title}
+                </h3>
+                <p className="text-[11px] text-slate-600 dark:text-zinc-400 mt-1 line-clamp-2 leading-relaxed">
+                  {currentModuleInfo.description}
+                </p>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="w-full bg-slate-200 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                <div 
+                  className="bg-emerald-500 h-full rounded-full transition-all duration-300" 
+                  style={{ width: `${moduleProgressPercent}%` }}
                 />
-              </div>
-
-              {/* Module Filter Pills */}
-              <div className="flex flex-wrap gap-1 mb-3">
-                {DOC_CATEGORIES.map(cat => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-2 py-1 rounded text-[10px] font-medium font-mono transition-colors ${
-                      selectedCategory === cat.id
-                        ? 'bg-black text-white dark:bg-white dark:text-black font-bold'
-                        : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#121722] dark:hover:bg-[#1D2532] text-slate-600 dark:text-zinc-400'
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Grouped Modules Stream (Accordion Style) */}
-              <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
-                {groupedModulesForSidebar.map(mod => {
-                  const isCurrent = mod.id === currentModuleId;
-                  const isExpanded = expandedModules[mod.id] ?? isCurrent;
-
-                  return (
-                    <div
-                      key={mod.id}
-                      className={`border rounded-xl overflow-hidden transition-all ${
-                        isCurrent
-                          ? 'border-emerald-500/60 dark:border-emerald-500/40 bg-emerald-500/5'
-                          : 'border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#0D1017]'
-                      }`}
-                    >
-                      {/* Module Header Toggle */}
-                      <button
-                        onClick={() => setExpandedModules(p => ({ ...p, [mod.id]: !isExpanded }))}
-                        className="w-full flex items-center justify-between p-2.5 text-xs font-mono font-bold text-slate-900 dark:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors text-left"
-                      >
-                        <div className="flex items-center space-x-2 truncate">
-                          <span className={`w-2 h-2 rounded-full ${isCurrent ? 'bg-emerald-500 ring-2 ring-emerald-500/30' : 'bg-slate-400 dark:bg-zinc-600'}`} />
-                          <span className="truncate">{mod.shortTitle}</span>
-                        </div>
-                        <div className="flex items-center space-x-1.5 flex-shrink-0 text-slate-400">
-                          <span className="text-[10px] font-mono">({mod.articles.length})</span>
-                          {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-                        </div>
-                      </button>
-
-                      {/* Articles List inside Module */}
-                      {isExpanded && (
-                        <div className="p-1 pt-0 space-y-0.5 border-t border-slate-100 dark:border-zinc-800/60">
-                          {mod.articles.map((item, idx) => {
-                            const isActive = item.slug === article.slug;
-                            const itemCompleted = item.nodeId ? nodeStatus[item.nodeId] === 'completed' : false;
-
-                            return (
-                              <button
-                                key={item.slug}
-                                onClick={() => onSelectArticle(item.slug)}
-                                className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between group ${
-                                  isActive
-                                    ? 'bg-emerald-100/80 dark:bg-[#10B981]/20 text-emerald-900 dark:text-[#10B981] font-bold border-l-2 border-[#10B981]'
-                                    : 'text-slate-600 dark:text-[#94A3B8] hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800/40'
-                                }`}
-                              >
-                                <div className="truncate pr-1">
-                                  <span className="font-mono text-[10px] text-slate-400 dark:text-[#64748B] mr-1.5">
-                                    #{String(idx + 1).padStart(2, '0')}
-                                  </span>
-                                  <span className="text-[11px] leading-tight">{item.title}</span>
-                                </div>
-                                {itemCompleted && (
-                                  <CheckCircle2 className="w-3 h-3 text-[#10B981] flex-shrink-0 ml-1" />
-                                )}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
               </div>
             </div>
 
-            {/* Connected Roadmap Box */}
+            {/* Mode Switcher Tabs: [Kurikulum Modul] vs [Rekomendasi Cerdas] */}
+            <div className="flex rounded-xl bg-slate-100 dark:bg-[#121722] p-1 border border-slate-200 dark:border-zinc-800">
+              <button
+                onClick={() => setSidebarTab('syllabus')}
+                className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-mono font-bold transition-all flex items-center justify-center space-x-1.5 ${
+                  sidebarTab === 'syllabus'
+                    ? 'bg-white dark:bg-[#08090D] text-slate-950 dark:text-white shadow-2xs'
+                    : 'text-slate-500 hover:text-black dark:text-zinc-400 dark:hover:text-white'
+                }`}
+              >
+                <span>Kurikulum ({currentModuleArticles.length})</span>
+              </button>
+              <button
+                onClick={() => setSidebarTab('recommendations')}
+                className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-mono font-bold transition-all flex items-center justify-center space-x-1.5 ${
+                  sidebarTab === 'recommendations'
+                    ? 'bg-white dark:bg-[#08090D] text-emerald-600 dark:text-[#10B981] shadow-2xs'
+                    : 'text-slate-500 hover:text-black dark:text-zinc-400 dark:hover:text-white'
+                }`}
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+                <span>Rekomendasi</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+              </button>
+            </div>
+
+            {/* TAB 1: KURIKULUM MODUL INI (FOKUS MATERI YANG DIBUKA) */}
+            {sidebarTab === 'syllabus' && (
+              <div className="space-y-3">
+                {/* Search within this module */}
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder={`Cari topik ${currentModuleInfo.shortTitle}...`}
+                    value={sidebarSearch}
+                    onChange={(e) => setSidebarSearch(e.target.value)}
+                    className="w-full pl-8 pr-3 py-1.5 rounded-lg text-xs bg-slate-100 dark:bg-[#121722] border border-slate-200 dark:border-[#1D2532] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                  />
+                </div>
+
+                {/* Step-by-step topic list of current module */}
+                <div className="space-y-1 max-h-[360px] overflow-y-auto pr-1">
+                  {filteredCurrentModuleArticles.map((item, idx) => {
+                    const isActive = item.slug === article.slug;
+                    const itemCompleted = item.nodeId ? nodeStatus[item.nodeId] === 'completed' : false;
+
+                    return (
+                      <button
+                        key={item.slug}
+                        onClick={() => onSelectArticle(item.slug)}
+                        className={`w-full text-left p-2.5 rounded-xl text-xs transition-all flex items-center justify-between group ${
+                          isActive
+                            ? 'bg-emerald-500/15 text-emerald-900 dark:text-[#10B981] font-bold border-2 border-emerald-500/60 shadow-xs'
+                            : 'bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-[#94A3B8] hover:border-slate-400 dark:hover:border-zinc-600'
+                        }`}
+                      >
+                        <div className="flex items-start space-x-2 truncate pr-2">
+                          <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded flex-shrink-0 ${
+                            isActive 
+                              ? 'bg-emerald-500 text-black font-extrabold'
+                              : 'bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400'
+                          }`}>
+                            #{String(idx + 1).padStart(2, '0')}
+                          </span>
+                          <div className="truncate">
+                            <div className="truncate font-medium">{item.title}</div>
+                            {isActive && (
+                              <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono mt-0.5 flex items-center space-x-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping inline-block" />
+                                <span>Sedang Dibaca</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {itemCompleted && (
+                          <CheckCircle2 className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Quick Recommendation Teaser Snippet below syllabus */}
+                {smartRecommendations.length > 0 && (
+                  <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-500/10 via-sky-500/10 to-transparent border border-emerald-500/20 space-y-2">
+                    <div className="flex items-center justify-between text-[11px] font-mono">
+                      <span className="flex items-center space-x-1 font-bold text-slate-800 dark:text-zinc-200">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                        <span>Rekomendasi Cerdas</span>
+                      </span>
+                      <button
+                        onClick={() => setSidebarTab('recommendations')}
+                        className="text-emerald-600 dark:text-emerald-400 hover:underline font-bold"
+                      >
+                        Lihat Semua ({smartRecommendations.length}) &rarr;
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={() => onSelectArticle(smartRecommendations[0].article.slug)}
+                      className="w-full text-left p-2 rounded-lg bg-white/80 dark:bg-[#0A0D14]/80 hover:bg-white dark:hover:bg-[#121722] border border-slate-200 dark:border-zinc-800 transition-colors"
+                    >
+                      <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-extrabold uppercase border ${smartRecommendations[0].badgeBg}`}>
+                        {smartRecommendations[0].badgeText}
+                      </span>
+                      <div className="text-xs font-bold text-slate-900 dark:text-white truncate mt-1">
+                        {smartRecommendations[0].article.title}
+                      </div>
+                      <p className="text-[10px] text-slate-500 dark:text-zinc-400 line-clamp-1 mt-0.5">
+                        {smartRecommendations[0].reason}
+                      </p>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB 2: SISTEM REKOMENDASI PINTAR */}
+            {sidebarTab === 'recommendations' && (
+              <div className="space-y-3">
+                <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-[#121722] border border-slate-200 dark:border-zinc-800 text-[11px] text-slate-600 dark:text-zinc-400 leading-relaxed">
+                  <div className="flex items-center space-x-1.5 font-bold text-slate-900 dark:text-white mb-0.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Algoritma Kurikulum Adaptif</span>
+                  </div>
+                  Rekomendasi dihitung berdasarkan prasyarat, sinergi lintas metodologi, dan proteksi risiko materi <em>"{article.title.slice(0, 30)}..."</em>.
+                </div>
+
+                <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
+                  {smartRecommendations.map((rec) => (
+                    <div
+                      key={rec.article.slug}
+                      onClick={() => onSelectArticle(rec.article.slug)}
+                      className="p-3 rounded-xl bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-zinc-800 hover:border-emerald-500 dark:hover:border-emerald-500/70 transition-all cursor-pointer group shadow-2xs"
+                    >
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-extrabold uppercase border ${rec.badgeBg}`}>
+                          {rec.badgeText}
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-400">
+                          {rec.article.readingTimeMinutes}m
+                        </span>
+                      </div>
+
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-[#10B981] transition-colors leading-snug line-clamp-2">
+                        {rec.article.title}
+                      </h4>
+
+                      <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-1.5 leading-relaxed line-clamp-2">
+                        {rec.reason}
+                      </p>
+
+                      <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-zinc-800/80 flex items-center justify-between text-[10px] font-mono">
+                        <span className="text-slate-400">{rec.article.category}</span>
+                        <span className="text-emerald-600 dark:text-[#10B981] font-bold group-hover:translate-x-1 transition-transform inline-flex items-center space-x-0.5">
+                          <span>Buka Materi</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setSidebarTab('syllabus')}
+                  className="w-full py-1.5 text-center text-xs font-mono text-slate-500 hover:text-black dark:text-zinc-400 dark:hover:text-white transition-colors"
+                >
+                  &larr; Kembali ke Daftar Kurikulum Modul
+                </button>
+              </div>
+            )}
+
+            {/* Connected Interactive Roadmap Canvas */}
             <div className="p-3.5 rounded-xl bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-[#1D2532] shadow-2xs">
               <div className="flex items-center space-x-2 text-xs font-bold text-slate-900 dark:text-[#F8FAFC] mb-1">
                 <Layers className="w-3.5 h-3.5 text-[#38BDF8]" />
-                <span>Roadmap Terhubung</span>
+                <span>Peta Roadmap Visual</span>
               </div>
               <p className="text-[11px] text-slate-600 dark:text-[#94A3B8] leading-relaxed mb-2.5">
                 Modul ini terhubung ke kurikulum <strong>{connectedRoadmap.title}</strong>.
