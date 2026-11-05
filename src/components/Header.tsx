@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Compass, 
   Users, 
@@ -8,41 +9,37 @@ import {
   Sun, 
   Moon, 
   Home, 
-  LayoutDashboard, 
   Terminal, 
   User
 } from 'lucide-react';
 
-export type ViewType = 'landing' | 'dashboard' | 'roadmap' | 'docs' | 'playground' | 'community' | 'profile' | 'syllabus';
-
 interface HeaderProps {
-  currentView: ViewType;
-  setCurrentView: (view: ViewType) => void;
   onOpenCreateModal: () => void;
-  completionPercentage: number;
-  completedNodes: number;
-  totalNodes: number;
   theme: 'dark' | 'light';
   setTheme: (theme: 'dark' | 'light') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  currentView,
-  setCurrentView,
   onOpenCreateModal,
-  completionPercentage,
-  completedNodes,
-  totalNodes,
   theme,
   setTheme
 }) => {
+  const location = useLocation();
+  const path = location.pathname;
+
+  const isActive = (targetPath: string) => {
+    if (targetPath === '/' && path === '/') return true;
+    if (targetPath !== '/' && path.startsWith(targetPath)) return true;
+    return false;
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0A0D14]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#1E293B] transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-15">
-          {/* Brand Logo (roadmap.sh Minimalist Style) */}
-          <div 
-            onClick={() => setCurrentView('landing')}
+          {/* Brand Logo Link to / */}
+          <Link 
+            to="/"
             className="flex items-center space-x-2.5 cursor-pointer group select-none"
           >
             <div className="w-8 h-8 rounded-lg bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-black font-black text-sm">
@@ -56,78 +53,78 @@ export const Header: React.FC<HeaderProps> = ({
                 .sh
               </span>
             </div>
-          </div>
+          </Link>
 
-          {/* Navigation Items (Clean Text Links like roadmap.sh) */}
+          {/* Real Route Navigation Links (Desktop) */}
           <nav className="hidden md:flex items-center space-x-1">
-            <button
-              onClick={() => setCurrentView('landing')}
+            <Link
+              to="/"
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                currentView === 'landing'
+                isActive('/')
                   ? 'text-slate-950 dark:text-white font-semibold bg-slate-100 dark:bg-[#161D2C]'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
               }`}
             >
               Beranda
-            </button>
+            </Link>
 
-            <button
-              onClick={() => setCurrentView('roadmap')}
+            <Link
+              to="/roadmaps/price-action-market-structure"
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                currentView === 'roadmap'
+                isActive('/roadmaps')
                   ? 'text-slate-950 dark:text-white font-semibold bg-slate-100 dark:bg-[#161D2C]'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
               }`}
             >
               Roadmaps
-            </button>
+            </Link>
 
-            <button
-              onClick={() => setCurrentView('docs')}
+            <Link
+              to="/docs/candlestick-anatomy-wick-dynamics"
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                currentView === 'docs'
+                isActive('/docs')
                   ? 'text-slate-950 dark:text-white font-semibold bg-slate-100 dark:bg-[#161D2C]'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
               }`}
             >
               Dokumentasi &amp; Panduan
-            </button>
+            </Link>
 
-            <button
-              onClick={() => setCurrentView('playground')}
+            <Link
+              to="/playground"
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                currentView === 'playground'
+                isActive('/playground')
                   ? 'text-slate-950 dark:text-white font-semibold bg-slate-100 dark:bg-[#161D2C]'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
               }`}
             >
               Simulator
-            </button>
+            </Link>
 
-            <button
-              onClick={() => setCurrentView('community')}
+            <Link
+              to="/community"
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                currentView === 'community'
+                isActive('/community')
                   ? 'text-slate-950 dark:text-white font-semibold bg-slate-100 dark:bg-[#161D2C]'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
               }`}
             >
               Komunitas
-            </button>
+            </Link>
 
-            <button
-              onClick={() => setCurrentView('profile')}
+            <Link
+              to="/profile"
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                currentView === 'profile'
+                isActive('/profile')
                   ? 'text-slate-950 dark:text-white font-semibold bg-slate-100 dark:bg-[#161D2C]'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
               }`}
             >
               Progres Belajar
-            </button>
+            </Link>
           </nav>
 
-          {/* Right Actions: Contributor Modal & Theme Toggle */}
+          {/* Right Actions: Create Modal & Theme Toggle */}
           <div className="flex items-center space-x-2.5">
             <button
               onClick={onOpenCreateModal}
@@ -148,27 +145,27 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Mobile Navigation Bar */}
+        {/* Mobile Navigation Links */}
         <div className="flex md:hidden items-center justify-between py-2 border-t border-slate-200 dark:border-[#1E293B] overflow-x-auto space-x-2">
           {[
-            { id: 'landing', label: 'Beranda' },
-            { id: 'roadmap', label: 'Roadmap' },
-            { id: 'docs', label: 'Dokumentasi' },
-            { id: 'playground', label: 'Simulator' },
-            { id: 'community', label: 'Komunitas' },
-            { id: 'profile', label: 'Progres' }
+            { to: '/', label: 'Beranda' },
+            { to: '/roadmaps/price-action-market-structure', label: 'Roadmap' },
+            { to: '/docs/candlestick-anatomy-wick-dynamics', label: 'Dokumentasi' },
+            { to: '/playground', label: 'Simulator' },
+            { to: '/community', label: 'Komunitas' },
+            { to: '/profile', label: 'Progres' }
           ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setCurrentView(tab.id as ViewType)}
+            <Link
+              key={tab.to}
+              to={tab.to}
               className={`px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
-                currentView === tab.id
+                (tab.to === '/' && path === '/') || (tab.to !== '/' && path.startsWith(tab.to.split('/')[1]))
                   ? 'bg-slate-900 text-white dark:bg-white dark:text-black font-semibold'
                   : 'text-slate-600 dark:text-slate-400'
               }`}
             >
               {tab.label}
-            </button>
+            </Link>
           ))}
         </div>
       </div>
