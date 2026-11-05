@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import { EducationalArticle, RoadmapNode } from '../types';
 import { EDUCATIONAL_ARTICLES, getAllArticles, getRoadmapSlugForArticle } from '../data/articles';
 import { VisualDiagram } from './VisualDiagram';
+import { UnifiedIllustrationEngine } from './illustration/UnifiedIllustrationEngine';
 import confetti from 'canvas-confetti';
 import { 
   ArrowLeft, 
@@ -472,10 +473,16 @@ export const DocReader: React.FC<DocReaderProps> = ({
                   </ReactMarkdown>
                 </div>
 
-                {/* Optional Visual Diagram Embedded */}
-                {section.visualType && (
+                {/* Unified 3-Mode Illustration Engine (Preset SVG / Interactive Candlestick / Snapshot Image) */}
+                {(section.visualType || section.illustrationMode) && (
                   <div className="my-6">
-                    <VisualDiagram type={section.visualType} />
+                    <UnifiedIllustrationEngine
+                      initialMode={section.illustrationMode || 'preset'}
+                      presetType={section.visualType || 'candlestick_anatomy'}
+                      chartConfig={section.chartConfig}
+                      snapshotConfig={section.snapshotConfig}
+                      allowModeSwitch={true}
+                    />
                   </div>
                 )}
 

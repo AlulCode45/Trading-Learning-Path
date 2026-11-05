@@ -82,6 +82,21 @@ export interface ArticleSection {
   title: string;
   content: string;
   visualType?: string;
+  illustrationMode?: 'preset' | 'interactive_chart' | 'snapshot';
+  chartConfig?: {
+    symbol?: string;
+    title?: string;
+    timeframe?: string;
+    data?: any[];
+    boxes?: any[];
+    markers?: any[];
+    keyLevels?: any[];
+  };
+  snapshotConfig?: {
+    src?: string;
+    caption?: string;
+    sourceUrl?: string;
+  };
   callout?: {
     type: 'note' | 'warning' | 'tip' | 'example';
     title?: string;
