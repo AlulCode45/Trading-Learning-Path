@@ -25,6 +25,7 @@ interface ChartCanvasProps {
   selectedId: string | null;
   onSelectId: (id: string | null, type: 'candle' | 'fib' | 'box' | 'position' | 'trendline' | 'polyline' | 'badge') => void;
   onUpdateCandle: (candle: CustomCandle) => void;
+  onUpdateBadge?: (badge: TextBadgeAnnotation) => void;
   activeTool: 'select' | 'candle' | 'fibonacci' | 'box' | 'position-long' | 'position-short' | 'trendline' | 'polyline' | 'badge';
   onAddAnnotation: (type: string, payload: any) => void;
 }
@@ -45,6 +46,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   selectedId,
   onSelectId,
   onUpdateCandle,
+  onUpdateBadge,
   activeTool,
   onAddAnnotation
 }) => {
@@ -150,6 +152,12 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   const labelTextFill = isDarkMode ? '#64748B' : '#475569';
   const candleBorderStroke = isDarkMode ? '#000000' : '#1E293B';
 
+  const getDashArray = (style?: 'solid' | 'dashed' | 'dotted' | 'none') => {
+    if (style === 'dashed') return '5 3';
+    if (style === 'dotted') return '2 2';
+    return 'none';
+  };
+
   // Handle Mouse Move for Crosshair
   const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
     const rect = svgRef.current?.getBoundingClientRect();
@@ -186,7 +194,14 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
         candleIndex: xIdx,
         price: clickedPrice,
         text: 'BOS',
-        color: '#FACC15'
+        color: '#FACC15',
+        bgColor: '#FACC15',
+        bgOpacity: 1,
+        textColor: '#000000',
+        borderColor: '#000000',
+        borderWidth: 1,
+        fontSize: 9.5,
+        style: 'badge'
       });
       return;
     }
@@ -199,7 +214,13 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           startPrice: drawingStart.price,
           endPrice: clickedPrice,
           startIndex: Math.min(drawingStart.xIndex, xIdx),
-          endIndex: Math.max(drawingStart.xIndex, xIdx)
+          endIndex: Math.max(drawingStart.xIndex, xIdx),
+          label: 'OTE Retracement',
+          showFill: true,
+          fillColor: '#10B981',
+          fillOpacity: 0.16,
+          lineStyle: 'dashed',
+          showPrices: true
         });
       } else if (activeTool === 'box') {
         onAddAnnotation('box', {
@@ -208,8 +229,16 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           topPrice: Math.max(drawingStart.price, clickedPrice),
           bottomPrice: Math.min(drawingStart.price, clickedPrice),
           label: 'Order Block (OB)',
+          labelPosition: 'top-left',
+          fontSize: 10,
           color: '#38BDF8',
-          showMidLine: true
+          textColor: '#38BDF8',
+          borderColor: '#38BDF8',
+          borderWidth: 1.5,
+          borderStyle: 'dashed',
+          opacity: 0.18,
+          showMidLine: true,
+          midLineLabel: '50% EQ'
         });
       } else if (activeTool === 'position-long') {
         const entry = drawingStart.price;
@@ -217,11 +246,18 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
         const stop = Math.min(entry - 10, clickedPrice < entry ? clickedPrice : entry - 10);
         onAddAnnotation('position', {
           type: 'long',
+          label: 'Long Setup',
           entryPrice: entry,
           targetPrice: target,
           stopPrice: stop,
           startIndex: Math.min(drawingStart.xIndex, xIdx),
-          endIndex: Math.max(drawingStart.xIndex + 3, xIdx)
+          endIndex: Math.max(drawingStart.xIndex + 3, xIdx),
+          targetColor: '#10B981',
+          targetTextColor: '#10B981',
+          targetOpacity: 0.22,
+          stopColor: '#EF4444',
+          stopTextColor: '#EF4444',
+          stopOpacity: 0.22
         });
       } else if (activeTool === 'position-short') {
         const entry = drawingStart.price;
@@ -229,11 +265,18 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
         const stop = Math.max(entry + 10, clickedPrice > entry ? clickedPrice : entry + 10);
         onAddAnnotation('position', {
           type: 'short',
+          label: 'Short Setup',
           entryPrice: entry,
           targetPrice: target,
           stopPrice: stop,
           startIndex: Math.min(drawingStart.xIndex, xIdx),
-          endIndex: Math.max(drawingStart.xIndex + 3, xIdx)
+          endIndex: Math.max(drawingStart.xIndex + 3, xIdx),
+          targetColor: '#10B981',
+          targetTextColor: '#10B981',
+          targetOpacity: 0.22,
+          stopColor: '#EF4444',
+          stopTextColor: '#EF4444',
+          stopOpacity: 0.22
         });
       } else if (activeTool === 'trendline') {
         onAddAnnotation('trendline', {
@@ -241,7 +284,15 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           y1Price: drawingStart.price,
           x2Index: xIdx,
           y2Price: clickedPrice,
-          color: '#FACC15'
+          color: '#FACC15',
+          strokeWidth: 2,
+          lineStyle: 'solid',
+          label: 'BOS',
+          labelAlignment: 'center',
+          textColor: '#FACC15',
+          textBgColor: isDarkMode ? '#090D16' : '#FFFFFF',
+          showTextBg: true,
+          showDots: true
         });
       }
       setDrawingStart(null);
@@ -362,6 +413,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
           {/* Vertical Candle Timeline Grid */}
           {candles.map((c, idx) => {
             const x = indexToX(idx);
+            const customLabelColor = c.labelColor || (c.label ? (isDarkMode ? '#F8FAFC' : '#0F172A') : labelTextFill);
             return (
               <g key={`timeline-${c.id}`}>
                 <line
@@ -375,8 +427,9 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 <text
                   x={x}
                   y={totalHeight - padding.bottom + 16}
-                  fill={labelTextFill}
+                  fill={customLabelColor}
                   fontSize="9.5"
+                  fontWeight={c.label ? 'bold' : 'normal'}
                   fontFamily="JetBrains Mono, monospace"
                   textAnchor="middle"
                 >
@@ -386,15 +439,51 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             );
           })}
 
-          {/* LAYER: Box Drawings (Order Block, FVG, Supply/Demand with Mid-line) */}
+          {/* LAYER: Box Drawings (Order Block, FVG, Supply/Demand with Full Customization) */}
           {boxes.map((b) => {
             const x1 = indexToX(b.startIndex) - 12;
             const x2 = indexToX(b.endIndex) + 12;
+            const boxW = Math.max(25, x2 - x1);
             const yTop = priceToY(b.topPrice);
             const yBottom = priceToY(b.bottomPrice);
             const boxHeight = Math.max(4, yBottom - yTop);
             const yMid = yTop + boxHeight / 2;
             const isSelected = selectedId === b.id;
+
+            const fillColor = b.color || '#38BDF8';
+            const strokeColor = b.borderColor || fillColor;
+            const textColor = b.textColor || fillColor;
+            const fontSize = b.fontSize || 10;
+            const borderStyle = b.borderStyle || 'dashed';
+            const borderW = isSelected ? 2.5 : (b.borderWidth ?? 1.2);
+            const midColor = b.midLineColor || strokeColor;
+
+            // Label positioning
+            let labelX = x1 + 6;
+            let labelY = yTop + fontSize + 4;
+            let anchor: 'start' | 'middle' | 'end' = 'start';
+
+            if (b.labelPosition === 'top-right') {
+              labelX = x1 + boxW - 6;
+              labelY = yTop + fontSize + 4;
+              anchor = 'end';
+            } else if (b.labelPosition === 'center') {
+              labelX = x1 + boxW / 2;
+              labelY = yMid + fontSize / 3;
+              anchor = 'middle';
+            } else if (b.labelPosition === 'bottom-left') {
+              labelX = x1 + 6;
+              labelY = yTop + boxHeight - 6;
+              anchor = 'start';
+            }
+
+            const labelBadgeWidth = b.label ? b.label.length * (fontSize * 0.62) + 10 : 0;
+            const labelBadgeX =
+              anchor === 'middle'
+                ? labelX - labelBadgeWidth / 2
+                : anchor === 'end'
+                ? labelX - labelBadgeWidth + 2
+                : labelX - 4;
 
             return (
               <g
@@ -408,13 +497,13 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 <rect
                   x={x1}
                   y={yTop}
-                  width={Math.max(25, x2 - x1)}
+                  width={boxW}
                   height={boxHeight}
-                  fill={b.color}
-                  fillOpacity={b.opacity || 0.18}
-                  stroke={b.color}
-                  strokeWidth={isSelected ? 2.5 : 1.2}
-                  strokeDasharray={isSelected ? 'none' : '3 3'}
+                  fill={fillColor}
+                  fillOpacity={b.opacity ?? 0.18}
+                  stroke={borderStyle === 'none' && !isSelected ? 'none' : strokeColor}
+                  strokeWidth={borderW}
+                  strokeDasharray={isSelected ? 'none' : getDashArray(borderStyle)}
                   rx="3"
                 />
                 {b.showMidLine && (
@@ -422,34 +511,47 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                     <line
                       x1={x1}
                       y1={yMid}
-                      x2={x2}
+                      x2={x1 + boxW}
                       y2={yMid}
-                      stroke={b.color}
+                      stroke={midColor}
                       strokeWidth="1.2"
                       strokeDasharray="4 2"
                     />
                     <text
-                      x={x2 - 4}
+                      x={x1 + boxW - 4}
                       y={yMid - 3}
-                      fill={b.color}
+                      fill={midColor}
                       fontSize="8.5"
                       fontFamily="JetBrains Mono, monospace"
                       textAnchor="end"
                     >
-                      50% EQ
+                      {b.midLineLabel || '50% EQ'}
                     </text>
                   </g>
                 )}
-                <text
-                  x={x1 + 6}
-                  y={yTop + 14}
-                  fill={b.color}
-                  fontSize="10"
-                  fontWeight="bold"
-                  fontFamily="JetBrains Mono, monospace"
-                >
-                  {b.label}
-                </text>
+                {b.label && b.textBgColor && (
+                  <rect
+                    x={labelBadgeX}
+                    y={labelY - fontSize}
+                    width={labelBadgeWidth}
+                    height={fontSize + 5}
+                    fill={b.textBgColor}
+                    rx="2.5"
+                  />
+                )}
+                {b.label && (
+                  <text
+                    x={labelX}
+                    y={labelY}
+                    fill={textColor}
+                    fontSize={fontSize}
+                    fontWeight="bold"
+                    fontFamily="JetBrains Mono, monospace"
+                    textAnchor={anchor}
+                  >
+                    {b.label}
+                  </text>
+                )}
               </g>
             );
           })}
@@ -473,6 +575,18 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             const bottomY = Math.min(yEntry, yStop);
             const stopBoxHeight = Math.abs(yStop - yEntry);
 
+            const targetColor = pos.targetColor || '#10B981';
+            const targetTextColor = pos.targetTextColor || targetColor;
+            const targetOpacity = pos.targetOpacity ?? 0.22;
+
+            const stopColor = pos.stopColor || '#EF4444';
+            const stopTextColor = pos.stopTextColor || stopColor;
+            const stopOpacity = pos.stopOpacity ?? 0.22;
+
+            const entryLineColor = pos.entryLineColor || (isDarkMode ? '#F8FAFC' : '#0F172A');
+            const badgeBgColor = pos.badgeBgColor || (isDarkMode ? '#020617' : '#FFFFFF');
+            const badgeTextColor = pos.badgeTextColor || '#0284C7';
+
             return (
               <g
                 key={pos.id}
@@ -482,46 +596,48 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 }}
                 className="cursor-pointer"
               >
-                {/* Target / Reward Box (Green) */}
+                {/* Target / Reward Box */}
                 <rect
                   x={x1}
                   y={isLong ? topY : yEntry}
                   width={x2 - x1}
                   height={targetBoxHeight}
-                  fill="rgba(16, 185, 129, 0.22)"
-                  stroke="#10B981"
+                  fill={targetColor}
+                  fillOpacity={targetOpacity}
+                  stroke={targetColor}
                   strokeWidth={isSelected ? 2 : 1}
                 />
                 <text
                   x={x1 + 6}
                   y={(isLong ? topY : yEntry) + 14}
-                  fill="#10B981"
+                  fill={targetTextColor}
                   fontSize="9.5"
                   fontFamily="JetBrains Mono, monospace"
                   fontWeight="bold"
                 >
-                  TP: {pos.targetPrice.toFixed(1)} (+{rewardPips.toFixed(1)} pts)
+                  {pos.label ? `${pos.label} • ` : ''}TP: {pos.targetPrice.toFixed(1)} (+{rewardPips.toFixed(1)})
                 </text>
 
-                {/* Stop / Risk Box (Red) */}
+                {/* Stop / Risk Box */}
                 <rect
                   x={x1}
                   y={isLong ? yEntry : bottomY}
                   width={x2 - x1}
                   height={stopBoxHeight}
-                  fill="rgba(239, 68, 68, 0.22)"
-                  stroke="#EF4444"
+                  fill={stopColor}
+                  fillOpacity={stopOpacity}
+                  stroke={stopColor}
                   strokeWidth={isSelected ? 2 : 1}
                 />
                 <text
                   x={x1 + 6}
                   y={(isLong ? yEntry : bottomY) + stopBoxHeight - 6}
-                  fill="#EF4444"
+                  fill={stopTextColor}
                   fontSize="9.5"
                   fontFamily="JetBrains Mono, monospace"
                   fontWeight="bold"
                 >
-                  SL: {pos.stopPrice.toFixed(1)} (-{riskPips.toFixed(1)} pts)
+                  SL: {pos.stopPrice.toFixed(1)} (-{riskPips.toFixed(1)})
                 </text>
 
                 {/* Center Entry Line */}
@@ -530,7 +646,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   y1={yEntry}
                   x2={x2}
                   y2={yEntry}
-                  stroke={isDarkMode ? '#F8FAFC' : '#0F172A'}
+                  stroke={entryLineColor}
                   strokeWidth="2"
                 />
 
@@ -540,15 +656,15 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   y={yEntry - 12}
                   width="100"
                   height="22"
-                  fill={isDarkMode ? '#020617' : '#FFFFFF'}
-                  stroke="#38BDF8"
+                  fill={badgeBgColor}
+                  stroke={badgeTextColor}
                   strokeWidth="1.2"
                   rx="4"
                 />
                 <text
                   x={x2 - 55}
                   y={yEntry + 3}
-                  fill="#0284C7"
+                  fill={badgeTextColor}
                   fontSize="9.5"
                   fontWeight="900"
                   fontFamily="JetBrains Mono, monospace"
@@ -575,6 +691,10 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
               { pct: 1.618, label: '161.8% Target', color: '#EC4899' }
             ];
             const isSelected = selectedId === fib.id;
+            const showFill = fib.showFill !== false;
+            const fillColor = fib.fillColor || '#10B981';
+            const fillOpacity = fib.fillOpacity ?? 0.16;
+            const showPrices = fib.showPrices !== false;
 
             return (
               <g
@@ -586,7 +706,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 className="cursor-pointer"
               >
                 {/* OTE Golden Zone Shading */}
-                {(() => {
+                {showFill && (() => {
                   const y618 = priceToY(fib.startPrice + (fib.endPrice - fib.startPrice) * 0.618);
                   const y786 = priceToY(fib.startPrice + (fib.endPrice - fib.startPrice) * 0.786);
                   const topY = Math.min(y618, y786);
@@ -597,15 +717,36 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                       y={topY}
                       width={xEnd - xStart}
                       height={botY - topY}
-                      fill="rgba(16, 185, 129, 0.16)"
+                      fill={fillColor}
+                      fillOpacity={fillOpacity}
                       stroke="none"
                     />
                   );
                 })()}
 
+                {/* Optional Fib Header Label */}
+                {fib.label && (
+                  <text
+                    x={xStart + 4}
+                    y={priceToY(fib.startPrice) - 5}
+                    fill={fib.textColor || '#10B981'}
+                    fontSize="9.5"
+                    fontWeight="bold"
+                    fontFamily="JetBrains Mono, monospace"
+                  >
+                    {fib.label}
+                  </text>
+                )}
+
                 {levels.map((lvl) => {
                   const priceLevel = fib.startPrice + (fib.endPrice - fib.startPrice) * lvl.pct;
                   const y = priceToY(priceLevel);
+                  const strokeCol = fib.lineColor || lvl.color;
+                  const txtCol = fib.textColor || lvl.color;
+                  const dash = fib.lineStyle
+                    ? getDashArray(fib.lineStyle)
+                    : (lvl.pct === 0.5 || lvl.pct === 0.618 ? 'none' : '4 3');
+
                   return (
                     <g key={`${fib.id}-lvl-${lvl.pct}`}>
                       <line
@@ -613,20 +754,20 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                         y1={y}
                         x2={xEnd}
                         y2={y}
-                        stroke={lvl.color}
-                        strokeWidth={isSelected ? 1.8 : 1}
-                        strokeDasharray={lvl.pct === 0.5 || lvl.pct === 0.618 ? 'none' : '4 3'}
+                        stroke={strokeCol}
+                        strokeWidth={isSelected ? 1.8 : 1.1}
+                        strokeDasharray={dash}
                         strokeOpacity={0.85}
                       />
                       <text
                         x={xEnd + 4}
                         y={y + 3}
-                        fill={lvl.color}
+                        fill={txtCol}
                         fontSize="9"
                         fontFamily="JetBrains Mono, monospace"
                         fontWeight="bold"
                       >
-                        {lvl.label} ({priceLevel.toFixed(1)})
+                        {lvl.label}{showPrices ? ` (${priceLevel.toFixed(1)})` : ''}
                       </text>
                     </g>
                   );
@@ -635,13 +776,25 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             );
           })}
 
-          {/* LAYER: Trendlines */}
+          {/* LAYER: Trendlines with Custom Labels & Styling */}
           {trendlines.map((t) => {
             const x1 = indexToX(t.x1Index);
             const y1 = priceToY(t.y1Price);
             const x2 = indexToX(t.x2Index);
             const y2 = priceToY(t.y2Price);
             const isSelected = selectedId === t.id;
+
+            const lineColor = t.color || '#FACC15';
+            const strokeW = isSelected ? (t.strokeWidth || 2) + 1.2 : (t.strokeWidth || 2);
+            const dash = getDashArray(t.lineStyle || 'solid');
+            const fontSize = t.fontSize || 9.5;
+            const textColor = t.textColor || lineColor;
+
+            // Label coordinates along the line
+            const align = t.labelAlignment || 'center';
+            const labelX = align === 'start' ? x1 + 10 : align === 'end' ? x2 - 10 : (x1 + x2) / 2;
+            const labelY = align === 'start' ? y1 - 8 : align === 'end' ? y2 - 8 : (y1 + y2) / 2 - 8;
+            const pillW = t.label ? Math.max(32, t.label.length * (fontSize * 0.65) + 12) : 0;
 
             return (
               <g
@@ -657,12 +810,44 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   y1={y1}
                   x2={x2}
                   y2={y2}
-                  stroke={t.color || '#FACC15'}
-                  strokeWidth={isSelected ? 3.5 : 2}
+                  stroke={lineColor}
+                  strokeWidth={strokeW}
+                  strokeDasharray={dash}
                   strokeLinecap="round"
                 />
-                <circle cx={x1} cy={y1} r={isSelected ? 4.5 : 3} fill={t.color || '#FACC15'} />
-                <circle cx={x2} cy={y2} r={isSelected ? 4.5 : 3} fill={t.color || '#FACC15'} />
+                {(t.showDots !== false || isSelected) && (
+                  <>
+                    <circle cx={x1} cy={y1} r={isSelected ? 4.5 : 3} fill={lineColor} />
+                    <circle cx={x2} cy={y2} r={isSelected ? 4.5 : 3} fill={lineColor} />
+                  </>
+                )}
+                {t.label && (
+                  <g>
+                    {t.showTextBg !== false && (
+                      <rect
+                        x={labelX - pillW / 2}
+                        y={labelY - fontSize}
+                        width={pillW}
+                        height={fontSize + 6}
+                        fill={t.textBgColor || (isDarkMode ? '#090D16' : '#FFFFFF')}
+                        stroke={lineColor}
+                        strokeWidth="1"
+                        rx="3"
+                      />
+                    )}
+                    <text
+                      x={labelX}
+                      y={labelY}
+                      fill={textColor}
+                      fontSize={fontSize}
+                      fontWeight="bold"
+                      fontFamily="JetBrains Mono, monospace"
+                      textAnchor="middle"
+                    >
+                      {t.label}
+                    </text>
+                  </g>
+                )}
               </g>
             );
           })}
@@ -684,6 +869,8 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             const x = indexToX(idx);
             const isBullish = candle.close >= candle.open;
             const bodyColor = candle.color || (isBullish ? '#10B981' : '#EF4444');
+            const wickColor = candle.wickColor || bodyColor;
+            const borderColor = candle.borderColor || candleBorderStroke;
 
             const yHigh = priceToY(candle.high);
             const yLow = priceToY(candle.low);
@@ -724,7 +911,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   y1={yHigh}
                   x2={x}
                   y2={bodyTop}
-                  stroke={bodyColor}
+                  stroke={wickColor}
                   strokeWidth={isSelected ? 2.5 : 1.8}
                 />
 
@@ -735,7 +922,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   width={candleWidth}
                   height={bodyHeight}
                   fill={bodyColor}
-                  stroke={candleBorderStroke}
+                  stroke={borderColor}
                   strokeWidth="1"
                   rx="1.5"
                 />
@@ -746,7 +933,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   y1={bodyTop + bodyHeight}
                   x2={x}
                   y2={yLow}
-                  stroke={bodyColor}
+                  stroke={wickColor}
                   strokeWidth={isSelected ? 2.5 : 1.8}
                 />
 
@@ -838,7 +1025,11 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                 const vol = candle.volume || 1000;
                 const barH = Math.max(3, (vol / maxVolume) * (volumeHeight - 16));
                 const isBull = candle.close >= candle.open;
-                const barColor = isBull ? 'rgba(16, 185, 129, 0.45)' : 'rgba(239, 68, 68, 0.45)';
+                const barColor = candle.color
+                  ? `${candle.color}73`
+                  : isBull
+                  ? 'rgba(16, 185, 129, 0.45)'
+                  : 'rgba(239, 68, 68, 0.45)';
 
                 return (
                   <rect
@@ -855,11 +1046,22 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
             </g>
           )}
 
-          {/* LAYER: Badges & Text Callouts */}
+          {/* LAYER: Badges & Text Callouts (With Full Text, Background, Border & Style Customization + Drag) */}
           {badges.map((badge) => {
             const x = indexToX(badge.candleIndex);
             const y = priceToY(badge.price);
             const isSelected = selectedId === badge.id;
+
+            const fontSize = badge.fontSize || 9.5;
+            const bgColor = badge.bgColor || badge.color || '#FACC15';
+            const bgOpacity = badge.style === 'transparent' ? 0 : (badge.bgOpacity ?? (badge.style === 'outline' ? 0.12 : 1));
+            const textColor = badge.textColor || (badge.style === 'outline' || badge.style === 'transparent' ? bgColor : '#000000');
+            const borderColor = badge.borderColor || (badge.style === 'outline' ? bgColor : '#000000');
+            const borderWidth = isSelected ? 2 : (badge.borderWidth ?? (badge.style === 'transparent' ? 0 : 1));
+            const rx = badge.style === 'pill' ? 12 : 4;
+
+            const badgeW = Math.max(42, (badge.text?.length || 1) * (fontSize * 0.65) + 16);
+            const badgeH = Math.max(20, fontSize + 11);
 
             return (
               <g
@@ -868,23 +1070,52 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   e.stopPropagation();
                   onSelectId(badge.id, 'badge');
                 }}
-                className="cursor-pointer"
+                onMouseDown={(e) => {
+                  if (activeTool !== 'select' || !onUpdateBadge) return;
+                  e.stopPropagation();
+                  onSelectId(badge.id, 'badge');
+                  const handleMove = (moveEvt: MouseEvent) => {
+                    const rect = svgRef.current?.getBoundingClientRect();
+                    if (!rect) return;
+                    const newIdx = xToIndex(moveEvt.clientX - rect.left);
+                    const newPrice = yToPrice(moveEvt.clientY - rect.top);
+                    onUpdateBadge({ ...badge, candleIndex: newIdx, price: newPrice });
+                  };
+                  const handleUp = () => {
+                    window.removeEventListener('mousemove', handleMove);
+                    window.removeEventListener('mouseup', handleUp);
+                  };
+                  window.addEventListener('mousemove', handleMove);
+                  window.addEventListener('mouseup', handleUp);
+                }}
+                className="cursor-move"
               >
+                {/* Callout Pointer Triangle */}
+                {badge.style === 'callout' && (
+                  <polygon
+                    points={`${x - 5},${y + badgeH / 2 - 1} ${x + 5},${y + badgeH / 2 - 1} ${x},${y + badgeH / 2 + 6}`}
+                    fill={bgColor}
+                    fillOpacity={bgOpacity}
+                    stroke={borderColor}
+                    strokeWidth={borderWidth}
+                  />
+                )}
                 <rect
-                  x={x - 24}
-                  y={y - 11}
-                  width="48"
-                  height="20"
-                  fill={badge.color || '#FACC15'}
-                  stroke="#000"
-                  strokeWidth={isSelected ? 2 : 1}
-                  rx="3"
+                  x={x - badgeW / 2}
+                  y={y - badgeH / 2}
+                  width={badgeW}
+                  height={badgeH}
+                  fill={bgColor}
+                  fillOpacity={bgOpacity}
+                  stroke={borderWidth > 0 ? borderColor : 'none'}
+                  strokeWidth={borderWidth}
+                  rx={rx}
                 />
                 <text
                   x={x}
-                  y={y + 3}
-                  fill="#000000"
-                  fontSize="9.5"
+                  y={y + fontSize * 0.34}
+                  fill={textColor}
+                  fontSize={fontSize}
                   fontWeight="900"
                   fontFamily="JetBrains Mono, monospace"
                   textAnchor="middle"
