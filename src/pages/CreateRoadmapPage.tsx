@@ -7,7 +7,6 @@ import {
   Plus, 
   Trash2, 
   Sparkles, 
-  TrendingUp, 
   Image as ImageIcon, 
   Layers, 
   GitFork, 
@@ -31,9 +30,6 @@ import {
   Send,
   GitBranch
 } from 'lucide-react';
-import { PRESET_SVG_ITEMS } from '../components/illustration/PresetSvgCatalog';
-import { VisualDiagram } from '../components/VisualDiagram';
-import { InteractiveTradingChart } from '../components/illustration/InteractiveTradingChart';
 import { ChartSnapshotViewer } from '../components/illustration/ChartSnapshotViewer';
 import { WysiwygMarkdownEditor } from '../components/editor/WysiwygMarkdownEditor';
 import { CustomChartBuilderModal } from '../components/chart-builder/CustomChartBuilderModal';
@@ -54,7 +50,7 @@ export interface NodeDraft {
   duration: string;
   level: number;
   importance: 'essential' | 'recommended' | 'optional';
-  illustration_mode: 'preset' | 'interactive_chart' | 'snapshot' | 'custom_builder';
+  illustration_mode: 'snapshot' | 'custom_builder';
   preset_type: string;
   chart_symbol: string;
   snapshot_url: string;
@@ -88,7 +84,7 @@ export const CreateRoadmapPage: React.FC = () => {
       duration: '2 jam',
       level: 1,
       importance: 'essential',
-      illustration_mode: 'preset',
+      illustration_mode: 'custom_builder',
       preset_type: 'candlestick-anatomy',
       chart_symbol: 'EUR/USD',
       snapshot_url: '',
@@ -103,7 +99,7 @@ export const CreateRoadmapPage: React.FC = () => {
       duration: '3 jam',
       level: 2,
       importance: 'essential',
-      illustration_mode: 'interactive_chart',
+      illustration_mode: 'custom_builder',
       preset_type: 'bos-choch',
       chart_symbol: 'EUR/USD',
       snapshot_url: '',
@@ -189,10 +185,10 @@ export const CreateRoadmapPage: React.FC = () => {
           duration: `${n.estimated_hours || 2} jam`,
           level: n.level || idx + 1,
           importance: idx < 3 ? 'essential' : 'recommended',
-          illustration_mode: idx % 3 === 0 ? 'preset' : idx % 3 === 1 ? 'interactive_chart' : 'snapshot',
+          illustration_mode: idx % 2 === 0 ? 'custom_builder' : 'snapshot',
           preset_type: n.visual_type || n.diagram_type || 'candlestick-anatomy',
           chart_symbol: 'EUR/USD',
-          snapshot_url: idx % 3 === 2 ? 'https://www.tradingview.com/x/vB8uY1rZ/' : '',
+          snapshot_url: idx % 2 === 1 ? 'https://www.tradingview.com/x/vB8uY1rZ/' : '',
           content_markdown: n.content || `### ${n.title}\n${n.summary || 'Pelajari materi ini dengan teliti.'}`,
           posX: typeof n.posX === 'number' ? n.posX : (idx === 0 ? LANE_CENTER_X : idx % 2 === 1 ? LANE_LEFT_X : LANE_RIGHT_X),
           posY: typeof n.posY === 'number' ? n.posY : 80 + idx * 160,
@@ -236,7 +232,7 @@ export const CreateRoadmapPage: React.FC = () => {
         duration: '2 jam',
         level: prev.length + 1,
         importance: 'recommended',
-        illustration_mode: 'preset',
+        illustration_mode: 'custom_builder',
         preset_type: 'bos-choch',
         chart_symbol: 'EUR/USD',
         snapshot_url: '',
@@ -342,11 +338,7 @@ export const CreateRoadmapPage: React.FC = () => {
             importance: n.importance,
             illustrationMode: n.illustration_mode,
             diagram_type: n.preset_type,
-            chartConfig: n.illustration_mode === 'interactive_chart' ? {
-              symbol: n.chart_symbol,
-              title: `${n.title} Setup Chart`,
-              timeframe: '15m'
-            } : null,
+            chartConfig: null,
             snapshotConfig: n.illustration_mode === 'snapshot' ? {
               src: n.snapshot_url,
               caption: n.title
@@ -897,7 +889,7 @@ export const CreateRoadmapPage: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* 3-Mode Illustration Engine Selector */}
+                        {/* 2-Mode Illustration Engine Selector (Chart Studio & Snapshot) */}
                         <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-zinc-800">
                           <div className="flex items-center justify-between">
                             <label className="font-mono text-xs font-bold text-slate-900 dark:text-white flex items-center space-x-1.5">
@@ -906,62 +898,7 @@ export const CreateRoadmapPage: React.FC = () => {
                             </label>
                           </div>
 
-                          {/* 4-Mode Illustration Engine Selector */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
-                            <button
-                              type="button"
-                              onClick={() => handleUpdateNode(index, 'illustration_mode', 'preset')}
-                              className={`p-3 rounded-xl border text-left transition-all ${
-                                node.illustration_mode === 'preset'
-                                  ? 'bg-amber-500/10 border-amber-500 text-slate-950 dark:text-white font-bold ring-2 ring-amber-500/20'
-                                  : 'bg-white dark:bg-[#121722] border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:border-slate-400'
-                              }`}
-                            >
-                              <div className="flex items-center space-x-1.5 mb-1 text-[11px] font-mono">
-                                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                                <span>Mode 1: Preset SVG</span>
-                              </div>
-                              <p className="text-[10px] text-slate-500 dark:text-zinc-400 leading-snug">
-                                25+ diagram teknikal lelang, BOS/CHoCH, Wyckoff, &amp; Risk.
-                              </p>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleUpdateNode(index, 'illustration_mode', 'interactive_chart')}
-                              className={`p-3 rounded-xl border text-left transition-all ${
-                                node.illustration_mode === 'interactive_chart'
-                                  ? 'bg-sky-500/10 border-sky-500 text-slate-950 dark:text-white font-bold ring-2 ring-sky-500/20'
-                                  : 'bg-white dark:bg-[#121722] border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:border-slate-400'
-                              }`}
-                            >
-                              <div className="flex items-center space-x-1.5 mb-1 text-[11px] font-mono">
-                                <TrendingUp className="w-3.5 h-3.5 text-sky-500" />
-                                <span>Mode 2: Chart Interaktif</span>
-                              </div>
-                              <p className="text-[10px] text-slate-500 dark:text-zinc-400 leading-snug">
-                                TradingView Lightweight Charts dengan FVG &amp; OB overlay.
-                              </p>
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleUpdateNode(index, 'illustration_mode', 'snapshot')}
-                              className={`p-3 rounded-xl border text-left transition-all ${
-                                node.illustration_mode === 'snapshot'
-                                  ? 'bg-purple-500/10 border-purple-500 text-slate-950 dark:text-white font-bold ring-2 ring-purple-500/20'
-                                  : 'bg-white dark:bg-[#121722] border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:border-slate-400'
-                              }`}
-                            >
-                              <div className="flex items-center space-x-1.5 mb-1 text-[11px] font-mono">
-                                <ImageIcon className="w-3.5 h-3.5 text-purple-500" />
-                                <span>Mode 3: Snapshot</span>
-                              </div>
-                              <p className="text-[10px] text-slate-500 dark:text-zinc-400 leading-snug">
-                                Link URL TradingView snapshot atau upload gambar custom.
-                              </p>
-                            </button>
-
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
                             <button
                               type="button"
                               onClick={() => {
@@ -976,68 +913,33 @@ export const CreateRoadmapPage: React.FC = () => {
                             >
                               <div className="flex items-center space-x-1.5 mb-1 text-[11px] font-mono">
                                 <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
-                                <span>Mode 4: Chart Studio 🎨</span>
+                                <span>Chart Studio 🎨 (Custom Chart &amp; Skematik)</span>
                               </div>
                               <p className="text-[10px] text-slate-500 dark:text-zinc-400 leading-snug">
-                                Susun candle, tarik Fibonacci Retracement &amp; kotak OB/FVG.
+                                Susun candle, kurva wave multi-titik, kartu info, tarik Fibonacci Retracement &amp; kotak OB/FVG.
+                              </p>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleUpdateNode(index, 'illustration_mode', 'snapshot')}
+                              className={`p-3 rounded-xl border text-left transition-all ${
+                                node.illustration_mode === 'snapshot'
+                                  ? 'bg-purple-500/10 border-purple-500 text-slate-950 dark:text-white font-bold ring-2 ring-purple-500/20'
+                                  : 'bg-white dark:bg-[#121722] border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-400 hover:border-slate-400'
+                              }`}
+                            >
+                              <div className="flex items-center space-x-1.5 mb-1 text-[11px] font-mono">
+                                <ImageIcon className="w-3.5 h-3.5 text-purple-500" />
+                                <span>Snapshot / Gambar Chart</span>
+                              </div>
+                              <p className="text-[10px] text-slate-500 dark:text-zinc-400 leading-snug">
+                                Link URL TradingView snapshot atau upload gambar chart custom.
                               </p>
                             </button>
                           </div>
 
                           {/* Specific Config Input per Mode */}
-                          {node.illustration_mode === 'preset' && (
-                            <div className="space-y-3 pt-2">
-                              <div>
-                                <label className="block font-mono text-[11px] text-slate-600 dark:text-zinc-400 mb-1">
-                                  Pilih Diagram dari Katalog Preset:
-                                </label>
-                                <select
-                                  value={node.preset_type}
-                                  onChange={(e) => handleUpdateNode(index, 'preset_type', e.target.value)}
-                                  className="w-full bg-white dark:bg-[#121722] border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white outline-none"
-                                >
-                                  {PRESET_SVG_ITEMS.map(item => (
-                                    <option key={item.type} value={item.type}>
-                                      [{item.category}] {item.title}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-
-                              <div className="p-3 rounded-xl bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-zinc-800">
-                                <div className="text-[10px] font-mono text-slate-400 mb-2">Pratinjau Diagram Terpilih:</div>
-                                <VisualDiagram type={node.preset_type as any} />
-                              </div>
-                            </div>
-                          )}
-
-                          {node.illustration_mode === 'interactive_chart' && (
-                            <div className="space-y-3 pt-2">
-                              <div>
-                                <label className="block font-mono text-[11px] text-slate-600 dark:text-zinc-400 mb-1">
-                                  Instrumen Pasangan Aset:
-                                </label>
-                                <select
-                                  value={node.chart_symbol}
-                                  onChange={(e) => handleUpdateNode(index, 'chart_symbol', e.target.value)}
-                                  className="w-full bg-white dark:bg-[#121722] border border-slate-300 dark:border-zinc-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white outline-none"
-                                >
-                                  <option value="EUR/USD">EUR/USD (London Judas &amp; FVG Imbalance)</option>
-                                  <option value="BTC/USDT">BTC/USDT (Wyckoff Spring &amp; JAC Breakout)</option>
-                                  <option value="XAU/USD">XAU/USD (Gold Session Breakout &amp; Sweep)</option>
-                                </select>
-                              </div>
-
-                              <div className="p-3 rounded-xl bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-zinc-800">
-                                <div className="text-[10px] font-mono text-slate-400 mb-2">Pratinjau Chart Interaktif:</div>
-                                <InteractiveTradingChart 
-                                  title={`${node.chart_symbol} Live Simulation`}
-                                  timeframe="15m"
-                                />
-                              </div>
-                            </div>
-                          )}
-
                           {node.illustration_mode === 'snapshot' && (
                             <div className="space-y-3 pt-2">
                               <div>
@@ -1063,7 +965,7 @@ export const CreateRoadmapPage: React.FC = () => {
                             </div>
                           )}
 
-                          {/* Mode 4: Custom Candle Chart Builder Studio */}
+                          {/* Custom Candle Chart Builder Studio */}
                           {node.illustration_mode === 'custom_builder' && (
                             <div className="space-y-3 pt-2">
                               <div className="flex items-center justify-between">
@@ -1238,7 +1140,7 @@ export const CreateRoadmapPage: React.FC = () => {
                   duration: sn.duration || '2 jam',
                   level: sn.level || idx + 1,
                   importance: sn.importance || 'recommended',
-                  illustration_mode: 'preset',
+                  illustration_mode: 'custom_builder',
                   preset_type: 'candlestick-anatomy',
                   chart_symbol: 'EUR/USD',
                   snapshot_url: '',
