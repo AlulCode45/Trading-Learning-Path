@@ -3,12 +3,12 @@ import {
   CustomCandle, 
   FibonacciDrawing, 
   BoxDrawing, 
-  PositionDrawing,
+  PositionDrawing, 
   TrendlineDrawing, 
-  PolylineDrawing,
-  TextBadgeAnnotation,
-  CustomChartConfig,
-  CandleTemplatePreset
+  PolylineDrawing, 
+  TextBadgeAnnotation, 
+  CustomChartConfig, 
+  CandleTemplatePreset 
 } from '../../types/chartBuilderTypes';
 import { CandleTemplateTray } from './CandleTemplateTray';
 import { ChartCanvas } from './ChartCanvas';
@@ -19,19 +19,15 @@ import {
   Sliders, 
   Box, 
   TrendingUp, 
-  TrendingDown,
+  TrendingDown, 
   Tag, 
   Trash2, 
-  RotateCcw, 
   Check, 
-  Download,
-  Copy,
-  Layers,
-  Activity,
-  BarChart2,
-  Percent,
+  Copy, 
   CheckCircle2,
-  FileCode
+  Sun,
+  Moon,
+  Maximize2
 } from 'lucide-react';
 
 interface CustomChartBuilderModalProps {
@@ -48,6 +44,14 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
   initialConfig
 }) => {
   if (!isOpen) return null;
+
+  // Theme Detection: sinkron dengan HTML dark class
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    return typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  });
+
+  // Candle Spacing / Zoom: Rapat, Normal, Lebar
+  const [candleSpacing, setCandleSpacing] = useState<'compact' | 'normal' | 'wide'>('normal');
 
   // Chart Elements State
   const [candles, setCandles] = useState<CustomCandle[]>(initialConfig?.candles || [
@@ -252,36 +256,82 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
   const activeBadge = selectedItem?.type === 'badge' ? badges.find(b => b.id === selectedItem.id) : null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-5 overflow-y-auto">
-      <div className="bg-[#090D16] border-2 border-black dark:border-zinc-700 shadow-[12px_12px_0px_#000] rounded-2xl w-full max-w-7xl max-h-[96vh] flex flex-col overflow-hidden my-auto animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className={`border-2 rounded-2xl w-full max-w-7xl max-h-[96vh] flex flex-col overflow-hidden my-auto animate-in fade-in duration-200 transition-colors shadow-2xl ${
+        isDarkMode 
+          ? 'bg-[#090D16] border-zinc-700 text-white shadow-[12px_12px_0px_#000]' 
+          : 'bg-white border-slate-300 text-slate-900 shadow-xl'
+      }`}>
         
         {/* Studio Header */}
-        <div className="bg-[#050811] border-b border-slate-800 px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 select-none">
+        <div className={`border-b px-5 py-3 flex flex-wrap items-center justify-between gap-3 select-none ${
+          isDarkMode ? 'bg-[#050811] border-slate-800' : 'bg-slate-50 border-slate-200'
+        }`}>
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-xl">
-              <Sparkles className="w-5 h-5 text-emerald-400" />
+            <div className="p-2 bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 rounded-xl">
+              <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-black text-white tracking-tight flex items-center space-x-2">
-                <span>Interactive Chart Canvas &amp; Technical Analysis Studio</span>
+              <h2 className="text-base sm:text-lg font-black tracking-tight flex items-center space-x-2">
+                <span>Interactive Chart Canvas &amp; Analysis Studio</span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500 text-black font-extrabold uppercase">
                   Pro Engine
                 </span>
               </h2>
-              <p className="text-xs text-slate-400 font-mono">
-                Generator kanvas analisis teknikal: susun formasi candle, gambar FVG/OB (EQ 50%), tarik Fibonacci, &amp; hitung Risk:Reward posisi.
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+                Generator kanvas analisis teknikal: formasi candle, FVG/OB (EQ 50%), Fibonacci, &amp; Risk:Reward posisi.
               </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-2">
+            {/* Theme Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              title={isDarkMode ? 'Beralih ke Mode Terang (Light Mode)' : 'Beralih ke Mode Gelap (Dark Mode)'}
+              className={`p-2 rounded-xl border text-xs font-mono flex items-center space-x-1.5 transition-colors ${
+                isDarkMode 
+                  ? 'bg-slate-800 text-amber-400 border-slate-700 hover:bg-slate-700' 
+                  : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100 shadow-2xs'
+              }`}
+            >
+              {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              <span className="text-[11px] font-bold">{isDarkMode ? 'Terang' : 'Gelap'}</span>
+            </button>
+
+            {/* Candle Spacing Selector */}
+            <div className={`flex items-center space-x-1 p-1 rounded-xl border text-[11px] font-mono ${
+              isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
+            }`}>
+              <span className="px-1 text-[10px] font-bold">Jarak:</span>
+              {(['compact', 'normal', 'wide'] as const).map(sp => (
+                <button
+                  key={sp}
+                  type="button"
+                  onClick={() => setCandleSpacing(sp)}
+                  className={`px-2 py-0.5 rounded-lg capitalize font-bold transition-all ${
+                    candleSpacing === sp
+                      ? 'bg-emerald-500 text-black shadow-2xs'
+                      : 'hover:text-black dark:hover:text-white'
+                  }`}
+                >
+                  {sp === 'compact' ? 'Rapat' : sp === 'normal' ? 'Standar' : 'Lebar'}
+                </button>
+              ))}
+            </div>
+
             <button
               type="button"
               onClick={handleCopyJson}
               title="Salin JSON Konfigurasi"
-              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-xs font-semibold rounded-xl flex items-center space-x-1.5 transition-colors border border-slate-700"
+              className={`px-3 py-2 rounded-xl font-mono text-xs font-semibold flex items-center space-x-1.5 transition-colors border ${
+                isDarkMode 
+                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700' 
+                  : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 shadow-2xs'
+              }`}
             >
-              {copyFeedback ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copyFeedback ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copyFeedback ? 'Tersalin!' : 'Copy JSON'}</span>
             </button>
 
@@ -297,7 +347,11 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
             <button
               type="button"
               onClick={onClose}
-              className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition-colors"
+              className={`p-2 rounded-xl transition-colors border ${
+                isDarkMode 
+                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' 
+                  : 'bg-white hover:bg-slate-100 text-slate-600 border-slate-300'
+              }`}
             >
               <X className="w-4 h-4" />
             </button>
@@ -305,14 +359,18 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
         </div>
 
         {/* Studio Workspace Layout */}
-        <div className="flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-800">
+        <div className={`flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x ${
+          isDarkMode ? 'divide-slate-800' : 'divide-slate-200'
+        }`}>
           
           {/* Left Panel: Tools & Candle Templates (3 Cols) */}
-          <div className="lg:col-span-3 p-4 bg-[#0A0E18] space-y-4 overflow-y-auto max-h-[78vh]">
+          <div className={`lg:col-span-3 p-4 space-y-4 overflow-y-auto max-h-[78vh] ${
+            isDarkMode ? 'bg-[#0A0E18]' : 'bg-slate-50'
+          }`}>
             {/* Tool Selection Palette */}
             <div>
-              <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center space-x-1.5">
-                <Sliders className="w-3.5 h-3.5 text-[#38BDF8]" />
+              <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 flex items-center space-x-1.5">
+                <Sliders className="w-3.5 h-3.5 text-[#0284C7]" />
                 <span>Peralatan Analisa (Tools):</span>
               </div>
               <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
@@ -335,7 +393,9 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                       className={`p-2 rounded-xl flex items-center space-x-2 transition-all border ${
                         isActive
                           ? 'bg-emerald-500 text-black font-extrabold border-emerald-400 shadow-2xs'
-                          : 'bg-[#121724] text-slate-300 border-slate-800 hover:border-slate-700'
+                          : isDarkMode
+                          ? 'bg-[#121724] text-slate-300 border-slate-800 hover:border-slate-700'
+                          : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 shadow-2xs'
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5 flex-shrink-0" />
@@ -347,9 +407,13 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
             </div>
 
             {/* Overlays Toggle */}
-            <div className="p-3 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
-              <span className="text-[11px] font-mono font-bold text-slate-300 block">Indikator Overlay:</span>
-              <div className="flex items-center justify-between text-xs font-mono text-slate-300">
+            <div className={`p-3 rounded-xl border space-y-2 ${
+              isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200'
+            }`}>
+              <span className="text-[11px] font-mono font-bold block text-slate-700 dark:text-slate-300">
+                Indikator Overlay:
+              </span>
+              <div className="flex items-center justify-between text-xs font-mono text-slate-700 dark:text-slate-300">
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -364,7 +428,7 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                     type="checkbox"
                     checked={showEma}
                     onChange={(e) => setShowEma(e.target.checked)}
-                    className="accent-[#38BDF8] rounded"
+                    className="accent-[#0284C7] rounded"
                   />
                   <span>EMA Curve ({emaPeriod})</span>
                 </label>
@@ -381,14 +445,16 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
           {/* Center Panel: Interactive Canvas & Canvas Toolbar (6 Cols) */}
           <div className="lg:col-span-6 p-4 sm:p-5 flex flex-col justify-between space-y-3 overflow-y-auto">
             {/* Canvas Quick Actions Bar */}
-            <div className="flex flex-wrap items-center justify-between gap-2 bg-[#0E131F] border border-slate-800 p-2.5 rounded-xl text-xs font-mono">
-              <div className="flex items-center space-x-2 text-slate-300">
-                <span className="text-[11px] font-bold text-slate-400">Tool:</span>
-                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-extrabold uppercase text-[10px]">
+            <div className={`flex flex-wrap items-center justify-between gap-2 border p-2.5 rounded-xl text-xs font-mono ${
+              isDarkMode ? 'bg-[#0E131F] border-slate-800' : 'bg-slate-100 border-slate-200'
+            }`}>
+              <div className="flex items-center space-x-2">
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Tool:</span>
+                <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-extrabold uppercase text-[10px]">
                   {activeTool.replace('-', ' ')}
                 </span>
-                <span className="text-[11px] text-slate-400">| {candles.length} Bar</span>
-                {positions.length > 0 && <span className="text-amber-400 font-bold">• {positions.length} Posisi</span>}
+                <span className="text-[11px] text-slate-500 dark:text-slate-400">| {candles.length} Bar</span>
+                {positions.length > 0 && <span className="text-amber-500 font-bold">• {positions.length} Posisi</span>}
               </div>
 
               <div className="flex items-center space-x-1.5">
@@ -396,7 +462,7 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                   <button
                     type="button"
                     onClick={handleDeleteSelected}
-                    className="px-2.5 py-1 bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 border border-rose-500/30 rounded-lg text-xs font-mono flex items-center space-x-1 transition-colors"
+                    className="px-2.5 py-1 bg-rose-500/15 hover:bg-rose-500/25 text-rose-500 border border-rose-500/30 rounded-lg text-xs font-mono flex items-center space-x-1 transition-colors"
                   >
                     <Trash2 className="w-3 h-3" />
                     <span>Hapus Item</span>
@@ -413,15 +479,19 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                     setBadges([]);
                     setSelectedItem(null);
                   }}
-                  className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-mono transition-colors"
+                  className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-colors border ${
+                    isDarkMode 
+                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' 
+                      : 'bg-white hover:bg-slate-200 text-slate-700 border-slate-300 shadow-2xs'
+                  }`}
                 >
                   Clear All
                 </button>
               </div>
             </div>
 
-            {/* The SVG Canvas */}
-            <div className="flex-1 flex items-center justify-center">
+            {/* The SVG Canvas Component */}
+            <div className="w-full flex-1">
               <ChartCanvas
                 candles={candles}
                 fibonaccis={fibonaccis}
@@ -433,6 +503,8 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                 showVolume={showVolume}
                 showEma={showEma}
                 emaPeriod={emaPeriod}
+                isDarkMode={isDarkMode}
+                candleSpacing={candleSpacing}
                 selectedId={selectedItem?.id || null}
                 onSelectId={(id, type) => setSelectedItem(id ? { id, type } : null)}
                 onUpdateCandle={(updated) => {
@@ -444,17 +516,23 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
             </div>
 
             {/* Crosshair & Shortcuts Info Footer */}
-            <div className="p-2.5 bg-slate-900/60 border border-slate-800 rounded-xl text-[11px] font-mono text-slate-400 flex flex-wrap items-center justify-between gap-2">
+            <div className={`p-2.5 border rounded-xl text-[11px] font-mono flex flex-wrap items-center justify-between gap-2 ${
+              isDarkMode ? 'bg-slate-900/60 border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-600'
+            }`}>
               <div className="flex items-center space-x-3">
-                <span>⌨️ Shortcuts: <kbd className="px-1.5 py-0.5 bg-black rounded text-[10px] text-white">Esc</kbd> Batalkan tool • <kbd className="px-1.5 py-0.5 bg-black rounded text-[10px] text-white">Del</kbd> Hapus item terpilih</span>
+                <span>⌨️ <kbd className="px-1.5 py-0.5 rounded text-[10px] bg-slate-200 dark:bg-black font-bold">Esc</kbd> Batalkan tool • <kbd className="px-1.5 py-0.5 rounded text-[10px] bg-slate-200 dark:bg-black font-bold">Del</kbd> Hapus item terpilih</span>
               </div>
-              <span className="text-emerald-400 font-bold">Interactive Crosshair Active</span>
+              <span className="text-emerald-500 font-bold">Scrollable &amp; Interactive</span>
             </div>
           </div>
 
           {/* Right Panel: Properties Inspector (3 Cols) */}
-          <div className="lg:col-span-3 p-4 bg-[#0A0E18] space-y-4 overflow-y-auto max-h-[78vh]">
-            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-1.5 pb-2 border-b border-slate-800">
+          <div className={`lg:col-span-3 p-4 space-y-4 overflow-y-auto max-h-[78vh] ${
+            isDarkMode ? 'bg-[#0A0E18]' : 'bg-slate-50'
+          }`}>
+            <div className={`text-[11px] font-mono font-bold uppercase tracking-wider flex items-center space-x-1.5 pb-2 border-b ${
+              isDarkMode ? 'text-slate-400 border-slate-800' : 'text-slate-600 border-slate-200'
+            }`}>
               <Sliders className="w-3.5 h-3.5 text-amber-500" />
               <span>Inspektur Properti (Properties):</span>
             </div>
@@ -462,13 +540,15 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
             {/* Active Candle Inspector */}
             {activeCandle ? (
               <div className="space-y-3 text-xs font-mono">
-                <div className="p-2.5 bg-[#121724] border border-slate-800 rounded-xl">
-                  <div className="text-slate-400 text-[10px] uppercase mb-1">Objek Terpilih:</div>
-                  <div className="font-bold text-white text-sm">Candle Bar #{activeCandle.index + 1}</div>
+                <div className={`p-2.5 border rounded-xl ${
+                  isDarkMode ? 'bg-[#121724] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+                }`}>
+                  <div className="text-slate-500 text-[10px] uppercase mb-1">Objek Terpilih:</div>
+                  <div className="font-bold text-sm">Candle Bar #{activeCandle.index + 1}</div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1">Label Candle:</label>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Label Candle:</label>
                   <input
                     type="text"
                     value={activeCandle.label || ''}
@@ -477,13 +557,15 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                       setCandles(prev => prev.map(c => c.id === activeCandle.id ? { ...c, label: val } : c));
                     }}
                     placeholder="Contoh: OB, Sweep, C1..."
-                    className="w-full bg-[#050811] border border-slate-700 rounded-lg px-3 py-1.5 text-white outline-none focus:border-emerald-500"
+                    className={`w-full rounded-lg px-3 py-1.5 outline-none border focus:border-emerald-500 ${
+                      isDarkMode ? 'bg-[#050811] border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'
+                    }`}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-slate-400 mb-1">Open Price:</label>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Open Price:</label>
                     <input
                       type="number"
                       value={activeCandle.open}
@@ -491,11 +573,13 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                         const val = Number(e.target.value);
                         setCandles(prev => prev.map(c => c.id === activeCandle.id ? { ...c, open: val } : c));
                       }}
-                      className="w-full bg-[#050811] border border-slate-700 rounded-lg px-3 py-1 text-white outline-none"
+                      className={`w-full rounded-lg px-3 py-1 outline-none border ${
+                        isDarkMode ? 'bg-[#050811] border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'
+                      }`}
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Close Price:</label>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Close Price:</label>
                     <input
                       type="number"
                       value={activeCandle.close}
@@ -503,11 +587,13 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                         const val = Number(e.target.value);
                         setCandles(prev => prev.map(c => c.id === activeCandle.id ? { ...c, close: val } : c));
                       }}
-                      className="w-full bg-[#050811] border border-slate-700 rounded-lg px-3 py-1 text-white outline-none"
+                      className={`w-full rounded-lg px-3 py-1 outline-none border ${
+                        isDarkMode ? 'bg-[#050811] border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'
+                      }`}
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">High Price:</label>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">High Price:</label>
                     <input
                       type="number"
                       value={activeCandle.high}
@@ -515,11 +601,13 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                         const val = Number(e.target.value);
                         setCandles(prev => prev.map(c => c.id === activeCandle.id ? { ...c, high: val } : c));
                       }}
-                      className="w-full bg-[#050811] border border-slate-700 rounded-lg px-3 py-1 text-white outline-none"
+                      className={`w-full rounded-lg px-3 py-1 outline-none border ${
+                        isDarkMode ? 'bg-[#050811] border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'
+                      }`}
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Low Price:</label>
+                    <label className="block text-slate-500 dark:text-slate-400 mb-1">Low Price:</label>
                     <input
                       type="number"
                       value={activeCandle.low}
@@ -527,13 +615,15 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                         const val = Number(e.target.value);
                         setCandles(prev => prev.map(c => c.id === activeCandle.id ? { ...c, low: val } : c));
                       }}
-                      className="w-full bg-[#050811] border border-slate-700 rounded-lg px-3 py-1 text-white outline-none"
+                      className={`w-full rounded-lg px-3 py-1 outline-none border ${
+                        isDarkMode ? 'bg-[#050811] border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'
+                      }`}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1">Volume Bar Lelang:</label>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Volume Bar Lelang:</label>
                   <input
                     type="number"
                     value={activeCandle.volume || 1000}
@@ -541,15 +631,17 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                       const val = Number(e.target.value);
                       setCandles(prev => prev.map(c => c.id === activeCandle.id ? { ...c, volume: val } : c));
                     }}
-                    className="w-full bg-[#050811] border border-slate-700 rounded-lg px-3 py-1 text-white outline-none"
+                    className={`w-full rounded-lg px-3 py-1 outline-none border ${
+                      isDarkMode ? 'bg-[#050811] border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'
+                    }`}
                   />
                 </div>
 
                 {/* Color Override */}
                 <div>
-                  <label className="block text-slate-400 mb-1">Warna Khusus:</label>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Warna Khusus:</label>
                   <div className="flex items-center space-x-2">
-                    {['#10B981', '#F43F5E', '#38BDF8', '#FACC15', '#A855F7'].map(color => (
+                    {['#10B981', '#EF4444', '#0284C7', '#FACC15', '#A855F7'].map(color => (
                       <button
                         key={color}
                         type="button"
@@ -566,18 +658,20 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
             ) : activePosition ? (
               /* Active Position (R:R Tool) Inspector */
               <div className="space-y-3 text-xs font-mono">
-                <div className="p-2.5 bg-[#121724] border border-slate-800 rounded-xl">
-                  <div className="text-slate-400 text-[10px] uppercase mb-1">Objek Terpilih:</div>
-                  <div className="font-bold text-white text-sm flex items-center justify-between">
+                <div className={`p-2.5 border rounded-xl ${
+                  isDarkMode ? 'bg-[#121724] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+                }`}>
+                  <div className="text-slate-500 text-[10px] uppercase mb-1">Objek Terpilih:</div>
+                  <div className="font-bold text-sm flex items-center justify-between">
                     <span>{activePosition.type === 'long' ? '🟢 Long Position' : '🔴 Short Position'}</span>
-                    <span className="text-[#38BDF8]">
+                    <span className="text-[#0284C7] font-extrabold">
                       R:R = 1 : {(Math.abs(activePosition.targetPrice - activePosition.entryPrice) / (Math.abs(activePosition.entryPrice - activePosition.stopPrice) || 1)).toFixed(2)}
                     </span>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1">Entry Price Level:</label>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Entry Price Level:</label>
                   <input
                     type="number"
                     value={activePosition.entryPrice}
@@ -585,12 +679,14 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                       const val = Number(e.target.value);
                       setPositions(prev => prev.map(p => p.id === activePosition.id ? { ...p, entryPrice: val } : p));
                     }}
-                    className="w-full bg-[#050811] border border-slate-700 rounded-lg px-3 py-1.5 text-white outline-none"
+                    className={`w-full rounded-lg px-3 py-1.5 outline-none border ${
+                      isDarkMode ? 'bg-[#050811] border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'
+                    }`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-emerald-400 mb-1">Take Profit (Target):</label>
+                  <label className="block text-emerald-500 mb-1 font-bold">Take Profit (Target):</label>
                   <input
                     type="number"
                     value={activePosition.targetPrice}
@@ -598,12 +694,14 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                       const val = Number(e.target.value);
                       setPositions(prev => prev.map(p => p.id === activePosition.id ? { ...p, targetPrice: val } : p));
                     }}
-                    className="w-full bg-[#050811] border border-emerald-500/50 rounded-lg px-3 py-1.5 text-white outline-none"
+                    className={`w-full rounded-lg px-3 py-1.5 outline-none border border-emerald-500/50 ${
+                      isDarkMode ? 'bg-[#050811] text-white' : 'bg-white text-slate-900'
+                    }`}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-rose-400 mb-1">Stop Loss (Invalidasi):</label>
+                  <label className="block text-rose-500 mb-1 font-bold">Stop Loss (Invalidasi):</label>
                   <input
                     type="number"
                     value={activePosition.stopPrice}
@@ -611,20 +709,24 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                       const val = Number(e.target.value);
                       setPositions(prev => prev.map(p => p.id === activePosition.id ? { ...p, stopPrice: val } : p));
                     }}
-                    className="w-full bg-[#050811] border border-rose-500/50 rounded-lg px-3 py-1.5 text-white outline-none"
+                    className={`w-full rounded-lg px-3 py-1.5 outline-none border border-rose-500/50 ${
+                      isDarkMode ? 'bg-[#050811] text-white' : 'bg-white text-slate-900'
+                    }`}
                   />
                 </div>
               </div>
             ) : activeBox ? (
               /* Active Box Inspector */
               <div className="space-y-3 text-xs font-mono">
-                <div className="p-2.5 bg-[#121724] border border-slate-800 rounded-xl">
-                  <div className="text-slate-400 text-[10px] uppercase mb-1">Objek Terpilih:</div>
-                  <div className="font-bold text-white text-sm">Zone Box Area</div>
+                <div className={`p-2.5 border rounded-xl ${
+                  isDarkMode ? 'bg-[#121724] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+                }`}>
+                  <div className="text-slate-500 text-[10px] uppercase mb-1">Objek Terpilih:</div>
+                  <div className="font-bold text-sm">Zone Box Area</div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1">Label Area:</label>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Label Area:</label>
                   <input
                     type="text"
                     value={activeBox.label}
@@ -632,12 +734,14 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                       const val = e.target.value;
                       setBoxes(prev => prev.map(b => b.id === activeBox.id ? { ...b, label: val } : b));
                     }}
-                    className="w-full bg-[#050811] border border-slate-700 rounded-lg px-3 py-1.5 text-white outline-none"
+                    className={`w-full rounded-lg px-3 py-1.5 outline-none border ${
+                      isDarkMode ? 'bg-[#050811] border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'
+                    }`}
                   />
                 </div>
 
                 <div className="flex items-center space-x-2 pt-1">
-                  <label className="flex items-center space-x-2 cursor-pointer text-slate-300">
+                  <label className="flex items-center space-x-2 cursor-pointer text-slate-700 dark:text-slate-300">
                     <input
                       type="checkbox"
                       checked={activeBox.showMidLine || false}
@@ -645,16 +749,16 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                         const checked = e.target.checked;
                         setBoxes(prev => prev.map(b => b.id === activeBox.id ? { ...b, showMidLine: checked } : b));
                       }}
-                      className="accent-[#38BDF8]"
+                      className="accent-[#0284C7]"
                     />
                     <span>Garis Tengah 50% (CE / MT)</span>
                   </label>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1">Pilihan Warna Box:</label>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Pilihan Warna Box:</label>
                   <div className="flex items-center space-x-2">
-                    {['#38BDF8', '#10B981', '#F43F5E', '#FACC15', '#A855F7'].map(color => (
+                    {['#38BDF8', '#10B981', '#EF4444', '#FACC15', '#A855F7'].map(color => (
                       <button
                         key={color}
                         type="button"
@@ -671,13 +775,15 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
             ) : activeBadge ? (
               /* Active Badge Inspector */
               <div className="space-y-3 text-xs font-mono">
-                <div className="p-2.5 bg-[#121724] border border-slate-800 rounded-xl">
-                  <div className="text-slate-400 text-[10px] uppercase mb-1">Objek Terpilih:</div>
-                  <div className="font-bold text-white text-sm">Structure Badge</div>
+                <div className={`p-2.5 border rounded-xl ${
+                  isDarkMode ? 'bg-[#121724] border-slate-800' : 'bg-white border-slate-200 shadow-2xs'
+                }`}>
+                  <div className="text-slate-500 text-[10px] uppercase mb-1">Objek Terpilih:</div>
+                  <div className="font-bold text-sm">Structure Badge</div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1">Teks Badge:</label>
+                  <label className="block text-slate-500 dark:text-slate-400 mb-1">Teks Badge:</label>
                   <input
                     type="text"
                     value={activeBadge.text}
@@ -686,7 +792,9 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                       setBadges(prev => prev.map(b => b.id === activeBadge.id ? { ...b, text: val } : b));
                     }}
                     placeholder="BOS / CHoCH..."
-                    className="w-full bg-[#050811] border border-slate-700 rounded-lg px-3 py-1.5 text-white outline-none"
+                    className={`w-full rounded-lg px-3 py-1.5 outline-none border ${
+                      isDarkMode ? 'bg-[#050811] border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'
+                    }`}
                   />
                 </div>
 
@@ -698,7 +806,11 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                       onClick={() => {
                         setBadges(prev => prev.map(b => b.id === activeBadge.id ? { ...b, text: badgeText } : b));
                       }}
-                      className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 hover:text-white"
+                      className={`text-[10px] px-2 py-0.5 rounded border transition-colors ${
+                        isDarkMode 
+                          ? 'bg-slate-800 text-slate-300 hover:text-white border-slate-700' 
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200'
+                      }`}
                     >
                       {badgeText}
                     </button>
@@ -706,8 +818,8 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                 </div>
               </div>
             ) : (
-              <div className="h-44 flex flex-col items-center justify-center text-center p-4 text-slate-500 font-mono text-xs">
-                <Sliders className="w-8 h-8 mb-2 opacity-40 text-slate-400" />
+              <div className="h-44 flex flex-col items-center justify-center text-center p-4 text-slate-400 dark:text-slate-500 font-mono text-xs">
+                <Sliders className="w-8 h-8 mb-2 opacity-40" />
                 <span>Klik objek candle, posisi Long/Short, atau kotak pada kanvas untuk mengubah propertinya.</span>
               </div>
             )}
