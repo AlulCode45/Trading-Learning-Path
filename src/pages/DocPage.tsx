@@ -6,7 +6,7 @@ import { DocReader } from '../components/DocReader';
 export const DocPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
   const navigate = useNavigate();
-  const currentArticleSlug = slug || 'candlestick-anatomy-wick-dynamics';
+  const currentArticleSlug = slug || 'what-is-trading-fundamentals';
 
   const [nodes, setNodes] = useState<RoadmapNode[]>([]);
 
