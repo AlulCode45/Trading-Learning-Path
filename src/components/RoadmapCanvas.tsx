@@ -12,7 +12,9 @@ import {
   Monitor, 
   Search, 
   Navigation,
-  ArrowRight
+  ArrowRight,
+  BookOpen,
+  Info
 } from 'lucide-react';
 
 interface RoadmapCanvasProps {
@@ -29,126 +31,191 @@ interface PositionedNode extends RoadmapNode {
   height: number;
 }
 
-interface LevelThemeConfig {
-  name: string;
-  shortLabel: string;
-  colorHex: string;
-  glowColor: string;
-  cardBaseClass: string;
-  cardSelectedClass: string;
-  tagClass: string;
-  stripColor: string;
+interface StageGroupBox {
+  level: number;
+  title: string;
+  subtitle: string;
+  tag: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  badgeBg: string;
+  badgeText: string;
 }
 
-const LEVEL_THEMES: Record<number, LevelThemeConfig> = {
+// Visual theme configurations inspired by roadmap.sh neo-brutalist color system
+interface NodeTheme {
+  name: string;
+  colorHex: string;
+  badgeName: string;
+  bgClass: string;
+  selectedBgClass: string;
+  borderClass: string;
+  shadowClass: string;
+  tagClass: string;
+  arrowColor: string;
+}
+
+const ROADMAP_THEMES: Record<number, NodeTheme> = {
   1: {
-    name: 'Fondasi Lelang',
-    shortLabel: 'Fase 1',
-    colorHex: '#10B981', // Emerald Mint
-    glowColor: 'rgba(16, 185, 129, 0.4)',
-    cardBaseClass: 'bg-emerald-50/95 hover:bg-emerald-50 border-emerald-300 hover:border-emerald-500 dark:bg-[#061812] dark:hover:bg-[#082018] dark:border-emerald-500/40 dark:hover:border-emerald-400',
-    cardSelectedClass: 'bg-emerald-50 border-2 border-[#10B981] dark:bg-[#061812] dark:border-[#10B981]',
-    tagClass: 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-500/40',
-    stripColor: '#10B981'
+    name: 'Fondasi Utama',
+    badgeName: 'Core Prerequisite',
+    colorHex: '#FACC15', // Signature roadmap.sh Yellow
+    bgClass: 'bg-[#FEF08A] hover:bg-[#FDE047] text-zinc-950',
+    selectedBgClass: 'bg-[#FACC15] ring-4 ring-black/20 dark:ring-white/30',
+    borderClass: 'border-2 border-black dark:border-black',
+    shadowClass: 'shadow-[3px_3px_0px_#000000] dark:shadow-[3px_3px_0px_#FACC15]',
+    tagClass: 'bg-black text-[#FEF08A] font-mono',
+    arrowColor: '#CA8A04'
   },
   2: {
     name: 'Struktur Pasar',
-    shortLabel: 'Fase 2',
-    colorHex: '#0284C7', // Sky Cyan Blue
-    glowColor: 'rgba(2, 132, 199, 0.4)',
-    cardBaseClass: 'bg-sky-50/95 hover:bg-sky-50 border-sky-300 hover:border-sky-500 dark:bg-[#06182B] dark:hover:bg-[#09223D] dark:border-sky-500/40 dark:hover:border-sky-400',
-    cardSelectedClass: 'bg-sky-50 border-2 border-[#0284C7] dark:bg-[#06182B] dark:border-[#0284C7]',
-    tagClass: 'bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-950/80 dark:text-sky-300 dark:border-sky-500/40',
-    stripColor: '#0284C7'
+    badgeName: 'Structure Analysis',
+    colorHex: '#38BDF8', // Sky Blue
+    bgClass: 'bg-[#BAE6FD] hover:bg-[#7DD3FC] text-zinc-950',
+    selectedBgClass: 'bg-[#38BDF8] ring-4 ring-black/20 dark:ring-white/30',
+    borderClass: 'border-2 border-black dark:border-black',
+    shadowClass: 'shadow-[3px_3px_0px_#000000] dark:shadow-[3px_3px_0px_#38BDF8]',
+    tagClass: 'bg-black text-[#BAE6FD] font-mono',
+    arrowColor: '#0284C7'
   },
   3: {
     name: 'Zona Nilai & FVG',
-    shortLabel: 'Fase 3',
-    colorHex: '#F59E0B', // Golden Amber
-    glowColor: 'rgba(245, 158, 11, 0.4)',
-    cardBaseClass: 'bg-amber-50/95 hover:bg-amber-50 border-amber-300 hover:border-amber-500 dark:bg-[#1C1405] dark:hover:bg-[#271B07] dark:border-amber-500/40 dark:hover:border-amber-400',
-    cardSelectedClass: 'bg-amber-50 border-2 border-[#F59E0B] dark:bg-[#1C1405] dark:border-[#F59E0B]',
-    tagClass: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-500/40',
-    stripColor: '#F59E0B'
+    badgeName: 'Institutional Value',
+    colorHex: '#C084FC', // Purple / Violet
+    bgClass: 'bg-[#E9D5FF] hover:bg-[#D8B4FE] text-zinc-950',
+    selectedBgClass: 'bg-[#C084FC] ring-4 ring-black/20 dark:ring-white/30',
+    borderClass: 'border-2 border-black dark:border-black',
+    shadowClass: 'shadow-[3px_3px_0px_#000000] dark:shadow-[3px_3px_0px_#C084FC]',
+    tagClass: 'bg-black text-[#E9D5FF] font-mono',
+    arrowColor: '#9333EA'
   },
   4: {
     name: 'Likuiditas & Sweeps',
-    shortLabel: 'Fase 4',
-    colorHex: '#A855F7', // Royal Violet Purple
-    glowColor: 'rgba(168, 85, 247, 0.4)',
-    cardBaseClass: 'bg-purple-50/95 hover:bg-purple-50 border-purple-300 hover:border-purple-500 dark:bg-[#170928] dark:hover:bg-[#220D3B] dark:border-purple-500/40 dark:hover:border-purple-400',
-    cardSelectedClass: 'bg-purple-50 border-2 border-[#A855F7] dark:bg-[#170928] dark:border-[#A855F7]',
-    tagClass: 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-950/80 dark:text-purple-300 dark:border-purple-500/40',
-    stripColor: '#A855F7'
+    badgeName: 'Liquidity Mapping',
+    colorHex: '#4ADE80', // Mint / Green
+    bgClass: 'bg-[#BBF7D0] hover:bg-[#86EFAC] text-zinc-950',
+    selectedBgClass: 'bg-[#4ADE80] ring-4 ring-black/20 dark:ring-white/30',
+    borderClass: 'border-2 border-black dark:border-black',
+    shadowClass: 'shadow-[3px_3px_0px_#000000] dark:shadow-[3px_3px_0px_#4ADE80]',
+    tagClass: 'bg-black text-[#BBF7D0] font-mono',
+    arrowColor: '#16A34A'
   },
   5: {
     name: 'Eksekusi & Risiko',
-    shortLabel: 'Fase 5',
-    colorHex: '#F43F5E', // Rose Crimson
-    glowColor: 'rgba(244, 63, 94, 0.4)',
-    cardBaseClass: 'bg-rose-50/95 hover:bg-rose-50 border-rose-300 hover:border-rose-500 dark:bg-[#1F0713] dark:hover:bg-[#2B0A1A] dark:border-rose-500/40 dark:hover:border-rose-400',
-    cardSelectedClass: 'bg-rose-50 border-2 border-[#F43F5E] dark:bg-[#1F0713] dark:border-[#F43F5E]',
-    tagClass: 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-950/80 dark:text-rose-300 dark:border-rose-500/40',
-    stripColor: '#F43F5E'
+    badgeName: 'Execution Protocol',
+    colorHex: '#FB7185', // Rose / Coral
+    bgClass: 'bg-[#FECDD3] hover:bg-[#FDA4AF] text-zinc-950',
+    selectedBgClass: 'bg-[#FB7185] ring-4 ring-black/20 dark:ring-white/30',
+    borderClass: 'border-2 border-black dark:border-black',
+    shadowClass: 'shadow-[3px_3px_0px_#000000] dark:shadow-[3px_3px_0px_#FB7185]',
+    tagClass: 'bg-black text-[#FECDD3] font-mono',
+    arrowColor: '#E11D48'
   }
 };
 
-const getLevelTheme = (lvl: number): LevelThemeConfig => {
-  return LEVEL_THEMES[lvl] || LEVEL_THEMES[((lvl - 1) % 5) + 1] || LEVEL_THEMES[1];
+const getNodeTheme = (lvl: number): NodeTheme => {
+  return ROADMAP_THEMES[lvl] || ROADMAP_THEMES[((lvl - 1) % 5) + 1] || ROADMAP_THEMES[1];
 };
 
-// Canvas geometry: spacious, uncrowded 3-lane grid with 60px horizontal clearance
+// Canvas geometry: roadmap.sh flowchart proportions
 const CANVAS_WIDTH = 1000;
-const NODE_WIDTH = 240;
-const NODE_HEIGHT = 118;
+const NODE_WIDTH = 250;
+const NODE_HEIGHT = 104;
 
 // Lane X coordinates
-const LANE_LEFT_X = 80;
-const LANE_CENTER_X = 380;
-const LANE_RIGHT_X = 680;
+const LANE_LEFT_X = 140;
+const LANE_CENTER_X = 375;
+const LANE_RIGHT_X = 610;
 
-const STAGE_LABELS: Record<number, { title: string; subtitle: string; y: number }> = {
-  1: { 
-    title: 'FASE 1: FONDASI LELANG & ANATOMI HARGA', 
-    subtitle: 'Anatomi candlestick, sumbu volume, dan fraktalitas multi-timeframe',
-    y: 25
+// Signature roadmap.sh Group Enclosure Containers
+const STAGE_BOXES: StageGroupBox[] = [
+  {
+    level: 1,
+    title: '1. FONDASI LELANG & ANATOMI HARGA',
+    subtitle: 'Anatomi candlestick, order flow lelang pembeli vs penjual, dan fraktalitas MTF',
+    tag: 'Prasyarat Wajib',
+    x: 40,
+    y: 35,
+    width: 920,
+    height: 340,
+    badgeBg: 'bg-black text-[#FACC15] dark:bg-white dark:text-black',
+    badgeText: 'FASE 1'
   },
-  2: { 
-    title: 'FASE 2: STRUKTUR PASAR & KONFIRMASI TREN', 
-    subtitle: 'Break of Structure (BOS), Change of Character (CHoCH), dan swing extremes',
-    y: 440
+  {
+    level: 2,
+    title: '2. STRUKTUR PASAR & KONFIRMASI TREN',
+    subtitle: 'Pemetaan swing highs/lows mekanis, validasi BOS vs CHoCH, dan order flow',
+    tag: 'Arsitektur Tren',
+    x: 40,
+    y: 420,
+    width: 920,
+    height: 410,
+    badgeBg: 'bg-black text-[#38BDF8] dark:bg-white dark:text-black',
+    badgeText: 'FASE 2'
   },
-  3: { 
-    title: 'FASE 3: ZONA NILAI INSTITUSI & IMBALANCE', 
-    subtitle: 'Fair Value Gaps (FVG), Supply & Demand fresh vs mitigated, serta equilibrium',
-    y: 860
+  {
+    level: 3,
+    title: '3. ZONA NILAI INSTITUSI & IMBALANCE',
+    subtitle: 'Fair Value Gaps (FVG), mitigasi Supply & Demand, serta diskon equilibrium 50%',
+    tag: 'Area Nilai',
+    x: 40,
+    y: 875,
+    width: 920,
+    height: 230,
+    badgeBg: 'bg-black text-[#C084FC] dark:bg-white dark:text-black',
+    badgeText: 'FASE 3'
   },
-  4: { 
-    title: 'FASE 4: KOLAM LIKUIDITAS & JEBAKAN PASAR', 
+  {
+    level: 4,
+    title: '4. KOLAM LIKUIDITAS & JEBAKAN PASAR',
     subtitle: 'Pemetaan Buy-side & Sell-side Liquidity, Equal Highs, dan Liquidity Sweeps',
-    y: 1080
+    tag: 'Smart Money Pool',
+    x: 40,
+    y: 1145,
+    width: 920,
+    height: 230,
+    badgeBg: 'bg-black text-[#4ADE80] dark:bg-white dark:text-black',
+    badgeText: 'FASE 4'
   },
-  5: { 
-    title: 'FASE 5: PROTOKOL EKSEKUSI & MANAJEMEN RISIKO', 
+  {
+    level: 5,
+    title: '5. PROTOKOL EKSEKUSI & MANAJEMEN RISIKO',
     subtitle: 'Trigger konfirmasi LTF, aturan risiko 1% modal, dan audit jurnal trading',
-    y: 1300
+    tag: 'Final Capstone',
+    x: 40,
+    y: 1415,
+    width: 920,
+    height: 425,
+    badgeBg: 'bg-black text-[#FB7185] dark:bg-white dark:text-black',
+    badgeText: 'FASE 5'
   }
-};
+];
 
-// Symmetrical, uncrowded position map for the core 12 modules
+// Presets for the core 12 price-action nodes inside their group boxes
 const POSITION_PRESETS: Record<string, { posX: number; posY: number }> = {
-  'node-1-1': { posX: LANE_CENTER_X, posY: 80 },   // Fase 1: Single Center Spine
-  'node-1-2': { posX: LANE_CENTER_X, posY: 260 },  // Fase 1: Step 2 Center Spine
-  'node-2-1': { posX: LANE_CENTER_X, posY: 495 },  // Fase 2: Valid Swings Center
-  'node-2-2': { posX: LANE_LEFT_X,   posY: 695 },  // Fase 2: BOS / CHoCH Left
-  'node-2-3': { posX: LANE_RIGHT_X,  posY: 695 },  // Fase 2: Strong / Weak Highs Right
-  'node-3-1': { posX: LANE_LEFT_X,   posY: 915 },  // Fase 3: Supply & Demand Left
-  'node-3-2': { posX: LANE_RIGHT_X,  posY: 915 },  // Fase 3: Premium / Discount Right
-  'node-4-1': { posX: LANE_LEFT_X,   posY: 1135 }, // Fase 4: BSL & SSL Left
-  'node-4-2': { posX: LANE_RIGHT_X,  posY: 1135 }, // Fase 4: Liquidity Sweeps Right
-  'node-5-1': { posX: LANE_LEFT_X,   posY: 1355 }, // Fase 5: LTF Entry Trigger Left
-  'node-5-2': { posX: LANE_RIGHT_X,  posY: 1355 }, // Fase 5: Logical Stop Loss Right
-  'node-5-3': { posX: LANE_CENTER_X, posY: 1545 }, // Fase 5: Capstone Review Center Convergence
+  // Box 1 (y: 35, h: 340)
+  'node-1-1': { posX: LANE_CENTER_X, posY: 80 },
+  'node-1-2': { posX: LANE_CENTER_X, posY: 235 },
+
+  // Box 2 (y: 420, h: 410)
+  'node-2-1': { posX: LANE_CENTER_X, posY: 465 },
+  'node-2-2': { posX: LANE_LEFT_X,   posY: 670 },
+  'node-2-3': { posX: LANE_RIGHT_X,  posY: 670 },
+
+  // Box 3 (y: 875, h: 230)
+  'node-3-1': { posX: LANE_LEFT_X,   posY: 935 },
+  'node-3-2': { posX: LANE_RIGHT_X,  posY: 935 },
+
+  // Box 4 (y: 1145, h: 230)
+  'node-4-1': { posX: LANE_LEFT_X,   posY: 1205 },
+  'node-4-2': { posX: LANE_RIGHT_X,  posY: 1205 },
+
+  // Box 5 (y: 1415, h: 425)
+  'node-5-1': { posX: LANE_LEFT_X,   posY: 1475 },
+  'node-5-2': { posX: LANE_RIGHT_X,  posY: 1475 },
+  'node-5-3': { posX: LANE_CENTER_X, posY: 1675 },
 };
 
 export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
@@ -163,11 +230,11 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
   const [statusFilter, setStatusFilter] = useState<'all' | 'available' | 'in_progress' | 'completed'>('all');
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.15, 1.5));
+  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.15, 1.4));
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.15, 0.65));
   const handleResetZoom = () => setZoom(1);
 
-  // Position nodes with spacious coordinates: presets for known curriculum or dynamic tree fallback
+  // Position nodes precisely using presets or dynamic flowchart logic
   const positionedNodes: PositionedNode[] = useMemo(() => {
     return nodes.map(node => {
       if (POSITION_PRESETS[node.id]) {
@@ -180,12 +247,11 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
         };
       }
 
-      // Dynamic fallback for custom / community roadmaps
-      const lvl = node.level || 1;
+      // Dynamic fallback for custom roadmaps
       const order = node.order_index || 1;
       const isLeft = order % 2 === 0;
       const posX = order === 1 ? LANE_CENTER_X : isLeft ? LANE_LEFT_X : LANE_RIGHT_X;
-      const posY = 80 + (order - 1) * 160;
+      const posY = 80 + (order - 1) * 155;
 
       return {
         ...node,
@@ -198,7 +264,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
   }, [nodes]);
 
   const totalCanvasHeight = useMemo(() => {
-    if (positionedNodes.length === 0) return 1600;
+    if (positionedNodes.length === 0) return 1880;
     const maxY = Math.max(...positionedNodes.map(n => n.posY));
     return maxY + 180;
   }, [positionedNodes]);
@@ -209,7 +275,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
     return map;
   }, [positionedNodes]);
 
-  // Clean Bézier connections with parent & child phase themes
+  // Clean, high-contrast flowchart connectors with directional arrows
   const connections = useMemo(() => {
     const list: Array<{
       id: string;
@@ -219,8 +285,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
       toY: number;
       isActive: boolean;
       isCompleted: boolean;
-      parentColor: string;
-      childColor: string;
+      color: string;
     }> = [];
 
     positionedNodes.forEach(child => {
@@ -228,9 +293,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
         const parent = posMap.get(child.parent_node_id)!;
         const isParentCompleted = parent.status === 'completed';
         const isChildCompleted = child.status === 'completed';
-
-        const parentTheme = getLevelTheme(parent.level);
-        const childTheme = getLevelTheme(child.level);
+        const theme = getNodeTheme(parent.level);
 
         list.push({
           id: `${parent.id}->${child.id}`,
@@ -240,55 +303,29 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
           toY: child.posY,
           isActive: isParentCompleted,
           isCompleted: isParentCompleted && isChildCompleted,
-          parentColor: parentTheme.colorHex,
-          childColor: childTheme.colorHex
+          color: theme.arrowColor
         });
       }
     });
 
-    // Add dual convergence curve into node-5-3 if node-5-2 exists
+    // Convergence curve from node-5-2 to node-5-3
     const node52 = posMap.get('node-5-2');
     const node53 = posMap.get('node-5-3');
     if (node52 && node53) {
-      const isParentCompleted = node52.status === 'completed';
-      const isChildCompleted = node53.status === 'completed';
-      const theme5 = getLevelTheme(5);
-
       list.push({
         id: 'node-5-2->node-5-3',
         fromX: node52.posX + NODE_WIDTH / 2,
         fromY: node52.posY + NODE_HEIGHT,
         toX: node53.posX + NODE_WIDTH / 2,
         toY: node53.posY,
-        isActive: isParentCompleted,
-        isCompleted: isParentCompleted && isChildCompleted,
-        parentColor: theme5.colorHex,
-        childColor: theme5.colorHex
+        isActive: node52.status === 'completed',
+        isCompleted: node52.status === 'completed' && node53.status === 'completed',
+        color: '#E11D48'
       });
     }
 
     return list;
   }, [positionedNodes, posMap]);
-
-  // Visual stage divider banners
-  const stageDividers = useMemo(() => {
-    const presentLevels = new Set(positionedNodes.map(n => n.level));
-    const list = [];
-
-    for (let lvl = 1; lvl <= 5; lvl++) {
-      if (presentLevels.has(lvl) && STAGE_LABELS[lvl]) {
-        list.push({
-          level: lvl,
-          y: STAGE_LABELS[lvl].y,
-          title: STAGE_LABELS[lvl].title,
-          subtitle: STAGE_LABELS[lvl].subtitle,
-          theme: getLevelTheme(lvl)
-        });
-      }
-    }
-
-    return list;
-  }, [positionedNodes]);
 
   const filteredNodes = useMemo(() => {
     return positionedNodes.filter(n => {
@@ -299,75 +336,39 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
     });
   }, [positionedNodes, searchTerm, statusFilter]);
 
-  const getStatusBadge = (status: RoadmapNode['status']) => {
-    switch (status) {
-      case 'completed':
-        return (
-          <span className="flex items-center space-x-1 text-[10px] font-mono bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 dark:border-emerald-500/40 px-2 py-0.5 rounded-full font-bold shadow-xs">
-            <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-            <span>Mastered</span>
-          </span>
-        );
-      case 'in_progress':
-        return (
-          <span className="flex items-center space-x-1 text-[10px] font-mono bg-amber-100 text-amber-800 border border-amber-300 dark:bg-amber-500/20 dark:text-amber-300 dark:border-amber-500/40 px-2 py-0.5 rounded-full animate-pulse font-bold shadow-xs">
-            <Clock className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-            <span>Aktif</span>
-          </span>
-        );
-      case 'available':
-        return (
-          <span className="flex items-center space-x-1 text-[10px] font-mono bg-sky-100 text-sky-800 border border-sky-300 dark:bg-sky-500/20 dark:text-sky-300 dark:border-sky-500/40 px-2 py-0.5 rounded-full font-bold shadow-xs">
-            <Sparkles className="w-3 h-3 text-sky-600 dark:text-sky-400" />
-            <span>Terbuka</span>
-          </span>
-        );
-      case 'locked':
-      default:
-        return (
-          <span className="flex items-center space-x-1 text-[10px] font-mono bg-slate-200/80 text-slate-700 border border-slate-300 dark:bg-[#1E293B]/70 dark:text-slate-400 dark:border-[#334155]/50 px-2 py-0.5 rounded-full font-medium">
-            <Lock className="w-2.5 h-2.5 text-slate-500 dark:text-slate-400" />
-            <span>Lanjutan</span>
-          </span>
-        );
-    }
-  };
-
   const handleJumpToActive = () => {
     const active = nodes.find(n => n.status === 'in_progress') || nodes.find(n => n.status === 'available');
-    if (active) {
-      onSelectNode(active);
-    }
+    if (active) onSelectNode(active);
   };
 
   return (
-    <div className="relative w-full overflow-hidden flex flex-col bg-slate-50 dark:bg-[#08090D] transition-colors">
-      {/* Roadmap Header Toolbar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-[#1E293B] bg-white dark:bg-[#0D1017] gap-4 transition-colors">
+    <div className="relative w-full overflow-hidden flex flex-col bg-[#F8FAFC] dark:bg-[#0B0F19] transition-colors">
+      {/* Roadmap.sh Navigation & Control Toolbar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between px-6 py-3.5 border-b border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#111625] gap-4 transition-colors">
         <div>
-          <div className="flex items-center space-x-3">
-            <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-[#F8FAFC] tracking-tight">{roadmap.title}</h1>
-            <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-[#10B981]/15 dark:text-[#10B981] border border-emerald-300 dark:border-[#10B981]/30 font-semibold">
-              {roadmap.difficulty}
+          <div className="flex items-center space-x-2.5">
+            <span className="px-2 py-0.5 rounded bg-black text-white dark:bg-white dark:text-black text-[10px] font-mono font-bold uppercase tracking-wider">
+              Roadmap
             </span>
-            <span className="text-xs font-mono text-slate-500 dark:text-[#94A3B8] hidden md:inline">
-              Est. {roadmap.estimated_hours} Jam Belajar
+            <h1 className="text-lg sm:text-xl font-extrabold text-zinc-950 dark:text-white tracking-tight">{roadmap.title}</h1>
+            <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400 hidden lg:inline">
+              • {nodes.length} Modul Terstruktur
             </span>
           </div>
-          <p className="text-xs text-slate-600 dark:text-[#94A3B8] mt-1 max-w-2xl">{roadmap.description}</p>
+          <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5 max-w-2xl">{roadmap.description}</p>
         </div>
 
-        {/* Search, Filter & View Controls */}
+        {/* Action Buttons & Filter */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Search Box */}
+          {/* Search Input */}
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#94A3B8]" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
-              placeholder="Cari konsep..."
+              placeholder="Cari topik..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="bg-slate-100 dark:bg-[#090D16] border border-slate-200 dark:border-[#1E293B] focus:border-[#10B981] rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-[#94A3B8] outline-none w-36 sm:w-44 transition-colors"
+              className="bg-slate-100 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 focus:border-black dark:focus:border-white rounded-md pl-8 pr-3 py-1.5 text-xs text-zinc-950 dark:text-white placeholder-zinc-400 outline-none w-36 sm:w-44 transition-all"
             />
           </div>
 
@@ -375,7 +376,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value as any)}
-            className="bg-slate-100 dark:bg-[#090D16] border border-slate-200 dark:border-[#1E293B] rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-700 dark:text-[#94A3B8] outline-none"
+            className="bg-slate-100 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 rounded-md px-2.5 py-1.5 text-xs font-mono text-zinc-800 dark:text-zinc-200 outline-none"
           >
             <option value="all">Semua Status</option>
             <option value="available">Tersedia</option>
@@ -386,52 +387,52 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
           {/* Jump to Active Button */}
           <button
             onClick={handleJumpToActive}
-            className="flex items-center space-x-1 px-2.5 py-1.5 bg-emerald-100 text-emerald-800 dark:bg-[#10B981]/15 dark:text-[#10B981] hover:bg-[#10B981] hover:text-black border border-emerald-300 dark:border-[#10B981]/30 rounded-lg text-xs font-mono transition-colors font-medium"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-[#FACC15] hover:bg-[#EAB308] text-black font-semibold border-2 border-black rounded-md text-xs shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all"
             title="Lompat ke Modul Aktif"
           >
             <Navigation className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Modul Aktif</span>
           </button>
 
-          {/* View mode toggle */}
-          <div className="flex items-center bg-slate-100 dark:bg-[#090D16] p-1 rounded-lg border border-slate-200 dark:border-[#1E293B]">
+          {/* View Mode Toggle */}
+          <div className="flex items-center bg-slate-100 dark:bg-zinc-900 p-0.5 rounded-md border border-slate-300 dark:border-zinc-700">
             <button
               onClick={() => setViewMode('canvas')}
-              title="Kanvas Graf 2D"
-              className={`p-1.5 rounded text-xs transition-colors ${viewMode === 'canvas' ? 'bg-white dark:bg-[#1E293B] text-[#10B981] shadow-xs' : 'text-slate-600 dark:text-[#94A3B8] hover:text-black dark:hover:text-white'}`}
+              title="Diagram Flowchart"
+              className={`p-1.5 rounded text-xs transition-colors ${viewMode === 'canvas' ? 'bg-black text-white dark:bg-white dark:text-black shadow-xs font-bold' : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'}`}
             >
               <Monitor className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode('linear')}
-              title="Urutan Linier"
-              className={`p-1.5 rounded text-xs transition-colors ${viewMode === 'linear' ? 'bg-white dark:bg-[#1E293B] text-[#10B981] shadow-xs' : 'text-slate-600 dark:text-[#94A3B8] hover:text-black dark:hover:text-white'}`}
+              title="Daftar Teks"
+              className={`p-1.5 rounded text-xs transition-colors ${viewMode === 'linear' ? 'bg-black text-white dark:bg-white dark:text-black shadow-xs font-bold' : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'}`}
             >
               <Smartphone className="w-4 h-4" />
             </button>
           </div>
 
-          {/* Zoom controls */}
+          {/* Zoom Controls */}
           {viewMode === 'canvas' && (
-            <div className="flex items-center space-x-1 bg-slate-100 dark:bg-[#090D16] p-1 rounded-lg border border-slate-200 dark:border-[#1E293B]">
+            <div className="flex items-center space-x-1 bg-slate-100 dark:bg-zinc-900 p-0.5 rounded-md border border-slate-300 dark:border-zinc-700">
               <button
                 onClick={handleZoomOut}
-                className="p-1.5 text-slate-600 dark:text-[#94A3B8] hover:text-black dark:hover:text-white hover:bg-slate-200 dark:hover:bg-[#1E293B] rounded transition-colors"
+                className="p-1.5 text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-slate-200 dark:hover:bg-zinc-800 rounded transition-colors"
                 title="Perkecil (-)"
               >
                 <ZoomOut className="w-3.5 h-3.5" />
               </button>
-              <span className="text-[11px] font-mono px-1 text-slate-700 dark:text-[#94A3B8]">{Math.round(zoom * 100)}%</span>
+              <span className="text-[11px] font-mono px-1 font-bold text-zinc-700 dark:text-zinc-300">{Math.round(zoom * 100)}%</span>
               <button
                 onClick={handleZoomIn}
-                className="p-1.5 text-slate-600 dark:text-[#94A3B8] hover:text-black dark:hover:text-white hover:bg-slate-200 dark:hover:bg-[#1E293B] rounded transition-colors"
+                className="p-1.5 text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-slate-200 dark:hover:bg-zinc-800 rounded transition-colors"
                 title="Perbesar (+)"
               >
                 <ZoomIn className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={handleResetZoom}
-                className="p-1.5 text-slate-600 dark:text-[#94A3B8] hover:text-black dark:hover:text-white hover:bg-slate-200 dark:hover:bg-[#1E293B] rounded transition-colors"
+                className="p-1.5 text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white hover:bg-slate-200 dark:hover:bg-zinc-800 rounded transition-colors"
                 title="Reset Zoom (100%)"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -441,11 +442,48 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
         </div>
       </div>
 
-      {/* Main Canvas Area */}
+      {/* Signature Roadmap.sh Color Legend Bar */}
+      <div className="flex flex-wrap items-center gap-4 px-6 py-2.5 bg-slate-100/90 dark:bg-[#0D121F] border-b border-slate-200 dark:border-zinc-800 text-xs font-mono select-none">
+        <span className="font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-[11px] flex items-center space-x-1">
+          <Info className="w-3.5 h-3.5 text-zinc-400" />
+          <span>Panduan Warna:</span>
+        </span>
+
+        <div className="flex items-center space-x-1.5">
+          <span className="w-3.5 h-3.5 rounded-xs bg-[#FEF08A] border-2 border-black shadow-[1px_1px_0px_#000]"></span>
+          <span className="text-zinc-800 dark:text-zinc-200 font-medium">Fondasi Lelang (Core)</span>
+        </div>
+
+        <div className="flex items-center space-x-1.5">
+          <span className="w-3.5 h-3.5 rounded-xs bg-[#BAE6FD] border-2 border-black shadow-[1px_1px_0px_#000]"></span>
+          <span className="text-zinc-800 dark:text-zinc-200 font-medium">Struktur Pasar</span>
+        </div>
+
+        <div className="flex items-center space-x-1.5">
+          <span className="w-3.5 h-3.5 rounded-xs bg-[#E9D5FF] border-2 border-black shadow-[1px_1px_0px_#000]"></span>
+          <span className="text-zinc-800 dark:text-zinc-200 font-medium">Zona Nilai & FVG</span>
+        </div>
+
+        <div className="flex items-center space-x-1.5">
+          <span className="w-3.5 h-3.5 rounded-xs bg-[#BBF7D0] border-2 border-black shadow-[1px_1px_0px_#000]"></span>
+          <span className="text-zinc-800 dark:text-zinc-200 font-medium">Kolam Likuiditas</span>
+        </div>
+
+        <div className="flex items-center space-x-1.5">
+          <span className="w-3.5 h-3.5 rounded-xs bg-[#FECDD3] border-2 border-black shadow-[1px_1px_0px_#000]"></span>
+          <span className="text-zinc-800 dark:text-zinc-200 font-medium">Eksekusi & Risiko</span>
+        </div>
+
+        <span className="ml-auto text-[11px] text-zinc-500 dark:text-zinc-400 hidden xl:inline">
+          💡 Klik node kartu untuk membuka materi &amp; kuis interaktif
+        </span>
+      </div>
+
+      {/* Main Flowchart Canvas Area */}
       {viewMode === 'canvas' ? (
         <div 
           ref={containerRef}
-          className="relative w-full h-[860px] overflow-auto bg-grid-tactical bg-slate-50 dark:bg-[#08090D] p-8 flex justify-center transition-colors"
+          className="relative w-full h-[880px] overflow-auto bg-grid-tactical bg-[#F8FAFC] dark:bg-[#0B0F19] p-8 flex justify-center transition-colors"
         >
           <div
             className="relative transition-transform duration-200 origin-top"
@@ -455,137 +493,101 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
               transform: `scale(${zoom})`
             }}
           >
-            {/* Colorful Stage Level Backdrop Dividers */}
-            {stageDividers.map(stage => {
-              const theme = stage.theme;
-              return (
-                <div
-                  key={stage.level}
-                  style={{ position: 'absolute', top: `${stage.y}px`, left: '30px', right: '30px' }}
-                  className="pointer-events-none z-0"
-                >
-                  <div className="flex items-center space-x-3 mb-1">
-                    <span 
-                      style={{ 
-                        borderColor: `${theme.colorHex}55`,
-                        color: theme.colorHex,
-                        backgroundColor: `${theme.colorHex}15`
-                      }}
-                      className="text-[10.5px] font-mono tracking-widest font-bold px-3 py-0.5 rounded-md border shadow-xs"
-                    >
-                      {stage.title}
-                    </span>
-                    <div 
-                      style={{
-                        background: `linear-gradient(to right, ${theme.colorHex}55, ${theme.colorHex}15, transparent)`
-                      }}
-                      className="flex-1 h-[1.5px]" 
-                    />
-                  </div>
-                  <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 pl-1 font-medium">
-                    {stage.subtitle}
-                  </p>
+            {/* Stage Group Enclosure Containers (roadmap.sh Section Boxes) */}
+            {STAGE_BOXES.map(box => (
+              <div
+                key={box.level}
+                style={{
+                  position: 'absolute',
+                  left: `${box.x}px`,
+                  top: `${box.y}px`,
+                  width: `${box.width}px`,
+                  height: `${box.height}px`
+                }}
+                className="rounded-2xl border-2 border-dashed border-slate-300 dark:border-zinc-700/80 bg-white/40 dark:bg-zinc-900/30 backdrop-blur-2xs pointer-events-none transition-colors"
+              >
+                {/* Enclosure Header Pill at Top-Left */}
+                <div className="absolute -top-3.5 left-6 flex items-center space-x-2">
+                  <span className={`px-2.5 py-0.5 rounded text-[11px] font-mono font-extrabold uppercase border-2 border-black shadow-[2px_2px_0px_#000] ${box.badgeBg}`}>
+                    {box.title}
+                  </span>
+                  <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 px-2 py-0.5 rounded border border-slate-300 dark:border-zinc-700">
+                    {box.tag}
+                  </span>
                 </div>
-              );
-            })}
+              </div>
+            ))}
 
-            {/* SVG Vector Connections (Smooth Bézier Curves with Chromatic Gradients) */}
+            {/* SVG Vector Connections (High-Contrast Bold Flowchart Lines) */}
             <svg
               className="absolute inset-0 w-full h-full pointer-events-none z-10"
               style={{ width: `${CANVAS_WIDTH}px`, height: `${totalCanvasHeight}px` }}
             >
-              <defs>
-                <filter id="glow-connector" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="4" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-                {connections.map(conn => (
-                  <linearGradient 
-                    key={`grad-${conn.id}`} 
-                    id={`grad-${conn.id.replace(/[^a-zA-Z0-9]/g, '_')}`} 
-                    x1="0%" y1="0%" x2="0%" y2="100%"
-                  >
-                    <stop offset="0%" stopColor={conn.parentColor} />
-                    <stop offset="100%" stopColor={conn.childColor} />
-                  </linearGradient>
-                ))}
-              </defs>
-
               {connections.map(conn => {
                 const dy = conn.toY - conn.fromY;
                 const pathD = `M ${conn.fromX} ${conn.fromY} C ${conn.fromX} ${conn.fromY + dy * 0.5}, ${conn.toX} ${conn.toY - dy * 0.5}, ${conn.toX} ${conn.toY - 2}`;
-                const gradId = `grad-${conn.id.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
                 return (
                   <g key={conn.id}>
-                    {/* High-contrast halo stroke behind line to make it pop boldly against grid */}
+                    {/* High-contrast halo background stroke */}
                     <path
                       d={pathD}
                       fill="none"
                       stroke="currentColor"
-                      className="text-white dark:text-[#08090D]"
+                      className="text-white dark:text-[#0B0F19]"
                       strokeWidth={7}
                       strokeLinecap="round"
-                      strokeOpacity={0.95}
                     />
 
-                    {/* Bold, vibrant chromatic gradient connector line */}
+                    {/* Primary Solid High-Contrast Line */}
                     <path
                       d={pathD}
                       fill="none"
-                      stroke={`url(#${gradId})`}
-                      strokeWidth={3}
+                      stroke="currentColor"
+                      className="text-zinc-900 dark:text-zinc-200"
+                      strokeWidth={2.75}
                       strokeLinecap="round"
-                      strokeOpacity={1}
-                      filter={conn.isCompleted ? 'url(#glow-connector)' : undefined}
                     />
 
-                    {/* Source node exit anchor port */}
+                    {/* Source Node Exit Port Pin */}
                     <circle
                       cx={conn.fromX}
                       cy={conn.fromY}
-                      r={4.5}
-                      fill={conn.parentColor}
+                      r={4}
+                      fill="currentColor"
+                      className="text-zinc-900 dark:text-zinc-200"
                       stroke="currentColor"
-                      className="text-white dark:text-[#08090D]"
-                      strokeWidth={2}
+                      strokeWidth={1.5}
                     />
 
-                    {/* Midpoint flow pulse indicator */}
+                    {/* Midpoint Pulse Dot */}
                     <circle
                       cx={(conn.fromX + conn.toX) / 2}
                       cy={(conn.fromY + conn.toY) / 2}
-                      r={4}
-                      fill={conn.childColor}
+                      r={3.5}
+                      fill={conn.color}
                       stroke="currentColor"
-                      className="text-white dark:text-[#08090D] animate-pulse"
+                      className="text-zinc-900 dark:text-zinc-200"
                       strokeWidth={1.5}
                     />
 
-                    {/* Prominent directional arrowhead pointing into child node */}
+                    {/* Crisp Directional Arrowhead pointing into Child Card */}
                     <polygon
-                      points={`${conn.toX - 6},${conn.toY - 12} ${conn.toX + 6},${conn.toY - 12} ${conn.toX},${conn.toY - 2}`}
-                      fill={conn.childColor}
-                      stroke="currentColor"
-                      className="text-white dark:text-[#08090D]"
-                      strokeWidth={1.5}
+                      points={`${conn.toX - 6},${conn.toY - 12} ${conn.toX + 6},${conn.toY - 12} ${conn.toX},${conn.toY - 1}`}
+                      fill="currentColor"
+                      className="text-zinc-900 dark:text-zinc-200"
                     />
                   </g>
                 );
               })}
             </svg>
 
-            {/* Interactive Colorful Node Cards */}
+            {/* Interactive Neo-Brutalist Node Cards (roadmap.sh Aesthetic) */}
             {filteredNodes.map(node => {
               const isSelected = selectedNodeId === node.id;
-              const isLocked = node.status === 'locked';
-              const theme = getLevelTheme(node.level);
-
-              const cardClasses = isSelected
-                ? `${theme.cardSelectedClass} scale-[1.03] z-30 shadow-lg`
-                : isLocked
-                ? 'bg-slate-100/90 hover:bg-slate-100 border-slate-300 hover:border-slate-400 dark:bg-[#0D1017]/90 dark:hover:bg-[#121722] dark:border-[#1E293B] opacity-80 hover:opacity-100 z-20 shadow-xs'
-                : `${theme.cardBaseClass} hover:scale-[1.02] hover:shadow-md z-20`;
+              const isCompleted = node.status === 'completed';
+              const isInProgress = node.status === 'in_progress';
+              const theme = getNodeTheme(node.level);
 
               return (
                 <div
@@ -596,50 +598,55 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
                     left: `${node.posX}px`,
                     top: `${node.posY}px`,
                     width: `${node.width}px`,
-                    height: `${node.height}px`,
-                    boxShadow: isSelected 
-                      ? `0 0 24px ${theme.glowColor}, 0 4px 16px rgba(0,0,0,0.15)` 
-                      : undefined
+                    height: `${node.height}px`
                   }}
-                  className={`group cursor-pointer rounded-xl overflow-hidden transition-all duration-200 select-none flex flex-col justify-between border ${cardClasses}`}
+                  className={`group cursor-pointer rounded-lg p-3 transition-all duration-150 select-none flex flex-col justify-between ${theme.borderClass} ${
+                    isSelected
+                      ? `${theme.selectedBgClass} -translate-x-1 -translate-y-1 shadow-[5px_5px_0px_#000] dark:shadow-[5px_5px_0px_#fff] z-30`
+                      : `${theme.bgClass} ${theme.shadowClass} hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_#000] dark:hover:shadow-[4px_4px_0px_#fff] z-20`
+                  }`}
                 >
-                  {/* Colored Top Accent Strip for instant visual stage identification */}
-                  <div 
-                    style={{ backgroundColor: theme.stripColor }} 
-                    className="h-1.5 w-full flex-shrink-0"
-                  />
+                  {/* Top Metadata Row: Order Tag & Status */}
+                  <div className="flex items-center justify-between">
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded font-bold ${theme.tagClass}`}>
+                      #{node.order_index} {theme.name}
+                    </span>
 
-                  <div className="p-3 flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center justify-between mb-1.5">
-                        {/* Stage Phase Tag */}
-                        <span 
-                          className={`text-[9.5px] font-mono px-2 py-0.5 rounded font-bold border ${theme.tagClass}`}
-                        >
-                          {theme.shortLabel} #{node.order_index}
+                    <div className="flex items-center space-x-1">
+                      {isCompleted ? (
+                        <span className="flex items-center space-x-0.5 text-[9.5px] font-mono font-extrabold bg-black text-[#4ADE80] px-1.5 py-0.2 rounded border border-black">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>DONE</span>
                         </span>
-                        {getStatusBadge(node.status)}
-                      </div>
-
-                      <h3 className={`text-xs font-bold leading-snug line-clamp-2 transition-colors ${
-                        isLocked 
-                          ? 'text-slate-600 dark:text-slate-400' 
-                          : 'text-slate-900 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-300'
-                      }`}>
-                        {node.title}
-                      </h3>
+                      ) : isInProgress ? (
+                        <span className="flex items-center space-x-0.5 text-[9.5px] font-mono font-extrabold bg-black text-[#FACC15] px-1.5 py-0.2 rounded border border-black animate-pulse">
+                          <Clock className="w-3 h-3" />
+                          <span>AKTIF</span>
+                        </span>
+                      ) : (
+                        <span className="text-[9.5px] font-mono text-zinc-600 font-semibold">
+                          OPEN
+                        </span>
+                      )}
                     </div>
+                  </div>
 
-                    <div className="pt-2 mt-1 border-t border-slate-200/90 dark:border-white/10 flex items-center justify-between text-[10px] font-mono text-slate-600 dark:text-slate-400">
+                  {/* Card Main Title */}
+                  <h3 className="text-xs font-bold leading-snug line-clamp-2 text-zinc-950 font-sans tracking-tight my-1">
+                    {node.title}
+                  </h3>
+
+                  {/* Card Bottom Meta */}
+                  <div className="pt-1.5 border-t border-black/15 flex items-center justify-between text-[10px] font-mono text-zinc-700">
+                    <span className="flex items-center space-x-1">
+                      <BookOpen className="w-3 h-3 text-zinc-800" />
                       <span>{node.checklists?.length || 0} Verifikasi</span>
-                      <span 
-                        style={{ color: theme.colorHex }} 
-                        className="group-hover:translate-x-0.5 transition-transform font-bold flex items-center space-x-0.5"
-                      >
-                        <span>Buka</span>
-                        <ArrowRight className="w-2.5 h-2.5" />
-                      </span>
-                    </div>
+                    </span>
+
+                    <span className="font-extrabold text-black group-hover:translate-x-0.5 transition-transform flex items-center space-x-0.5">
+                      <span>Buka</span>
+                      <ArrowRight className="w-2.5 h-2.5" />
+                    </span>
                   </div>
                 </div>
               );
@@ -647,51 +654,41 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
           </div>
         </div>
       ) : (
-        /* Mobile-First Linear Order View with Colorful Stage Tiers */
+        /* Mobile-First Linear Order View (roadmap.sh Textual View) */
         <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-4 w-full">
-          <div className="text-xs text-slate-500 dark:text-slate-400 font-mono uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Alur Belajar Berurutan ({filteredNodes.length} Modul)</span>
-            <span className="text-[10px] text-emerald-600 dark:text-[#10B981] font-bold">5 Fase Kurikulum</span>
+          <div className="text-xs text-zinc-500 dark:text-zinc-400 font-mono uppercase tracking-wider mb-2 flex items-center justify-between">
+            <span>Urutan Kurikulum Linier ({filteredNodes.length} Modul)</span>
+            <span className="text-[10px] font-bold text-black dark:text-white bg-[#FACC15] px-2 py-0.5 rounded border border-black">
+              roadmap.sh Style
+            </span>
           </div>
 
           {filteredNodes.map((node) => {
-            const theme = getLevelTheme(node.level);
+            const theme = getNodeTheme(node.level);
             return (
               <div
                 key={node.id}
                 onClick={() => onSelectNode(node)}
-                style={{
-                  borderLeftWidth: '5px',
-                  borderLeftColor: theme.colorHex
-                }}
-                className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start space-x-4 ${
-                  selectedNodeId === node.id
-                    ? `${theme.cardSelectedClass} shadow-md`
-                    : `${theme.cardBaseClass} hover:shadow-sm`
+                className={`p-4 rounded-xl border-2 border-black transition-all cursor-pointer flex items-start space-x-4 ${theme.bgClass} ${theme.shadowClass} hover:-translate-x-0.5 hover:-translate-y-0.5 ${
+                  selectedNodeId === node.id ? 'ring-4 ring-black/20' : ''
                 }`}
               >
-                <div 
-                  style={{ 
-                    backgroundColor: `${theme.colorHex}20`,
-                    borderColor: `${theme.colorHex}55`,
-                    color: theme.colorHex 
-                  }}
-                  className="flex-shrink-0 w-8 h-8 rounded-lg border flex items-center justify-center font-mono text-xs font-bold"
-                >
+                <div className="flex-shrink-0 w-8 h-8 rounded-md bg-black text-white flex items-center justify-center font-mono text-xs font-black">
                   {node.order_index}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span 
-                      style={{ color: theme.colorHex }} 
-                      className="text-xs font-mono font-bold"
-                    >
-                      {theme.shortLabel} — {theme.name}
+                    <span className="text-xs font-mono font-extrabold text-zinc-800 uppercase tracking-wider">
+                      Fase {node.level}: {theme.name}
                     </span>
-                    {getStatusBadge(node.status)}
+                    {node.status === 'completed' && (
+                      <span className="text-[10px] font-mono font-bold bg-black text-[#4ADE80] px-2 py-0.5 rounded">
+                        ✓ SELESAI
+                      </span>
+                    )}
                   </div>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white mt-1">{node.title}</h3>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mt-1">{node.summary}</p>
+                  <h3 className="text-sm font-extrabold text-zinc-950 mt-1">{node.title}</h3>
+                  <p className="text-xs text-zinc-700 line-clamp-2 mt-1">{node.summary}</p>
                 </div>
               </div>
             );
