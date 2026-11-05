@@ -4,8 +4,166 @@ interface VisualDiagramProps {
   type?: string;
 }
 
+function normalizeDiagramType(rawType?: string): string {
+  if (!rawType) return 'candlestick_anatomy';
+  const clean = rawType.toLowerCase().trim().replace(/[-_]+/g, '_');
+
+  // Exact & direct aliases
+  if (clean === 'candlestick' || clean === 'candlestick_anatomy' || clean === 'candlesticks') {
+    return 'candlestick_anatomy';
+  }
+  if (clean === 'market_structure' || clean === 'market_participants' || clean === 'market_structure_participants') {
+    return 'market_structure';
+  }
+  if (clean === 'swing_structure' || clean === 'structure') {
+    return 'swing_structure';
+  }
+  if (clean === 'bos_choch' || clean === 'bos' || clean === 'choch' || clean === 'break_of_structure') {
+    return 'bos_choch';
+  }
+  if (clean === 'strong_weak_levels' || clean === 'strong_weak' || clean === 'protected_highs_lows') {
+    return 'strong_weak_levels';
+  }
+  if (clean === 'supply_demand_zones' || clean === 'supply_demand' || clean === 'snd') {
+    return 'supply_demand_zones';
+  }
+  if (clean === 'order_block' || clean === 'orderblock' || clean === 'order_block_diagram') {
+    return 'order_block_diagram';
+  }
+  if (clean === 'fvg_bpr_diagram' || clean === 'fvg' || clean === 'fvg_bpr' || clean === 'fair_value_gap') {
+    return 'fvg_bpr_diagram';
+  }
+  if (clean === 'premium_discount' || clean === 'pd_array' || clean === 'discount_premium') {
+    return 'premium_discount';
+  }
+  if (clean === 'liquidity_pools' || clean === 'liquidity' || clean === 'liquidity_pool') {
+    return 'liquidity_pools';
+  }
+  if (clean === 'liquidity_sweep' || clean === 'sweep' || clean === 'turtle_soup') {
+    return 'liquidity_sweep';
+  }
+  if (clean === 'asian_range_judas_diagram' || clean === 'asian_range' || clean === 'judas_swing') {
+    return 'asian_range_judas_diagram';
+  }
+  if (clean === 'amd_power_of_3_diagram' || clean === 'amd' || clean === 'power_of_3' || clean === 'po3') {
+    return 'amd_power_of_3_diagram';
+  }
+  if (clean === 'smt_divergence_diagram' || clean === 'smt' || clean === 'smt_divergence') {
+    return 'smt_divergence_diagram';
+  }
+  if (clean === 'wyckoff_accumulation_schematic' || clean === 'wyckoff_accumulation' || clean === 'accumulation') {
+    return 'wyckoff_accumulation_schematic';
+  }
+  if (clean === 'wyckoff_distribution_schematic' || clean === 'wyckoff_distribution' || clean === 'distribution') {
+    return 'wyckoff_distribution_schematic';
+  }
+  if (clean === 'wyckoff_vsa_volume_spread' || clean === 'wyckoff_vsa' || clean === 'vsa' || clean === 'volume_spread_analysis') {
+    return 'wyckoff_vsa_volume_spread';
+  }
+  if (clean === 'drawdown_recovery_curve' || clean === 'drawdown' || clean === 'drawdown_recovery') {
+    return 'drawdown_recovery_curve';
+  }
+  if (clean === 'risk_position_sizing_calc' || clean === 'risk_position_sizing' || clean === 'position_sizing') {
+    return 'risk_position_sizing_calc';
+  }
+  if (clean === 'risk_reward_calc' || clean === 'risk_reward' || clean === 'rrr') {
+    return 'risk_reward_calc';
+  }
+  if (clean === 'trade_journaling' || clean === 'trade_journal' || clean === 'journal') {
+    return 'trade_journaling';
+  }
+  if (clean === 'quant_time_series_stationarity_diagram' || clean === 'quant_time_series' || clean === 'stationarity') {
+    return 'quant_time_series_stationarity_diagram';
+  }
+  if (clean === 'quant_monte_carlo_drawdown' || clean === 'monte_carlo' || clean === 'quant_monte_carlo') {
+    return 'quant_monte_carlo_drawdown';
+  }
+  if (clean === 'orderbook_depth_l2' || clean === 'orderbook' || clean === 'orderbook_depth' || clean === 'level2') {
+    return 'orderbook_depth_l2';
+  }
+  if (clean === 'entry_protocol' || clean === 'entry' || clean === 'checklist_entry') {
+    return 'entry_protocol';
+  }
+  if (clean === 'multi_timeframe' || clean === 'mtf' || clean === 'timeframe') {
+    return 'multi_timeframe';
+  }
+
+  // Fuzzy match fallback
+  if (clean.includes('candlestick')) return 'candlestick_anatomy';
+  if (clean.includes('timeframe')) return 'multi_timeframe';
+  if (clean.includes('swing') || clean.includes('structure')) return 'swing_structure';
+  if (clean.includes('bos') || clean.includes('choch')) return 'bos_choch';
+  if (clean.includes('fvg') || clean.includes('gap')) return 'fvg_bpr_diagram';
+  if (clean.includes('order') && clean.includes('block')) return 'order_block_diagram';
+  if (clean.includes('sweep')) return 'liquidity_sweep';
+  if (clean.includes('liquidity')) return 'liquidity_pools';
+  if (clean.includes('judas') || clean.includes('asian')) return 'asian_range_judas_diagram';
+  if (clean.includes('power') || clean.includes('amd')) return 'amd_power_of_3_diagram';
+  if (clean.includes('smt') || clean.includes('divergence')) return 'smt_divergence_diagram';
+  if (clean.includes('accumul')) return 'wyckoff_accumulation_schematic';
+  if (clean.includes('distribut')) return 'wyckoff_distribution_schematic';
+  if (clean.includes('vsa') || clean.includes('volume')) return 'wyckoff_vsa_volume_spread';
+  if (clean.includes('sizing') || clean.includes('position')) return 'risk_position_sizing_calc';
+  if (clean.includes('drawdown')) return 'drawdown_recovery_curve';
+  if (clean.includes('journal')) return 'trade_journaling';
+  if (clean.includes('monte') || clean.includes('carlo')) return 'quant_monte_carlo_drawdown';
+  if (clean.includes('orderbook') || clean.includes('depth')) return 'orderbook_depth_l2';
+  if (clean.includes('risk') || clean.includes('reward')) return 'risk_reward_calc';
+  if (clean.includes('entry')) return 'entry_protocol';
+
+  return 'candlestick_anatomy';
+}
+
 export const VisualDiagram: React.FC<VisualDiagramProps> = ({ type }) => {
-  switch (type) {
+  const normalized = normalizeDiagramType(type);
+
+  switch (normalized) {
+    case 'market_structure':
+      return (
+        <div className="bg-[#0B1120] border-2 border-black dark:border-[#1E293B] shadow-[4px_4px_0px_#000] rounded-xl p-5 my-5 flex flex-col items-center">
+          <div className="flex items-center justify-between w-full mb-3 pb-2 border-b border-slate-800">
+            <span className="text-xs font-mono text-[#38BDF8] uppercase tracking-wider font-bold">
+              Hierarki Partisipan &amp; Ekosistem Likuiditas Pasar
+            </span>
+            <span className="text-[10px] font-mono bg-black/60 text-slate-400 px-2 py-0.5 rounded border border-slate-700">
+              Institutional Order Flow Pyramid
+            </span>
+          </div>
+          <svg viewBox="0 0 540 220" className="w-full max-w-lg h-56 select-none">
+            {/* Pyramid Layers */}
+            {/* Tier 1: Central Banks */}
+            <polygon points="270,15 220,55 320,55" fill="rgba(245, 158, 11, 0.25)" stroke="#F59E0B" strokeWidth="1.5" />
+            <text x="270" y="42" fill="#F59E0B" fontSize="9.5" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">
+              Tier 1: Bank Sentral (The Fed, ECB, BOJ)
+            </text>
+
+            {/* Tier 2: Tier-1 Market Makers */}
+            <polygon points="220,57 320,57 360,95 180,95" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" strokeWidth="1.5" />
+            <text x="270" y="80" fill="#10B981" fontSize="9.5" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">
+              Tier 2: Market Makers &amp; Tier-1 Banks (JP Morgan, Citi)
+            </text>
+
+            {/* Tier 3: Institutional Hedge Funds */}
+            <polygon points="180,97 360,97 400,135 140,135" fill="rgba(56, 189, 248, 0.2)" stroke="#38BDF8" strokeWidth="1.5" />
+            <text x="270" y="120" fill="#38BDF8" fontSize="9.5" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">
+              Tier 3: Hedge Funds &amp; Algorithmic CTAs (Citadel, RenTech)
+            </text>
+
+            {/* Tier 4: Commercial Hedgers */}
+            <polygon points="140,137 400,137 440,170 100,170" fill="rgba(168, 85, 247, 0.2)" stroke="#A855F7" strokeWidth="1.5" />
+            <text x="270" y="157" fill="#C084FC" fontSize="9" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">
+              Tier 4: Commercial Entities &amp; Multinational Hedgers
+            </text>
+
+            {/* Tier 5: Retail Traders (Bottom) */}
+            <polygon points="100,172 440,172 480,205 60,205" fill="rgba(244, 63, 94, 0.2)" stroke="#F43F5E" strokeWidth="1.5" />
+            <text x="270" y="193" fill="#FB7185" fontSize="9" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">
+              Tier 5: Retail Traders (Kolam Likuiditas &amp; Stop Hunts)
+            </text>
+          </svg>
+        </div>
+      );
+
     case 'candlestick_anatomy':
       return (
         <div className="bg-[#0B1120] border-2 border-black dark:border-[#1E293B] shadow-[4px_4px_0px_#000] rounded-xl p-5 my-5 flex flex-col items-center">
@@ -1205,12 +1363,37 @@ export const VisualDiagram: React.FC<VisualDiagramProps> = ({ type }) => {
 
     default:
       return (
-        <div className="bg-[#0B1120] border-2 border-black dark:border-[#1E293B] shadow-[4px_4px_0px_#000] rounded-xl p-4 my-4 flex items-center justify-between text-xs font-mono">
-          <div className="flex items-center space-x-2 text-slate-400">
-            <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse"></span>
-            <span>Diagram Konseptual: Termuat secara interaktif pada kanvas visual roadmap</span>
+        <div className="bg-[#0B1120] border-2 border-black dark:border-[#1E293B] shadow-[4px_4px_0px_#000] rounded-xl p-5 my-5 flex flex-col items-center">
+          <div className="flex items-center justify-between w-full mb-3 pb-2 border-b border-slate-800">
+            <span className="text-xs font-mono text-[#10B981] uppercase tracking-wider font-bold">
+              Struktur Pasar Mekanis &amp; Dinamika Likuiditas
+            </span>
+            <span className="text-[10px] font-mono bg-black/60 text-slate-400 px-2 py-0.5 rounded border border-slate-700">
+              Technical Chart Model
+            </span>
           </div>
-          <span className="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Interactive SVG</span>
+          <svg viewBox="0 0 520 200" className="w-full max-w-lg h-52 select-none">
+            <polyline 
+              points="40,160 110,60 160,110 260,30 320,80 430,20 480,100" 
+              fill="none" 
+              stroke="#F8FAFC" 
+              strokeWidth="2.5" 
+            />
+            <circle cx="110" cy="60" r="4.5" fill="#10B981" />
+            <circle cx="160" cy="110" r="4.5" fill="#10B981" />
+            <circle cx="260" cy="30" r="4.5" fill="#10B981" />
+            <circle cx="320" cy="80" r="4.5" fill="#10B981" />
+            <circle cx="430" cy="20" r="4.5" fill="#10B981" />
+            <line x1="110" y1="60" x2="260" y2="60" stroke="#10B981" strokeDasharray="3 3" strokeWidth="1.5" />
+            <text x="180" y="55" fill="#10B981" fontSize="9" fontWeight="bold" fontFamily="JetBrains Mono">BOS</text>
+            <line x1="260" y1="30" x2="430" y2="30" stroke="#10B981" strokeDasharray="3 3" strokeWidth="1.5" />
+            <text x="340" y="25" fill="#10B981" fontSize="9" fontWeight="bold" fontFamily="JetBrains Mono">BOS</text>
+            <text x="160" y="130" fill="#38BDF8" fontSize="9" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">HL (Protected)</text>
+            <text x="320" y="100" fill="#38BDF8" fontSize="9" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">HL (Protected)</text>
+            <text x="260" y="185" fill="#94A3B8" fontSize="9" fontFamily="JetBrains Mono" textAnchor="middle">
+              Validasi Konfirmasi Struktur: Higher High &amp; Protected Higher Low
+            </text>
+          </svg>
         </div>
       );
   }

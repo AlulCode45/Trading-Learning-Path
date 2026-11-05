@@ -237,10 +237,38 @@ function seedInitialData() {
       'Jalur khusus scalping komoditas emas (Gold) di sesi overlap London dan New York menggunakan sweep likuiditas M1-M5 dan news filter.',
       'Scalping & Commodity',
       JSON.stringify([
-        { title: 'Karakteristik Volatilitas Gold & Sesi Trading', level: 1, duration: '2 jam' },
-        { title: 'Asian Range Liquidity Trap', level: 2, duration: '3 jam' },
-        { title: 'High-Impact Red Folder News Invalidation Rule', level: 3, duration: '2 jam' },
-        { title: 'M1 Order Flow & Fair Value Gap Refinement', level: 4, duration: '4 jam' }
+        { 
+          id: 'gold-1',
+          title: 'Karakteristik Volatilitas Gold & Sesi Trading', 
+          level: 1, 
+          duration: '2 jam',
+          diagram_type: 'asian_range_judas_diagram',
+          content_markdown: '### Karakteristik Volatilitas Gold (XAU/USD)\nEmas bergerak sangat agresif saat sesi overlap London dan New York. Pahami waktu pembukaan sesi untuk menghindari false breakout.'
+        },
+        { 
+          id: 'gold-2',
+          title: 'Asian Range Liquidity Trap', 
+          level: 2, 
+          duration: '3 jam',
+          diagram_type: 'liquidity_sweep',
+          content_markdown: '### Asian Range Liquidity Trap\nIdentifikasi manipulasi Judas Swing yang mengambil likuiditas Asian High/Low sebelum ekspansi searah tren utama harian.'
+        },
+        { 
+          id: 'gold-3',
+          title: 'High-Impact Red Folder News Invalidation Rule', 
+          level: 3, 
+          duration: '2 jam',
+          diagram_type: 'strong_weak_levels',
+          content_markdown: '### Filter Berita Fundamental (CPI, NFP, FOMC)\nAturan strict invalidasi posisi dan perlindungan modal saat rilis data ekonomi berdampak tinggi.'
+        },
+        { 
+          id: 'gold-4',
+          title: 'M1 Order Flow & Fair Value Gap Refinement', 
+          level: 4, 
+          duration: '4 jam',
+          diagram_type: 'fvg_bpr_diagram',
+          content_markdown: '### Eksekusi Presisi M1 / M5\nRefinement entri pada ketidakseimbangan Fair Value Gap dengan konfirmasi Change of Character (CHoCH).'
+        }
       ]),
       142
     );
@@ -253,10 +281,38 @@ function seedInitialData() {
       'Peta jalan swing trading aset kripto: Bitcoin Halving cycle, BTC Dominance, ETH/BTC ratio, dan timing rotasi sektor L1/DeFi/AI.',
       'Crypto & Momentum',
       JSON.stringify([
-        { title: 'Siklus 4 Tahunan Bitcoin & On-Chain Metrics', level: 1, duration: '3 jam' },
-        { title: 'Bitcoin Dominance (BTC.D) & Altseason Index', level: 2, duration: '2 jam' },
-        { title: 'Spot Orderbook Depth & Funding Rates', level: 3, duration: '4 jam' },
-        { title: 'DCA vs Structural Invalidation Swing Exit', level: 4, duration: '2 jam' }
+        { 
+          id: 'crypto-1',
+          title: 'Siklus 4 Tahunan Bitcoin & On-Chain Metrics', 
+          level: 1, 
+          duration: '3 jam',
+          diagram_type: 'wyckoff_accumulation_schematic',
+          content_markdown: '### Siklus Halving & Akumulasi Wyckoff\nMemahami fase Re-Akumulasi institusional pada siklus 4 tahunan Bitcoin sebelum fase Mark-Up.'
+        },
+        { 
+          id: 'crypto-2',
+          title: 'Bitcoin Dominance (BTC.D) & Altseason Index', 
+          level: 2, 
+          duration: '2 jam',
+          diagram_type: 'multi_timeframe',
+          content_markdown: '### Rotasi Modal: BTC.D ➔ ETH ➔ Large Caps ➔ Mid/Low Caps\nAnalisis multi-timeframe pergeseran likuiditas antar sektor aset kripto.'
+        },
+        { 
+          id: 'crypto-3',
+          title: 'Spot Orderbook Depth & Funding Rates', 
+          level: 3, 
+          duration: '4 jam',
+          diagram_type: 'orderbook_depth_l2',
+          content_markdown: '### Microstructure Pasar Kripto\nMenganalisis dinding likuiditas orderbook level 2 dan indikator perpetual futures funding rate.'
+        },
+        { 
+          id: 'crypto-4',
+          title: 'DCA vs Structural Invalidation Swing Exit', 
+          level: 4, 
+          duration: '2 jam',
+          diagram_type: 'risk_reward_calc',
+          content_markdown: '### Manajemen Risiko & Exit Portfolio\nKombinasi Dollar Cost Averaging dengan stop loss struktural yang ketat.'
+        }
       ]),
       98
     );
