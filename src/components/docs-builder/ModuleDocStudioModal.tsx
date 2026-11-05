@@ -61,45 +61,56 @@ export interface ModuleDocConfig {
 
 interface ModuleDocStudioModalProps {
   isOpen: boolean;
-  moduleIndex: number;
+  moduleIndex?: number;
   moduleTitle: string;
-  moduleLevel: number;
-  initialDocConfig: ModuleDocConfig;
+  moduleLevel?: number;
+  moduleDuration?: string;
+  initialMarkdown?: string;
+  initialChartConfig?: CustomChartConfig;
+  initialDocConfig?: Partial<ModuleDocConfig>;
+  initialConfig?: Partial<ModuleDocConfig>;
   onClose: () => void;
   onSave: (config: ModuleDocConfig, updatedTitle?: string) => void;
 }
 
 export const ModuleDocStudioModal: React.FC<ModuleDocStudioModalProps> = ({
   isOpen,
-  moduleIndex,
+  moduleIndex = 0,
   moduleTitle,
-  moduleLevel,
+  moduleLevel = 1,
+  initialMarkdown,
+  initialChartConfig,
   initialDocConfig,
+  initialConfig,
   onClose,
   onSave
 }) => {
+  const resolvedDocConfig = initialDocConfig || initialConfig || {};
   const [title, setTitle] = useState(moduleTitle);
-  const [summary, setSummary] = useState(initialDocConfig.summary || '');
-  const [readingTimeMinutes, setReadingTimeMinutes] = useState(initialDocConfig.readingTimeMinutes || 8);
-  const [prerequisites, setPrerequisites] = useState<string[]>(initialDocConfig.prerequisites || []);
+  const [summary, setSummary] = useState(resolvedDocConfig.summary || '');
+  const [readingTimeMinutes, setReadingTimeMinutes] = useState(resolvedDocConfig.readingTimeMinutes || 8);
+  const [prerequisites, setPrerequisites] = useState<string[]>(resolvedDocConfig.prerequisites || []);
   const [newPrereq, setNewPrereq] = useState('');
 
   const [sections, setSections] = useState<DocSectionDraft[]>(
-    initialDocConfig.sections && initialDocConfig.sections.length > 0
-      ? initialDocConfig.sections
+    resolvedDocConfig.sections && resolvedDocConfig.sections.length > 0
+      ? resolvedDocConfig.sections
       : [
           {
             id: 'sec-1',
             title: '1. Konsep Dasar & Mekanika Struktur',
-            content: '### Penjelasan Materi\nuraikan logika institusional, alasan terbentuknya pergerakan harga, dan parameter validasinya secara objektif.',
-            illustrationMode: 'none'
+            content:
+              initialMarkdown ||
+              '### Penjelasan Materi\nUraikan logika institusional, alasan terbentuknya pergerakan harga, dan parameter validasinya secara objektif.',
+            illustrationMode: initialChartConfig ? 'custom_builder' : 'none',
+            customChartConfig: initialChartConfig
           }
         ]
   );
 
   const [commonMistakes, setCommonMistakes] = useState<Array<{ mistake: string; correction: string }>>(
-    initialDocConfig.commonMistakes && initialDocConfig.commonMistakes.length > 0
-      ? initialDocConfig.commonMistakes
+    resolvedDocConfig.commonMistakes && resolvedDocConfig.commonMistakes.length > 0
+      ? resolvedDocConfig.commonMistakes
       : [
           {
             mistake: 'Masuk posisi sebelum penutupan body candle terkonfirmasi valid.',
@@ -109,8 +120,8 @@ export const ModuleDocStudioModal: React.FC<ModuleDocStudioModalProps> = ({
   );
 
   const [keyTakeaways, setKeyTakeaways] = useState<string[]>(
-    initialDocConfig.keyTakeaways && initialDocConfig.keyTakeaways.length > 0
-      ? initialDocConfig.keyTakeaways
+    resolvedDocConfig.keyTakeaways && resolvedDocConfig.keyTakeaways.length > 0
+      ? resolvedDocConfig.keyTakeaways
       : [
           'Selalu identifikasi struktur High Timeframe (HTF) sebelum mencari konfirmasi eksekusi.',
           'Batasi risiko maksimal 1% per transaksi dengan titik invalidasi mekanis.'
@@ -118,8 +129,8 @@ export const ModuleDocStudioModal: React.FC<ModuleDocStudioModalProps> = ({
   );
 
   const [checklists, setChecklists] = useState<Array<{ id: string; text: string; is_completed: boolean }>>(
-    initialDocConfig.checklists && initialDocConfig.checklists.length > 0
-      ? initialDocConfig.checklists
+    resolvedDocConfig.checklists && resolvedDocConfig.checklists.length > 0
+      ? resolvedDocConfig.checklists
       : [
           { id: `chk-${Date.now()}-1`, text: 'Memahami aturan identifikasi struktur pada chart riil', is_completed: false },
           { id: `chk-${Date.now()}-2`, text: 'Menentukan level invalidasi (Stop Loss) dan Target (TP) secara presisi', is_completed: false }
@@ -127,7 +138,7 @@ export const ModuleDocStudioModal: React.FC<ModuleDocStudioModalProps> = ({
   );
 
   const [quizzes, setQuizzes] = useState<QuizQuestion[]>(
-    initialDocConfig.quizzes || []
+    resolvedDocConfig.quizzes || []
   );
 
   const [activeTab, setActiveTab] = useState<'sections' | 'mistakes_takeaways' | 'checklist_quiz' | 'preview'>('sections');

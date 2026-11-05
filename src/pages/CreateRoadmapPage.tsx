@@ -1130,16 +1130,21 @@ export const CreateRoadmapPage: React.FC = () => {
       {docStudioTargetIndex !== null && nodes[docStudioTargetIndex] && (
         <ModuleDocStudioModal
           isOpen={true}
+          moduleIndex={docStudioTargetIndex}
           moduleTitle={nodes[docStudioTargetIndex].title || `Modul #${docStudioTargetIndex + 1}`}
+          moduleLevel={nodes[docStudioTargetIndex].level || docStudioTargetIndex + 1}
           moduleDuration={nodes[docStudioTargetIndex].duration || '2 jam'}
           initialMarkdown={nodes[docStudioTargetIndex].content_markdown}
           initialChartConfig={nodes[docStudioTargetIndex].custom_chart_config}
-          initialConfig={nodes[docStudioTargetIndex].doc_config}
+          initialDocConfig={nodes[docStudioTargetIndex].doc_config}
           onClose={() => setDocStudioTargetIndex(null)}
-          onSave={(docConfig) => {
+          onSave={(docConfig, updatedTitle) => {
             handleUpdateNode(docStudioTargetIndex, 'doc_config', docConfig);
-            if (docConfig.sections.length > 0 && docConfig.sections[0].contentMarkdown.trim()) {
-              handleUpdateNode(docStudioTargetIndex, 'content_markdown', docConfig.sections[0].contentMarkdown);
+            if (updatedTitle && updatedTitle.trim()) {
+              handleUpdateNode(docStudioTargetIndex, 'title', updatedTitle.trim());
+            }
+            if (docConfig.sections.length > 0 && docConfig.sections[0].content?.trim()) {
+              handleUpdateNode(docStudioTargetIndex, 'content_markdown', docConfig.sections[0].content);
             }
           }}
         />
