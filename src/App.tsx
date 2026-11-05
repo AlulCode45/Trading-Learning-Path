@@ -4,6 +4,7 @@ import { Header } from './components/Header';
 import { HomePage } from './pages/HomePage';
 import { RoadmapsDirectoryPage } from './pages/RoadmapsDirectoryPage';
 import { RoadmapPage } from './pages/RoadmapPage';
+import { DocsHubPage } from './pages/DocsHubPage';
 import { DocPage } from './pages/DocPage';
 import { PlaygroundPage } from './pages/PlaygroundPage';
 import { CommunityPage } from './pages/CommunityPage';
@@ -55,7 +56,7 @@ export function App() {
               }
             />
             <Route path="/roadmaps/:slug" element={<RoadmapPage />} />
-            <Route path="/docs" element={<Navigate to="/docs/candlestick-anatomy-wick-dynamics" replace />} />
+            <Route path="/docs" element={<DocsHubPage />} />
             <Route path="/docs/:slug" element={<DocPage />} />
             <Route path="/playground" element={<PlaygroundPage />} />
             <Route path="/community" element={<CommunityPage />} />

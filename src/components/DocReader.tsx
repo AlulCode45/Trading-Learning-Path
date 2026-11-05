@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { EducationalArticle, RoadmapNode } from '../types';
-import { EDUCATIONAL_ARTICLES, getAllArticles, getRoadmapSlugForArticle } from '../data/articles';
+import { 
+  EDUCATIONAL_ARTICLES, 
+  getAllArticles, 
+  getRoadmapSlugForArticle, 
+  DOC_MODULES, 
+  getModuleIdForArticle, 
+  getArticlesByModule 
+} from '../data/articles';
 import { VisualDiagram } from './VisualDiagram';
 import { UnifiedIllustrationEngine } from './illustration/UnifiedIllustrationEngine';
 import confetti from 'canvas-confetti';
@@ -22,9 +30,13 @@ import {
   Bookmark, 
   Share2, 
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  Folder,
   TrendingUp,
   Check,
-  Search
+  Search,
+  GraduationCap
 } from 'lucide-react';
 
 interface DocReaderProps {
@@ -111,8 +123,27 @@ export const DocReader: React.FC<DocReaderProps> = ({
   const article: EducationalArticle | undefined = EDUCATIONAL_ARTICLES[articleSlug] || dynamicArticle || Object.values(EDUCATIONAL_ARTICLES)[0];
   const allArticlesList = getAllArticles();
 
+  const currentModuleId = useMemo(() => getModuleIdForArticle(article), [article]);
+  const currentModuleInfo = useMemo(() => DOC_MODULES.find(m => m.id === currentModuleId) || DOC_MODULES[0], [currentModuleId]);
+
+  const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({
+    'price-action': true,
+    'smc': true,
+    'wyckoff': true,
+    'risk': true,
+    'quant': true
+  });
+
+  // Ensure current module is expanded when article changes
+  useEffect(() => {
+    setExpandedModules(prev => ({
+      ...prev,
+      [currentModuleId]: true
+    }));
+  }, [currentModuleId]);
+
   const DOC_CATEGORIES = [
-    { id: 'all', label: 'Semua' },
+    { id: 'all', label: 'Semua Modul' },
     { id: 'price-action', label: 'Price Action' },
     { id: 'smc', label: 'SMC & ICT' },
     { id: 'wyckoff', label: 'Wyckoff' },
@@ -120,40 +151,24 @@ export const DocReader: React.FC<DocReaderProps> = ({
     { id: 'quant', label: 'Kuantitatif' }
   ];
 
-  const filteredArticles = useMemo(() => {
-    return allArticlesList.filter(item => {
-      const matchSearch = item.title.toLowerCase().includes(sidebarSearch.toLowerCase()) ||
-                          item.slug.toLowerCase().includes(sidebarSearch.toLowerCase()) ||
-                          item.category.toLowerCase().includes(sidebarSearch.toLowerCase());
-      if (!matchSearch) return false;
-      if (selectedCategory === 'all') return true;
-      if (selectedCategory === 'price-action') {
-        return item.category === 'Market Fundamentals' || 
-               item.category.includes('Price Action') || 
-               item.category === 'Market Structure' || 
-               item.category === 'Market Dynamics' ||
-               item.category === 'Execution Protocol' ||
-               item.category === 'Trading Operations' ||
-               item.slug.startsWith('candlestick-') ||
-               item.slug.startsWith('valid-') ||
-               item.slug.startsWith('bos-') ||
-               item.slug.startsWith('what-is-');
-      }
-      if (selectedCategory === 'smc') {
-        return item.category === 'Institutional Trading' || item.slug.startsWith('smc-');
-      }
-      if (selectedCategory === 'wyckoff') {
-        return item.category === 'Classical Analysis' || item.slug.startsWith('wyckoff-') || item.slug.startsWith('wyk-');
-      }
-      if (selectedCategory === 'risk') {
-        return item.category === 'Core Foundation' || item.slug.startsWith('risk-') || item.slug.startsWith('psych-');
-      }
-      if (selectedCategory === 'quant') {
-        return item.category === 'Quantitative' || item.slug.startsWith('quant-');
-      }
-      return true;
-    });
-  }, [allArticlesList, sidebarSearch, selectedCategory]);
+  // Grouped modules for the sidebar
+  const groupedModulesForSidebar = useMemo(() => {
+    return DOC_MODULES.map(mod => {
+      const articles = getArticlesByModule(mod.id);
+      const filtered = articles.filter(item => {
+        if (!sidebarSearch.trim()) return true;
+        const q = sidebarSearch.toLowerCase();
+        return item.title.toLowerCase().includes(q) ||
+               item.slug.toLowerCase().includes(q) ||
+               item.category.toLowerCase().includes(q);
+      });
+      return {
+        ...mod,
+        articles: filtered,
+        total: articles.length
+      };
+    }).filter(mod => selectedCategory === 'all' || mod.id === selectedCategory);
+  }, [sidebarSearch, selectedCategory]);
 
   const connectedRoadmap = useMemo(() => {
     const rSlug = getRoadmapSlugForArticle(article);
@@ -171,10 +186,14 @@ export const DocReader: React.FC<DocReaderProps> = ({
     }
   }, [article]);
 
-  // Find current index and prev/next
-  const currentIndex = allArticlesList.findIndex(a => a.slug === article.slug);
-  const prevArticle = currentIndex > 0 ? allArticlesList[currentIndex - 1] : null;
-  const nextArticle = currentIndex < allArticlesList.length - 1 ? allArticlesList[currentIndex + 1] : null;
+  // Current module's articles for logical in-module prev/next
+  const currentModuleArticles = useMemo(() => {
+    return getArticlesByModule(currentModuleId);
+  }, [currentModuleId]);
+
+  const moduleIndex = currentModuleArticles.findIndex(a => a.slug === article.slug);
+  const prevArticle = moduleIndex > 0 ? currentModuleArticles[moduleIndex - 1] : null;
+  const nextArticle = moduleIndex >= 0 && moduleIndex < currentModuleArticles.length - 1 ? currentModuleArticles[moduleIndex + 1] : null;
 
   // Track active section on scroll
   useEffect(() => {
@@ -253,21 +272,37 @@ export const DocReader: React.FC<DocReaderProps> = ({
     <div className="min-h-screen bg-slate-50 dark:bg-[#08090D] text-slate-900 dark:text-[#E2E8F0] transition-colors">
       {/* Top Sticky Subheader Bar */}
       <div className="sticky top-15 z-30 bg-white/95 dark:bg-[#0D1017]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#1D2532] px-4 sm:px-8 py-2.5 flex items-center justify-between transition-colors">
-        <div className="flex items-center space-x-3 text-xs font-mono text-slate-500 dark:text-[#94A3B8] overflow-x-auto">
-          <button
-            onClick={onReturnToRoadmap}
+        <div className="flex items-center space-x-2 text-xs font-mono text-slate-500 dark:text-[#94A3B8] overflow-x-auto">
+          <Link
+            to="/docs"
             className="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-[#121722] dark:hover:bg-[#1D2532] text-slate-700 dark:text-[#94A3B8] hover:text-black dark:hover:text-white border border-slate-300 dark:border-[#1D2532] transition-colors flex-shrink-0 font-medium"
           >
-            <Map className="w-3.5 h-3.5 text-[#10B981]" />
-            <span>Peta Roadmap</span>
+            <BookOpen className="w-3.5 h-3.5 text-[#10B981]" />
+            <span>Dokumentasi Hub</span>
+          </Link>
+          <ChevronRight className="w-3.5 h-3.5 flex-shrink-0 opacity-40 text-slate-400" />
+          <button
+            onClick={() => setSelectedCategory(currentModuleId)}
+            className={`px-2 py-0.5 rounded text-[11px] font-bold font-mono transition-colors flex-shrink-0 ${currentModuleInfo.badgeBg} ${currentModuleInfo.badgeText}`}
+          >
+            {currentModuleInfo.shortTitle}
           </button>
           <ChevronRight className="w-3.5 h-3.5 flex-shrink-0 opacity-40 text-slate-400" />
-          <span className="truncate max-w-[200px] sm:max-w-none text-emerald-600 dark:text-[#10B981] font-semibold">
+          <span className="truncate max-w-[220px] sm:max-w-none text-emerald-600 dark:text-[#10B981] font-semibold">
             {article.title}
           </span>
         </div>
 
         <div className="flex items-center space-x-2 flex-shrink-0">
+          <button
+            onClick={onReturnToRoadmap}
+            className="hidden sm:inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-[#1D2532] hover:bg-slate-100 dark:hover:bg-[#1D2532] text-slate-600 dark:text-[#94A3B8] hover:text-black dark:hover:text-white text-xs font-mono transition-colors"
+            title="Buka peta visual roadmap"
+          >
+            <Map className="w-3.5 h-3.5 text-[#10B981]" />
+            <span>Peta Visual</span>
+          </button>
+
           <button
             onClick={handleCopyLink}
             className="p-1.5 rounded-lg border border-slate-300 dark:border-[#1D2532] hover:bg-slate-100 dark:hover:bg-[#1D2532] text-slate-600 dark:text-[#94A3B8] hover:text-black dark:hover:text-white text-xs flex items-center space-x-1 transition-colors"
@@ -295,39 +330,42 @@ export const DocReader: React.FC<DocReaderProps> = ({
 
       {/* Main 3-Column Technical Documentation Layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex gap-8">
-        {/* Left Navigation: Topics Directory */}
-        <aside className="hidden lg:block w-72 flex-shrink-0">
-          <div className="sticky top-28 space-y-5">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-[#94A3B8] flex items-center space-x-2 font-bold">
-                  <BookOpen className="w-3.5 h-3.5 text-[#10B981]" />
-                  <span>Katalog Kurikulum</span>
-                </h4>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-200 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 font-bold">
-                  {filteredArticles.length} Materi
-                </span>
-              </div>
+        {/* Left Navigation: Topics Directory per Module */}
+        <aside className="hidden lg:block w-80 flex-shrink-0">
+          <div className="sticky top-28 space-y-4">
+            
+            {/* Back to Blog Hub Button */}
+            <Link
+              to="/docs"
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#121722] dark:hover:bg-zinc-800 border border-slate-300 dark:border-zinc-800 text-xs font-mono font-bold text-slate-800 dark:text-zinc-200 transition-colors shadow-2xs"
+            >
+              <span className="flex items-center space-x-2">
+                <BookOpen className="w-3.5 h-3.5 text-[#10B981]" />
+                <span>Katalog Blog &amp; Semua Modul</span>
+              </span>
+              <ArrowLeft className="w-3.5 h-3.5" />
+            </Link>
 
+            <div>
               {/* Search input in sidebar */}
-              <div className="relative mb-3">
+              <div className="relative mb-2.5">
                 <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="Cari materi..."
+                  placeholder="Cari materi dalam modul..."
                   value={sidebarSearch}
                   onChange={(e) => setSidebarSearch(e.target.value)}
                   className="w-full pl-8 pr-3 py-1.5 rounded-lg text-xs bg-slate-100 dark:bg-[#121722] border border-slate-200 dark:border-[#1D2532] text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
 
-              {/* Category Filter Pills */}
+              {/* Module Filter Pills */}
               <div className="flex flex-wrap gap-1 mb-3">
                 {DOC_CATEGORIES.map(cat => (
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`px-2 py-1 rounded text-[10px] font-medium transition-colors ${
+                    className={`px-2 py-1 rounded text-[10px] font-medium font-mono transition-colors ${
                       selectedCategory === cat.id
                         ? 'bg-black text-white dark:bg-white dark:text-black font-bold'
                         : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#121722] dark:hover:bg-[#1D2532] text-slate-600 dark:text-zinc-400'
@@ -338,41 +376,81 @@ export const DocReader: React.FC<DocReaderProps> = ({
                 ))}
               </div>
 
-              <div className="space-y-1 max-h-[380px] overflow-y-auto pr-1">
-                {filteredArticles.map((item, idx) => {
-                  const isActive = item.slug === article.slug;
-                  const itemCompleted = item.nodeId ? nodeStatus[item.nodeId] === 'completed' : false;
+              {/* Grouped Modules Stream (Accordion Style) */}
+              <div className="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
+                {groupedModulesForSidebar.map(mod => {
+                  const isCurrent = mod.id === currentModuleId;
+                  const isExpanded = expandedModules[mod.id] ?? isCurrent;
 
                   return (
-                    <button
-                      key={item.slug}
-                      onClick={() => onSelectArticle(item.slug)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors flex items-center justify-between group ${
-                        isActive
-                          ? 'bg-emerald-100/70 dark:bg-[#10B981]/15 text-emerald-800 dark:text-[#10B981] font-semibold border-l-3 border-[#10B981]'
-                          : 'text-slate-600 dark:text-[#94A3B8] hover:text-black dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-[#121722]'
+                    <div
+                      key={mod.id}
+                      className={`border rounded-xl overflow-hidden transition-all ${
+                        isCurrent
+                          ? 'border-emerald-500/60 dark:border-emerald-500/40 bg-emerald-500/5'
+                          : 'border-slate-200 dark:border-zinc-800 bg-white dark:bg-[#0D1017]'
                       }`}
                     >
-                      <div className="truncate pr-2">
-                        <span className="font-mono text-[10px] text-slate-400 dark:text-[#64748B] mr-1.5">{idx + 1}.</span>
-                        <span>{item.title}</span>
-                      </div>
-                      {itemCompleted && (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#10B981] flex-shrink-0" />
+                      {/* Module Header Toggle */}
+                      <button
+                        onClick={() => setExpandedModules(p => ({ ...p, [mod.id]: !isExpanded }))}
+                        className="w-full flex items-center justify-between p-2.5 text-xs font-mono font-bold text-slate-900 dark:text-zinc-100 hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors text-left"
+                      >
+                        <div className="flex items-center space-x-2 truncate">
+                          <span className={`w-2 h-2 rounded-full ${isCurrent ? 'bg-emerald-500 ring-2 ring-emerald-500/30' : 'bg-slate-400 dark:bg-zinc-600'}`} />
+                          <span className="truncate">{mod.shortTitle}</span>
+                        </div>
+                        <div className="flex items-center space-x-1.5 flex-shrink-0 text-slate-400">
+                          <span className="text-[10px] font-mono">({mod.articles.length})</span>
+                          {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                        </div>
+                      </button>
+
+                      {/* Articles List inside Module */}
+                      {isExpanded && (
+                        <div className="p-1 pt-0 space-y-0.5 border-t border-slate-100 dark:border-zinc-800/60">
+                          {mod.articles.map((item, idx) => {
+                            const isActive = item.slug === article.slug;
+                            const itemCompleted = item.nodeId ? nodeStatus[item.nodeId] === 'completed' : false;
+
+                            return (
+                              <button
+                                key={item.slug}
+                                onClick={() => onSelectArticle(item.slug)}
+                                className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between group ${
+                                  isActive
+                                    ? 'bg-emerald-100/80 dark:bg-[#10B981]/20 text-emerald-900 dark:text-[#10B981] font-bold border-l-2 border-[#10B981]'
+                                    : 'text-slate-600 dark:text-[#94A3B8] hover:text-black dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800/40'
+                                }`}
+                              >
+                                <div className="truncate pr-1">
+                                  <span className="font-mono text-[10px] text-slate-400 dark:text-[#64748B] mr-1.5">
+                                    #{String(idx + 1).padStart(2, '0')}
+                                  </span>
+                                  <span className="text-[11px] leading-tight">{item.title}</span>
+                                </div>
+                                {itemCompleted && (
+                                  <CheckCircle2 className="w-3 h-3 text-[#10B981] flex-shrink-0 ml-1" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
                       )}
-                    </button>
+                    </div>
                   );
                 })}
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-[#1D2532] shadow-xs">
+            {/* Connected Roadmap Box */}
+            <div className="p-3.5 rounded-xl bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-[#1D2532] shadow-2xs">
               <div className="flex items-center space-x-2 text-xs font-bold text-slate-900 dark:text-[#F8FAFC] mb-1">
                 <Layers className="w-3.5 h-3.5 text-[#38BDF8]" />
                 <span>Roadmap Terhubung</span>
               </div>
-              <p className="text-[11px] text-slate-600 dark:text-[#94A3B8] leading-relaxed mb-3">
-                Topik ini adalah simpul dari kurikulum <strong>{connectedRoadmap.title}</strong>.
+              <p className="text-[11px] text-slate-600 dark:text-[#94A3B8] leading-relaxed mb-2.5">
+                Modul ini terhubung ke kurikulum <strong>{connectedRoadmap.title}</strong>.
               </p>
               <button
                 onClick={onReturnToRoadmap}
@@ -382,6 +460,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
                 <span>Buka Kanvas Interaktif</span>
               </button>
             </div>
+
           </div>
         </aside>
 
@@ -682,33 +761,62 @@ export const DocReader: React.FC<DocReaderProps> = ({
             )}
           </div>
 
-          {/* Previous / Next Article Navigation Footer */}
-          <div className="mt-12 pt-6 border-t border-slate-200 dark:border-[#1D2532] flex items-center justify-between gap-4">
-            {prevArticle ? (
-              <button
-                onClick={() => onSelectArticle(prevArticle.slug)}
-                className="flex items-center space-x-2 text-left p-3 rounded-xl border border-slate-200 dark:border-[#1D2532] hover:border-emerald-500 bg-white dark:bg-[#0D1017] text-xs transition-colors flex-1 shadow-xs"
-              >
-                <ArrowLeft className="w-4 h-4 text-emerald-600 dark:text-[#10B981] flex-shrink-0" />
-                <div className="truncate">
-                  <div className="text-[10px] font-mono text-slate-500">Sebelumnya</div>
-                  <div className="font-semibold text-slate-900 dark:text-[#F8FAFC] truncate">{prevArticle.title}</div>
-                </div>
-              </button>
-            ) : <div className="flex-1" />}
+          {/* Previous / Next Article Navigation Footer (In-Module) */}
+          <div className="mt-12 pt-6 border-t border-slate-200 dark:border-[#1D2532] space-y-4">
+            <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-zinc-400">
+              <span>Alur Belajar Modul: <strong className="text-slate-800 dark:text-zinc-200">{currentModuleInfo.title}</strong></span>
+              <span>Materi {(moduleIndex >= 0 ? moduleIndex + 1 : 1)} dari {currentModuleArticles.length}</span>
+            </div>
 
-            {nextArticle ? (
-              <button
-                onClick={() => onSelectArticle(nextArticle.slug)}
-                className="flex items-center justify-end space-x-2 text-right p-3 rounded-xl border border-slate-200 dark:border-[#1D2532] hover:border-emerald-500 bg-white dark:bg-[#0D1017] text-xs transition-colors flex-1 shadow-xs"
+            <div className="flex items-center justify-between gap-4">
+              {prevArticle ? (
+                <button
+                  onClick={() => onSelectArticle(prevArticle.slug)}
+                  className="flex items-center space-x-2 text-left p-3.5 rounded-xl border border-slate-200 dark:border-[#1D2532] hover:border-emerald-500 bg-white dark:bg-[#0D1017] text-xs transition-colors flex-1 shadow-2xs"
+                >
+                  <ArrowLeft className="w-4 h-4 text-emerald-600 dark:text-[#10B981] flex-shrink-0" />
+                  <div className="truncate">
+                    <div className="text-[10px] font-mono text-slate-500">Sebelumnya di {currentModuleInfo.shortTitle}</div>
+                    <div className="font-semibold text-slate-900 dark:text-[#F8FAFC] truncate">{prevArticle.title}</div>
+                  </div>
+                </button>
+              ) : <div className="flex-1" />}
+
+              {nextArticle ? (
+                <button
+                  onClick={() => onSelectArticle(nextArticle.slug)}
+                  className="flex items-center justify-end space-x-2 text-right p-3.5 rounded-xl border border-slate-200 dark:border-[#1D2532] hover:border-emerald-500 bg-white dark:bg-[#0D1017] text-xs transition-colors flex-1 shadow-2xs"
+                >
+                  <div className="truncate">
+                    <div className="text-[10px] font-mono text-slate-500">Selanjutnya di {currentModuleInfo.shortTitle}</div>
+                    <div className="font-semibold text-slate-900 dark:text-[#F8FAFC] truncate">{nextArticle.title}</div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-emerald-600 dark:text-[#10B981] flex-shrink-0" />
+                </button>
+              ) : (
+                <Link
+                  to="/docs"
+                  className="flex items-center justify-end space-x-2 text-right p-3.5 rounded-xl border border-emerald-500/50 bg-emerald-500/10 text-xs transition-colors flex-1 shadow-2xs"
+                >
+                  <div className="truncate">
+                    <div className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">Modul Selesai ✓</div>
+                    <div className="font-semibold text-slate-900 dark:text-white">Jelajahi Modul Lainnya di Blog Hub</div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-emerald-600 dark:text-[#10B981] flex-shrink-0" />
+                </Link>
+              )}
+            </div>
+
+            {/* Quick Link back to Docs Hub */}
+            <div className="pt-4 text-center">
+              <Link
+                to="/docs"
+                className="inline-flex items-center space-x-2 text-xs font-mono font-bold text-slate-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
               >
-                <div className="truncate">
-                  <div className="text-[10px] font-mono text-slate-500">Selanjutnya</div>
-                  <div className="font-semibold text-slate-900 dark:text-[#F8FAFC] truncate">{nextArticle.title}</div>
-                </div>
-                <ArrowRight className="w-4 h-4 text-emerald-600 dark:text-[#10B981] flex-shrink-0" />
-              </button>
-            ) : <div className="flex-1" />}
+                <BookOpen className="w-3.5 h-3.5 text-[#10B981]" />
+                <span>Lihat Semua Modul Dokumentasi (Price Action, SMC, Wyckoff, Risiko, Quant) &rarr;</span>
+              </Link>
+            </div>
           </div>
         </article>
 
