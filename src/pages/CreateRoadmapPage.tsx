@@ -28,7 +28,8 @@ import {
   Cpu,
   BarChart3,
   ShieldCheck,
-  Send
+  Send,
+  GitBranch
 } from 'lucide-react';
 import { PRESET_SVG_ITEMS } from '../components/illustration/PresetSvgCatalog';
 import { VisualDiagram } from '../components/VisualDiagram';
@@ -38,8 +39,17 @@ import { WysiwygMarkdownEditor } from '../components/editor/WysiwygMarkdownEdito
 import { CustomChartBuilderModal } from '../components/chart-builder/CustomChartBuilderModal';
 import { CustomChartRenderer } from '../components/illustration/CustomChartRenderer';
 import { CustomChartConfig } from '../types/chartBuilderTypes';
+import { RoadmapGraphStudioModal } from '../components/roadmap-builder/RoadmapGraphStudioModal';
+import {
+  RoadmapEdgeConnection,
+  RoadmapStageBoxConfig,
+  LANE_LEFT_X,
+  LANE_CENTER_X,
+  LANE_RIGHT_X
+} from '../types/roadmapStudioTypes';
 
 export interface NodeDraft {
+  id?: string;
   title: string;
   duration: string;
   level: number;
@@ -50,6 +60,10 @@ export interface NodeDraft {
   snapshot_url: string;
   content_markdown: string;
   custom_chart_config?: CustomChartConfig;
+  posX?: number;
+  posY?: number;
+  customColor?: string;
+  customBadge?: string;
 }
 
 export const CreateRoadmapPage: React.FC = () => {
@@ -69,6 +83,7 @@ export const CreateRoadmapPage: React.FC = () => {
   // Modules / Nodes State
   const [nodes, setNodes] = useState<NodeDraft[]>([
     {
+      id: 'node-1',
       title: 'Fondasi Struktur Pasar & Likuiditas Awal',
       duration: '2 jam',
       level: 1,
@@ -78,8 +93,12 @@ export const CreateRoadmapPage: React.FC = () => {
       chart_symbol: 'EUR/USD',
       snapshot_url: '',
       content_markdown: '### Modul 1: Fondasi\nPelajari anatomi candlestick dan mekanika lelang pasar dua arah (*Double Auction Market*).',
+      posX: LANE_CENTER_X,
+      posY: 80,
+      customColor: '#FEF08A'
     },
     {
+      id: 'node-2',
       title: 'Validasi Swing High & Break of Structure (BOS)',
       duration: '3 jam',
       level: 2,
@@ -89,8 +108,12 @@ export const CreateRoadmapPage: React.FC = () => {
       chart_symbol: 'EUR/USD',
       snapshot_url: '',
       content_markdown: '### Modul 2: Struktur Pasar Mekanis\nIdentifikasi konfirmasi penutupan body candle di luar swing point objektif.',
+      posX: LANE_LEFT_X,
+      posY: 245,
+      customColor: '#BAE6FD'
     },
     {
+      id: 'node-3',
       title: 'Eksekusi & Mitigasi Order Block Institusional',
       duration: '3 jam',
       level: 3,
@@ -100,8 +123,36 @@ export const CreateRoadmapPage: React.FC = () => {
       chart_symbol: 'EUR/USD',
       snapshot_url: 'https://www.tradingview.com/x/vB8uY1rZ/',
       content_markdown: '### Modul 3: Order Block & Mitigasi\nAturan entry limit order pada level Mean Threshold 50% candle pemicu likuiditas.',
+      posX: LANE_RIGHT_X,
+      posY: 410,
+      customColor: '#E9D5FF'
     }
   ]);
+
+  const [customConnections, setCustomConnections] = useState<RoadmapEdgeConnection[]>([
+    {
+      id: 'edge-node-1-node-2',
+      fromNodeId: 'node-1',
+      toNodeId: 'node-2',
+      fromPort: 'bottom',
+      toPort: 'top',
+      color: '#CA8A04',
+      lineStyle: 'solid',
+      curveType: 'bezier'
+    },
+    {
+      id: 'edge-node-2-node-3',
+      fromNodeId: 'node-2',
+      toNodeId: 'node-3',
+      fromPort: 'bottom',
+      toPort: 'top',
+      color: '#0284C7',
+      lineStyle: 'solid',
+      curveType: 'bezier'
+    }
+  ]);
+  const [customStageBoxes, setCustomStageBoxes] = useState<RoadmapStageBoxConfig[]>([]);
+  const [isFlowStudioOpen, setIsFlowStudioOpen] = useState<boolean>(false);
 
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
   const [chartBuilderTargetIndex, setChartBuilderTargetIndex] = useState<number | null>(null);
@@ -133,6 +184,7 @@ export const CreateRoadmapPage: React.FC = () => {
         setDifficulty((rm.difficulty as any) || 'Intermediate');
         
         const templatedNodes: NodeDraft[] = json.data.nodes.map((n: any, idx: number) => ({
+          id: `node-${idx + 1}`,
           title: n.title,
           duration: `${n.estimated_hours || 2} jam`,
           level: n.level || idx + 1,
@@ -142,9 +194,26 @@ export const CreateRoadmapPage: React.FC = () => {
           chart_symbol: 'EUR/USD',
           snapshot_url: idx % 3 === 2 ? 'https://www.tradingview.com/x/vB8uY1rZ/' : '',
           content_markdown: n.content || `### ${n.title}\n${n.summary || 'Pelajari materi ini dengan teliti.'}`,
+          posX: typeof n.posX === 'number' ? n.posX : (idx === 0 ? LANE_CENTER_X : idx % 2 === 1 ? LANE_LEFT_X : LANE_RIGHT_X),
+          posY: typeof n.posY === 'number' ? n.posY : 80 + idx * 160,
+          customColor: n.customColor
         }));
 
         setNodes(templatedNodes);
+        const autoEdges: RoadmapEdgeConnection[] = [];
+        for (let i = 0; i < templatedNodes.length - 1; i++) {
+          autoEdges.push({
+            id: `edge-${templatedNodes[i].id}-${templatedNodes[i + 1].id}`,
+            fromNodeId: templatedNodes[i].id!,
+            toNodeId: templatedNodes[i + 1].id!,
+            fromPort: 'bottom',
+            toPort: 'top',
+            color: '#0284C7',
+            lineStyle: 'solid',
+            curveType: 'bezier'
+          });
+        }
+        setCustomConnections(autoEdges);
         setExpandedIndex(0);
       }
     } catch (err) {
@@ -156,9 +225,13 @@ export const CreateRoadmapPage: React.FC = () => {
   };
 
   const handleAddNode = () => {
+    const nextIdx = nodes.length + 1;
+    const newId = `node-${nextIdx}-${Date.now().toString().slice(-3)}`;
+    const prevNode = nodes[nodes.length - 1];
     setNodes(prev => [
       ...prev,
       {
+        id: newId,
         title: '',
         duration: '2 jam',
         level: prev.length + 1,
@@ -168,8 +241,25 @@ export const CreateRoadmapPage: React.FC = () => {
         chart_symbol: 'EUR/USD',
         snapshot_url: '',
         content_markdown: '### Ringkasan Materi\nTuliskan panduan praktik dan aturan teknikal di sini.',
+        posX: prevNode?.posX === LANE_LEFT_X ? LANE_RIGHT_X : LANE_LEFT_X,
+        posY: (prevNode?.posY || 80) + 165
       }
     ]);
+    if (prevNode?.id) {
+      setCustomConnections(prev => [
+        ...prev,
+        {
+          id: `edge-${prevNode.id}-${newId}`,
+          fromNodeId: prevNode.id!,
+          toNodeId: newId,
+          fromPort: 'bottom',
+          toPort: 'top',
+          color: '#0284C7',
+          lineStyle: 'solid',
+          curveType: 'bezier'
+        }
+      ]);
+    }
     setExpandedIndex(nodes.length);
   };
 
@@ -245,7 +335,7 @@ export const CreateRoadmapPage: React.FC = () => {
           difficulty,
           estimated_hours: totalEstimatedHours,
           nodes: nodes.map((n, idx) => ({
-            id: `node-${idx + 1}`,
+            id: n.id || `node-${idx + 1}`,
             title: n.title,
             duration: n.duration,
             level: n.level || idx + 1,
@@ -262,7 +352,13 @@ export const CreateRoadmapPage: React.FC = () => {
               caption: n.title
             } : null,
             customChartConfig: n.illustration_mode === 'custom_builder' ? n.custom_chart_config : null,
-            content_markdown: n.content_markdown
+            content_markdown: n.content_markdown,
+            posX: typeof n.posX === 'number' ? n.posX : (idx === 0 ? LANE_CENTER_X : idx % 2 === 1 ? LANE_LEFT_X : LANE_RIGHT_X),
+            posY: typeof n.posY === 'number' ? n.posY : 80 + idx * 165,
+            customColor: n.customColor || undefined,
+            customBadge: n.customBadge || undefined,
+            customConnections: idx === 0 ? customConnections : undefined,
+            customStageBoxes: idx === 0 ? customStageBoxes : undefined
           }))
         })
       });
@@ -276,7 +372,7 @@ export const CreateRoadmapPage: React.FC = () => {
         origin: { y: 0.6 }
       });
 
-      const newSlug = json.data?.slug || 'community';
+      const newSlug = json.data?.slug || json.slug || 'community';
       setSuccessSlug(newSlug);
 
       setTimeout(() => {
@@ -312,12 +408,21 @@ export const CreateRoadmapPage: React.FC = () => {
             </h1>
 
             <p className="text-xs sm:text-sm text-slate-600 dark:text-[#94A3B8]">
-              Rancang dan publikasikan kurikulum trading terstruktur Anda. Lengkapi setiap modul dengan panduan tutorial markdown dan engine ilustrasi 3-mode (Preset Diagram, Candlestick Interaktif, atau Snapshot Anotasi).
+              Rancang dan publikasikan kurikulum trading terstruktur Anda. Lengkapi setiap modul dengan panduan tutorial markdown, engine ilustrasi chart, serta <strong>Studio Peta &amp; Alur Garis (Drag &amp; Drop Posisi &amp; Konektor)</strong>.
             </p>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center space-x-3 flex-shrink-0">
+          <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
+            <button
+              type="button"
+              onClick={() => setIsFlowStudioOpen(true)}
+              className="px-4 py-2.5 rounded-xl bg-[#FACC15] hover:bg-[#EAB308] text-black font-mono font-extrabold text-xs border-2 border-black shadow-[3px_3px_0px_#000] flex items-center space-x-2 transition-all"
+            >
+              <GitBranch className="w-4 h-4" />
+              <span>🗺️ Studio Peta &amp; Alur Garis ({customConnections.length} Garis)</span>
+            </button>
+
             <Link
               to="/roadmaps"
               className="px-4 py-2 rounded-xl border border-slate-300 dark:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-800 text-xs font-mono font-medium transition-colors"
@@ -591,12 +696,67 @@ export const CreateRoadmapPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Interactive Visual Flow & Node-Graph Studio Launcher Card */}
+            <div className="bg-white dark:bg-[#121722] border-2 border-slate-200 dark:border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-800 dark:text-white flex items-center space-x-1.5">
+                  <GitBranch className="w-4 h-4 text-[#FACC15]" />
+                  <span>Studio Peta &amp; Alur Garis Kurikulum</span>
+                </h2>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-black text-[#FACC15] font-bold">
+                  {nodes.length} Node • {customConnections.length} Garis
+                </span>
+              </div>
+
+              <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed">
+                Atur tata letak kartu modul secara bebas (Drag &amp; Drop koordinat X/Y), tarik garis konektor antar modul (cabang paralel / konvergensi), dan sesuaikan warna fase sebelum dipublikasikan.
+              </p>
+
+              {/* Mini-Map Flowchart Preview */}
+              <div
+                onClick={() => setIsFlowStudioOpen(true)}
+                className="relative h-48 w-full rounded-xl border-2 border-dashed border-slate-300 dark:border-zinc-700 bg-grid-tactical bg-slate-50 dark:bg-[#0B0F19] overflow-hidden cursor-pointer group flex flex-col items-center justify-center p-3"
+              >
+                <div className="w-full max-w-xs space-y-2 pointer-events-none">
+                  {nodes.slice(0, 4).map((nd, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        marginLeft: idx === 0 ? 'auto' : idx % 2 === 1 ? '0px' : 'auto',
+                        marginRight: idx === 0 ? 'auto' : idx % 2 === 1 ? 'auto' : '0px',
+                        backgroundColor: nd.customColor || (idx % 2 === 0 ? '#FEF08A' : '#BAE6FD')
+                      }}
+                      className="w-44 px-2.5 py-1.5 rounded-lg border-2 border-black shadow-[2px_2px_0px_#000] text-[10px] font-mono font-bold text-black truncate flex items-center justify-between"
+                    >
+                      <span className="truncate">#{idx + 1} {nd.title || `Modul ${idx + 1}`}</span>
+                      <span className="text-[8px] opacity-75 ml-1">X:{Math.round(nd.posX || 375)}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <span className="px-3.5 py-2 rounded-xl bg-[#FACC15] text-black font-mono font-extrabold text-xs border-2 border-black shadow-[3px_3px_0px_#000]">
+                    🗺️ Klik untuk Geser Posisi &amp; Tarik Garis
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsFlowStudioOpen(true)}
+                className="w-full py-2.5 px-4 rounded-xl bg-[#FACC15] hover:bg-[#EAB308] text-black font-mono font-extrabold text-xs border-2 border-black shadow-[3px_3px_0px_#000] flex items-center justify-center space-x-2 transition-all"
+              >
+                <GitBranch className="w-4 h-4" />
+                <span>Buka Studio Peta &amp; Alur Garis (Full-Screen)</span>
+              </button>
+            </div>
+
           </div>
 
           {/* Column 2: Module Stages & 3-Mode Illustration Studio (7 Cols) */}
           <div className="lg:col-span-7 space-y-4">
             
-            <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-zinc-800">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-zinc-800">
               <div className="flex items-center space-x-2">
                 <Layers className="w-4 h-4 text-[#10B981]" />
                 <h2 className="text-sm font-mono font-bold uppercase tracking-wider text-slate-900 dark:text-white">
@@ -604,14 +764,25 @@ export const CreateRoadmapPage: React.FC = () => {
                 </h2>
               </div>
 
-              <button
-                type="button"
-                onClick={handleAddNode}
-                className="px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-800 dark:text-[#10B981] border border-emerald-500/30 text-xs font-mono font-bold flex items-center space-x-1.5 transition-colors"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Tambah Modul</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setIsFlowStudioOpen(true)}
+                  className="px-3 py-1.5 rounded-lg bg-amber-400/20 hover:bg-amber-400/30 text-amber-900 dark:text-[#FACC15] border border-amber-500/40 text-xs font-mono font-bold flex items-center space-x-1.5 transition-colors"
+                >
+                  <GitBranch className="w-3.5 h-3.5" />
+                  <span>Atur Posisi &amp; Garis</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleAddNode}
+                  className="px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-800 dark:text-[#10B981] border border-emerald-500/30 text-xs font-mono font-bold flex items-center space-x-1.5 transition-colors"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Tambah Modul</span>
+                </button>
+              </div>
             </div>
 
             {/* List of Module Cards */}
@@ -1018,6 +1189,69 @@ export const CreateRoadmapPage: React.FC = () => {
           onSave={(config) => {
             handleUpdateNode(chartBuilderTargetIndex, 'custom_chart_config', config);
             handleUpdateNode(chartBuilderTargetIndex, 'illustration_mode', 'custom_builder');
+          }}
+        />
+      )}
+
+      {/* Full-Screen Visual Roadmap Layout & Flow Connection Studio */}
+      {isFlowStudioOpen && (
+        <RoadmapGraphStudioModal
+          isOpen={isFlowStudioOpen}
+          roadmapTitle={title || 'Roadmap Kurikulum Baru'}
+          nodes={nodes.map((n, idx) => ({
+            id: n.id || `node-${idx + 1}`,
+            title: n.title || `Modul #${idx + 1}`,
+            duration: n.duration || '2 jam',
+            level: n.level || ((idx % 5) + 1),
+            importance: n.importance,
+            posX: typeof n.posX === 'number' ? n.posX : (idx === 0 ? LANE_CENTER_X : idx % 2 === 1 ? LANE_LEFT_X : LANE_RIGHT_X),
+            posY: typeof n.posY === 'number' ? n.posY : 80 + idx * 165,
+            customColor: n.customColor,
+            customBadge: n.customBadge
+          }))}
+          connections={customConnections}
+          stageBoxes={customStageBoxes}
+          onClose={() => setIsFlowStudioOpen(false)}
+          onApply={({ nodes: studioNodes, connections: studioEdges, stageBoxes: studioBoxes }) => {
+            setNodes(prev => {
+              const prevMap = new Map<string, NodeDraft>();
+              prev.forEach((p, idx) => prevMap.set(p.id || `node-${idx + 1}`, p));
+
+              return studioNodes.map((sn, idx) => {
+                const existing = prevMap.get(sn.id);
+                if (existing) {
+                  return {
+                    ...existing,
+                    id: sn.id,
+                    title: sn.title,
+                    duration: sn.duration,
+                    level: sn.level,
+                    posX: sn.posX,
+                    posY: sn.posY,
+                    customColor: sn.customColor,
+                    customBadge: sn.customBadge
+                  };
+                }
+                return {
+                  id: sn.id,
+                  title: sn.title,
+                  duration: sn.duration || '2 jam',
+                  level: sn.level || idx + 1,
+                  importance: sn.importance || 'recommended',
+                  illustration_mode: 'preset',
+                  preset_type: 'candlestick-anatomy',
+                  chart_symbol: 'EUR/USD',
+                  snapshot_url: '',
+                  content_markdown: `### ${sn.title}\nTuliskan materi dan panduan teknikal modul ini.`,
+                  posX: sn.posX,
+                  posY: sn.posY,
+                  customColor: sn.customColor,
+                  customBadge: sn.customBadge
+                };
+              });
+            });
+            setCustomConnections(studioEdges);
+            setCustomStageBoxes(studioBoxes);
           }}
         />
       )}

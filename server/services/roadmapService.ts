@@ -40,23 +40,36 @@ export class RoadmapService {
           id: n.id || `node-${idx + 1}`,
           roadmap_id: communityRm.id,
           title: n.title || 'Modul',
+          summary: n.summary || n.description || (n.content_markdown ? n.content_markdown.replace(/[#*`]/g, '').slice(0, 140) : ''),
           description: n.description || '',
+          content: n.content_markdown || n.content || '',
+          level: n.level || ((idx % 5) + 1),
           category: n.category || communityRm.category,
           importance: n.importance || 'recommended',
-          order_index: idx,
-          parent_node_id: n.parent_node_id || null,
+          order_index: idx + 1,
+          parent_node_id: n.parent_node_id !== undefined ? n.parent_node_id : (idx > 0 ? (parsedNodes[idx - 1].id || `node-${idx}`) : null),
           estimated_hours: n.duration ? parseInt(n.duration) || 2 : 2,
           status: n.status || (idx === 0 ? 'available' : 'locked'),
           doc_slug: n.doc_slug || n.id || `doc-${communityRm.slug}-${idx + 1}`,
+          visual_type: n.diagram_type || n.visual_type || 'candlestick-anatomy',
           illustrationMode: n.illustrationMode || 'preset',
           diagram_type: n.diagram_type || 'candlestick-anatomy',
           chartConfig: n.chartConfig || null,
           snapshotConfig: n.snapshotConfig || null,
+          customChartConfig: n.customChartConfig || null,
           content_markdown: n.content_markdown || '',
+          posX: typeof n.posX === 'number' ? n.posX : undefined,
+          posY: typeof n.posY === 'number' ? n.posY : undefined,
+          customColor: n.customColor || undefined,
+          customBadge: n.customBadge || undefined,
+          customConnections: Array.isArray(n.customConnections) ? n.customConnections : undefined,
+          customStageBoxes: Array.isArray(n.customStageBoxes) ? n.customStageBoxes : undefined,
           checklists: n.checklists || [],
           resources: n.resources || [],
           quizzes: n.quizzes || []
         }));
+
+        const firstNodeWithMeta = parsedNodes.find((n: any) => Array.isArray(n.customConnections) || Array.isArray(n.customStageBoxes));
 
         return {
           roadmap: {
@@ -69,7 +82,9 @@ export class RoadmapService {
             estimated_hours: safeNodes.length * 2,
             is_official: false,
             creator_name: communityRm.creator_name,
-            forked_from_id: communityRm.forked_from_id
+            forked_from_id: (communityRm as any).forked_from_id,
+            customConnections: firstNodeWithMeta?.customConnections || undefined,
+            customStageBoxes: firstNodeWithMeta?.customStageBoxes || undefined
           },
           stats: {
             total_nodes: safeNodes.length,
@@ -237,7 +252,7 @@ export class RoadmapService {
       nodes_json: JSON.stringify(data.nodes || [])
     });
 
-    return { success: true, id, slug };
+    return { success: true, id, slug, data: { id, slug } };
   }
 
   upvoteCommunityRoadmap(id: string) {

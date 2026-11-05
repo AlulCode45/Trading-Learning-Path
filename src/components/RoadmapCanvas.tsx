@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Roadmap, RoadmapNode } from '../types';
 import { 
   CheckCircle2, 
@@ -14,8 +14,20 @@ import {
   Navigation,
   ArrowRight,
   BookOpen,
-  Info
+  Info,
+  GitBranch
 } from 'lucide-react';
+import { RoadmapGraphStudioModal } from './roadmap-builder/RoadmapGraphStudioModal';
+import {
+  RoadmapEdgeConnection,
+  RoadmapStageBoxConfig,
+  PortPosition,
+  EdgeLineStyle,
+  EdgeCurveType,
+  getPortCoordinates,
+  buildEdgeSvgPath,
+  buildArrowPolygonPoints
+} from '../types/roadmapStudioTypes';
 
 interface RoadmapCanvasProps {
   roadmap: Roadmap;
@@ -248,23 +260,93 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
   const [viewMode, setViewMode] = useState<'canvas' | 'linear'>('canvas');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'available' | 'in_progress' | 'completed'>('all');
+  const [isFlowStudioOpen, setIsFlowStudioOpen] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Local custom layout override state (persisted in localStorage per roadmap slug)
+  const [customLayoutOverride, setCustomLayoutOverride] = useState<{
+    nodeOverrides: Record<string, { posX: number; posY: number; title?: string; level?: number; customColor?: string; customBadge?: string }>;
+    connections?: RoadmapEdgeConnection[];
+    stageBoxes?: RoadmapStageBoxConfig[];
+  } | null>(null);
+
+  useEffect(() => {
+    if (!roadmap?.slug) return;
+    try {
+      const saved = localStorage.getItem(`roadmap-flow-studio-${roadmap.slug}`);
+      if (saved) {
+        setCustomLayoutOverride(JSON.parse(saved));
+      } else {
+        setCustomLayoutOverride(null);
+      }
+    } catch {
+      setCustomLayoutOverride(null);
+    }
+  }, [roadmap?.slug]);
 
   const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.15, 1.4));
   const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.15, 0.65));
   const handleResetZoom = () => setZoom(1);
 
-  // Dynamic stage boxes matching the selected roadmap
+  // Dynamic stage boxes matching the selected roadmap or custom stage boxes
   const stageBoxes: StageGroupBox[] = useMemo(() => {
+    const customBoxes =
+      customLayoutOverride?.stageBoxes ||
+      roadmap?.customStageBoxes ||
+      nodes.find(n => Array.isArray(n.customStageBoxes) && n.customStageBoxes.length > 0)?.customStageBoxes;
+
+    if (customBoxes && customBoxes.length > 0) {
+      return customBoxes.map(b => ({
+        level: b.level,
+        title: b.title,
+        subtitle: b.subtitle || '',
+        tag: b.tag || `Fase ${b.level}`,
+        x: b.x,
+        y: b.y,
+        width: b.width,
+        height: b.height,
+        badgeBg: 'bg-black text-[#FACC15] dark:bg-white dark:text-black',
+        badgeText: `FASE ${b.level}`
+      }));
+    }
+
     if (roadmap?.slug && ROADMAP_STAGE_BOXES[roadmap.slug]) {
       return ROADMAP_STAGE_BOXES[roadmap.slug];
     }
-    return ROADMAP_STAGE_BOXES['price-action-market-structure'];
-  }, [roadmap?.slug]);
+    if (roadmap?.is_official) {
+      return ROADMAP_STAGE_BOXES['price-action-market-structure'];
+    }
+    return [];
+  }, [roadmap?.slug, roadmap?.is_official, roadmap?.customStageBoxes, nodes, customLayoutOverride]);
 
-  // Position nodes precisely using presets or dynamic flowchart logic
+  // Position nodes precisely using custom overrides, saved node posX/posY, presets, or dynamic fallback
   const positionedNodes: PositionedNode[] = useMemo(() => {
-    return nodes.map(node => {
+    return nodes.map((node, idx) => {
+      const localOverride = customLayoutOverride?.nodeOverrides?.[node.id];
+      if (localOverride) {
+        return {
+          ...node,
+          title: localOverride.title || node.title,
+          level: localOverride.level || node.level,
+          customColor: localOverride.customColor ?? node.customColor,
+          customBadge: localOverride.customBadge ?? node.customBadge,
+          posX: localOverride.posX,
+          posY: localOverride.posY,
+          width: NODE_WIDTH,
+          height: NODE_HEIGHT
+        };
+      }
+
+      if (typeof node.posX === 'number' && typeof node.posY === 'number') {
+        return {
+          ...node,
+          posX: node.posX,
+          posY: node.posY,
+          width: NODE_WIDTH,
+          height: NODE_HEIGHT
+        };
+      }
+
       if (POSITION_PRESETS[node.id]) {
         return {
           ...node,
@@ -276,7 +358,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
       }
 
       // Dynamic fallback for custom roadmaps
-      const order = node.order_index || 1;
+      const order = node.order_index || idx + 1;
       const isLeft = order % 2 === 0;
       const posX = order === 1 ? LANE_CENTER_X : isLeft ? LANE_LEFT_X : LANE_RIGHT_X;
       const posY = 80 + (order - 1) * 155;
@@ -289,13 +371,14 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
         height: NODE_HEIGHT
       };
     });
-  }, [nodes]);
+  }, [nodes, customLayoutOverride]);
 
   const totalCanvasHeight = useMemo(() => {
     if (positionedNodes.length === 0) return 1880;
     const maxY = Math.max(...positionedNodes.map(n => n.posY));
-    return maxY + 180;
-  }, [positionedNodes]);
+    const maxStageY = stageBoxes.length > 0 ? Math.max(...stageBoxes.map(b => b.y + b.height)) : 0;
+    return Math.max(maxY + 200, maxStageY + 120);
+  }, [positionedNodes, stageBoxes]);
 
   const posMap = useMemo(() => {
     const map = new Map<string, PositionedNode>();
@@ -303,14 +386,58 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
     return map;
   }, [positionedNodes]);
 
-  // Clean, high-contrast flowchart connectors with directional arrows
+  // Clean, high-contrast flowchart connectors with directional arrows & custom studio edges
   const connections = useMemo(() => {
+    const customEdges =
+      customLayoutOverride?.connections ||
+      roadmap?.customConnections ||
+      nodes.find(n => Array.isArray(n.customConnections) && n.customConnections.length > 0)?.customConnections;
+
+    if (customEdges && customEdges.length > 0) {
+      return customEdges
+        .map(edge => {
+          const parent = posMap.get(edge.fromNodeId);
+          const child = posMap.get(edge.toNodeId);
+          if (!parent || !child) return null;
+
+          const fromPt = getPortCoordinates(parent, edge.fromPort || 'bottom');
+          const toPt = getPortCoordinates(child, edge.toPort || 'top');
+          const theme = getNodeTheme(parent.level);
+
+          return {
+            id: edge.id,
+            fromNodeId: edge.fromNodeId,
+            toNodeId: edge.toNodeId,
+            fromX: fromPt.x,
+            fromY: fromPt.y,
+            toX: toPt.x,
+            toY: toPt.y,
+            fromPort: (edge.fromPort || 'bottom') as PortPosition,
+            toPort: (edge.toPort || 'top') as PortPosition,
+            curveType: (edge.curveType || 'bezier') as EdgeCurveType,
+            lineStyle: (edge.lineStyle || 'solid') as EdgeLineStyle,
+            label: edge.label,
+            isActive: parent.status === 'completed',
+            isCompleted: parent.status === 'completed' && child.status === 'completed',
+            color: edge.color || theme.arrowColor
+          };
+        })
+        .filter((x): x is NonNullable<typeof x> => x !== null);
+    }
+
     const list: Array<{
       id: string;
+      fromNodeId: string;
+      toNodeId: string;
       fromX: number;
       fromY: number;
       toX: number;
       toY: number;
+      fromPort: PortPosition;
+      toPort: PortPosition;
+      curveType: EdgeCurveType;
+      lineStyle: EdgeLineStyle;
+      label?: string;
       isActive: boolean;
       isCompleted: boolean;
       color: string;
@@ -325,10 +452,16 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
 
         list.push({
           id: `${parent.id}->${child.id}`,
+          fromNodeId: parent.id,
+          toNodeId: child.id,
           fromX: parent.posX + NODE_WIDTH / 2,
           fromY: parent.posY + NODE_HEIGHT,
           toX: child.posX + NODE_WIDTH / 2,
           toY: child.posY,
+          fromPort: 'bottom',
+          toPort: 'top',
+          curveType: 'bezier',
+          lineStyle: 'solid',
           isActive: isParentCompleted,
           isCompleted: isParentCompleted && isChildCompleted,
           color: theme.arrowColor
@@ -342,10 +475,16 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
     if (node52 && node53) {
       list.push({
         id: 'node-5-2->node-5-3',
+        fromNodeId: 'node-5-2',
+        toNodeId: 'node-5-3',
         fromX: node52.posX + NODE_WIDTH / 2,
         fromY: node52.posY + NODE_HEIGHT,
         toX: node53.posX + NODE_WIDTH / 2,
         toY: node53.posY,
+        fromPort: 'bottom',
+        toPort: 'top',
+        curveType: 'bezier',
+        lineStyle: 'solid',
         isActive: node52.status === 'completed',
         isCompleted: node52.status === 'completed' && node53.status === 'completed',
         color: '#E11D48'
@@ -353,12 +492,12 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
     }
 
     return list;
-  }, [positionedNodes, posMap]);
+  }, [positionedNodes, posMap, customLayoutOverride, roadmap?.customConnections, nodes]);
 
   const filteredNodes = useMemo(() => {
     return positionedNodes.filter(n => {
       const matchSearch = n.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          n.summary.toLowerCase().includes(searchTerm.toLowerCase());
+                          (n.summary || '').toLowerCase().includes(searchTerm.toLowerCase());
       const matchStatus = statusFilter === 'all' || n.status === statusFilter;
       return matchSearch && matchStatus;
     });
@@ -411,6 +550,17 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
             <option value="in_progress">Sedang Dipelajari</option>
             <option value="completed">Mastered ✓</option>
           </select>
+
+          {/* Interactive Flow & Position Studio Button */}
+          <button
+            type="button"
+            onClick={() => setIsFlowStudioOpen(true)}
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-sky-400 hover:bg-sky-300 text-black font-semibold border-2 border-black rounded-md text-xs shadow-[2px_2px_0px_#000] active:translate-x-0.5 active:translate-y-0.5 transition-all"
+            title="Kustomisasi Posisi Kartu & Tarik Garis Alur"
+          >
+            <GitBranch className="w-3.5 h-3.5" />
+            <span>Studio Posisi &amp; Garis</span>
+          </button>
 
           {/* Jump to Active Button */}
           <button
@@ -489,7 +639,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
 
         <div className="flex items-center space-x-1.5">
           <span className="w-3.5 h-3.5 rounded-xs bg-[#E9D5FF] border-2 border-black shadow-[1px_1px_0px_#000]"></span>
-          <span className="text-zinc-800 dark:text-zinc-200 font-medium">Zona Nilai & FVG</span>
+          <span className="text-zinc-800 dark:text-zinc-200 font-medium">Zona Nilai &amp; FVG</span>
         </div>
 
         <div className="flex items-center space-x-1.5">
@@ -499,11 +649,26 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
 
         <div className="flex items-center space-x-1.5">
           <span className="w-3.5 h-3.5 rounded-xs bg-[#FECDD3] border-2 border-black shadow-[1px_1px_0px_#000]"></span>
-          <span className="text-zinc-800 dark:text-zinc-200 font-medium">Eksekusi & Risiko</span>
+          <span className="text-zinc-800 dark:text-zinc-200 font-medium">Eksekusi &amp; Risiko</span>
         </div>
 
+        {customLayoutOverride && (
+          <button
+            type="button"
+            onClick={() => {
+              if (roadmap?.slug) {
+                localStorage.removeItem(`roadmap-flow-studio-${roadmap.slug}`);
+              }
+              setCustomLayoutOverride(null);
+            }}
+            className="px-2 py-0.5 rounded bg-rose-500/15 hover:bg-rose-500/25 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-[10px] font-bold"
+          >
+            ↺ Reset Layout ke Default
+          </button>
+        )}
+
         <span className="ml-auto text-[11px] text-zinc-500 dark:text-zinc-400 hidden xl:inline">
-          💡 Klik node kartu untuk membuka materi &amp; kuis interaktif
+          💡 Klik node kartu untuk materi atau klik &ldquo;Studio Posisi &amp; Garis&rdquo; untuk geser posisi &amp; tarik garis
         </span>
       </div>
 
@@ -522,9 +687,9 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
             }}
           >
             {/* Stage Group Enclosure Containers (roadmap.sh Section Boxes) */}
-            {stageBoxes.map(box => (
+            {stageBoxes.map((box, idx) => (
               <div
-                key={box.level}
+                key={`${box.level}-${idx}`}
                 style={{
                   position: 'absolute',
                   left: `${box.x}px`,
@@ -552,8 +717,18 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
               style={{ width: `${CANVAS_WIDTH}px`, height: `${totalCanvasHeight}px` }}
             >
               {connections.map(conn => {
-                const dy = conn.toY - conn.fromY;
-                const pathD = `M ${conn.fromX} ${conn.fromY} C ${conn.fromX} ${conn.fromY + dy * 0.5}, ${conn.toX} ${conn.toY - dy * 0.5}, ${conn.toX} ${conn.toY - 2}`;
+                const pathD = buildEdgeSvgPath(
+                  conn.fromX,
+                  conn.fromY,
+                  conn.toX,
+                  conn.toY,
+                  conn.fromPort || 'bottom',
+                  conn.toPort || 'top',
+                  conn.curveType || 'bezier'
+                );
+                const arrowPoints = buildArrowPolygonPoints(conn.toX, conn.toY, conn.toPort || 'top');
+                const midX = (conn.fromX + conn.toX) / 2;
+                const midY = (conn.fromY + conn.toY) / 2;
 
                 return (
                   <g key={conn.id}>
@@ -567,14 +742,21 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
                       strokeLinecap="round"
                     />
 
-                    {/* Primary Solid High-Contrast Line */}
+                    {/* Primary High-Contrast Line */}
                     <path
                       d={pathD}
                       fill="none"
-                      stroke="currentColor"
-                      className="text-zinc-900 dark:text-zinc-200"
+                      stroke={conn.color || 'currentColor'}
+                      className={conn.color ? '' : 'text-zinc-900 dark:text-zinc-200'}
                       strokeWidth={2.75}
                       strokeLinecap="round"
+                      strokeDasharray={
+                        conn.lineStyle === 'dashed'
+                          ? '8 6'
+                          : conn.lineStyle === 'animated'
+                          ? '6 6'
+                          : undefined
+                      }
                     />
 
                     {/* Source Node Exit Port Pin */}
@@ -582,28 +764,52 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
                       cx={conn.fromX}
                       cy={conn.fromY}
                       r={4}
-                      fill="currentColor"
+                      fill={conn.color || 'currentColor'}
                       className="text-zinc-900 dark:text-zinc-200"
-                      stroke="currentColor"
+                      stroke="#000"
                       strokeWidth={1.5}
                     />
 
-                    {/* Midpoint Pulse Dot */}
-                    <circle
-                      cx={(conn.fromX + conn.toX) / 2}
-                      cy={(conn.fromY + conn.toY) / 2}
-                      r={3.5}
-                      fill={conn.color}
-                      stroke="currentColor"
-                      className="text-zinc-900 dark:text-zinc-200"
-                      strokeWidth={1.5}
-                    />
+                    {/* Midpoint Label Badge or Pulse Dot */}
+                    {conn.label ? (
+                      <g transform={`translate(${midX}, ${midY})`}>
+                        <rect
+                          x={-Math.max(34, conn.label.length * 3.8)}
+                          y={-10}
+                          width={Math.max(68, conn.label.length * 7.6)}
+                          height={20}
+                          rx={5}
+                          fill="#0F172A"
+                          stroke="#000000"
+                          strokeWidth={1.5}
+                        />
+                        <text
+                          x={0}
+                          y={3.5}
+                          textAnchor="middle"
+                          fill="#FACC15"
+                          className="text-[10px] font-mono font-bold"
+                        >
+                          {conn.label}
+                        </text>
+                      </g>
+                    ) : (
+                      <circle
+                        cx={midX}
+                        cy={midY}
+                        r={3.5}
+                        fill={conn.color}
+                        stroke="currentColor"
+                        className="text-zinc-900 dark:text-zinc-200"
+                        strokeWidth={1.5}
+                      />
+                    )}
 
                     {/* Crisp Directional Arrowhead pointing into Child Card */}
                     <polygon
-                      points={`${conn.toX - 6},${conn.toY - 12} ${conn.toX + 6},${conn.toY - 12} ${conn.toX},${conn.toY - 1}`}
-                      fill="currentColor"
-                      className="text-zinc-900 dark:text-zinc-200"
+                      points={arrowPoints}
+                      fill={conn.color || 'currentColor'}
+                      className={conn.color ? '' : 'text-zinc-900 dark:text-zinc-200'}
                     />
                   </g>
                 );
@@ -626,18 +832,19 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
                     left: `${node.posX}px`,
                     top: `${node.posY}px`,
                     width: `${node.width}px`,
-                    height: `${node.height}px`
+                    height: `${node.height}px`,
+                    ...(node.customColor ? { backgroundColor: node.customColor } : {})
                   }}
                   className={`group cursor-pointer rounded-lg p-3 transition-all duration-150 select-none flex flex-col justify-between ${theme.borderClass} ${
                     isSelected
-                      ? `${theme.selectedBgClass} -translate-x-1 -translate-y-1 shadow-[5px_5px_0px_#000] dark:shadow-[5px_5px_0px_#fff] z-30`
-                      : `${theme.bgClass} ${theme.shadowClass} hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_#000] dark:hover:shadow-[4px_4px_0px_#fff] z-20`
+                      ? `${node.customColor ? 'ring-4 ring-black/20 dark:ring-white/30' : theme.selectedBgClass} -translate-x-1 -translate-y-1 shadow-[5px_5px_0px_#000] dark:shadow-[5px_5px_0px_#fff] z-30`
+                      : `${node.customColor ? 'text-zinc-950' : theme.bgClass} ${theme.shadowClass} hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_#000] dark:hover:shadow-[4px_4px_0px_#fff] z-20`
                   }`}
                 >
                   {/* Top Metadata Row: Order Tag & Status */}
                   <div className="flex items-center justify-between">
                     <span className={`text-[10px] px-1.5 py-0.2 rounded font-bold ${theme.tagClass}`}>
-                      #{node.order_index} {theme.name}
+                      #{node.order_index} {node.customBadge || theme.name}
                     </span>
 
                     <div className="flex items-center space-x-1">
@@ -707,7 +914,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono font-extrabold text-zinc-800 uppercase tracking-wider">
-                      Fase {node.level}: {theme.name}
+                      Fase {node.level}: {node.customBadge || theme.name}
                     </span>
                     {node.status === 'completed' && (
                       <span className="text-[10px] font-mono font-bold bg-black text-[#4ADE80] px-2 py-0.5 rounded">
@@ -722,6 +929,74 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
             );
           })}
         </div>
+      )}
+
+      {/* Full-Screen Visual Roadmap Flow Studio for Live Customization */}
+      {isFlowStudioOpen && (
+        <RoadmapGraphStudioModal
+          isOpen={isFlowStudioOpen}
+          roadmapTitle={roadmap.title}
+          nodes={positionedNodes.map(n => ({
+            id: n.id,
+            title: n.title,
+            duration: '2 jam',
+            level: n.level || 1,
+            importance: 'recommended',
+            posX: n.posX,
+            posY: n.posY,
+            customColor: n.customColor,
+            customBadge: n.customBadge
+          }))}
+          connections={connections.map(c => ({
+            id: c.id,
+            fromNodeId: c.fromNodeId,
+            toNodeId: c.toNodeId,
+            fromPort: c.fromPort,
+            toPort: c.toPort,
+            label: c.label,
+            color: c.color,
+            lineStyle: c.lineStyle,
+            curveType: c.curveType
+          }))}
+          stageBoxes={stageBoxes.map((b, i) => ({
+            id: `stage-${b.level}-${i}`,
+            level: b.level,
+            title: b.title,
+            subtitle: b.subtitle,
+            tag: b.tag,
+            x: b.x,
+            y: b.y,
+            width: b.width,
+            height: b.height
+          }))}
+          onClose={() => setIsFlowStudioOpen(false)}
+          onApply={({ nodes: studioNodes, connections: studioEdges, stageBoxes: studioBoxes }) => {
+            const nodeOverrides: Record<string, { posX: number; posY: number; title?: string; level?: number; customColor?: string; customBadge?: string }> = {};
+            studioNodes.forEach(sn => {
+              nodeOverrides[sn.id] = {
+                posX: sn.posX,
+                posY: sn.posY,
+                title: sn.title,
+                level: sn.level,
+                customColor: sn.customColor,
+                customBadge: sn.customBadge
+              };
+            });
+            const payload = {
+              nodeOverrides,
+              connections: studioEdges,
+              stageBoxes: studioBoxes
+            };
+            setCustomLayoutOverride(payload);
+            if (roadmap?.slug) {
+              try {
+                localStorage.setItem(`roadmap-flow-studio-${roadmap.slug}`, JSON.stringify(payload));
+              } catch {
+                // ignore storage quota errors
+              }
+            }
+          }}
+        />
       )}
     </div>
   );

@@ -1,3 +1,5 @@
+import { RoadmapEdgeConnection, RoadmapStageBoxConfig } from './roadmapStudioTypes';
+
 export interface Roadmap {
   id: string;
   slug: string;
@@ -11,6 +13,8 @@ export interface Roadmap {
   completed_nodes?: number;
   completion_percentage?: number;
   created_at: string;
+  customConnections?: RoadmapEdgeConnection[];
+  customStageBoxes?: RoadmapStageBoxConfig[];
 }
 
 export interface QuizQuestion {
@@ -38,6 +42,12 @@ export interface RoadmapNode {
   checklists: Array<{ id: string; text: string; is_completed: boolean }>;
   resources: Array<{ id: string; title: string; url: string; type: string; author: string | null }>;
   quizzes?: QuizQuestion[];
+  posX?: number;
+  posY?: number;
+  customColor?: string;
+  customBadge?: string;
+  customConnections?: RoadmapEdgeConnection[];
+  customStageBoxes?: RoadmapStageBoxConfig[];
 }
 
 export interface CommunityRoadmap {
