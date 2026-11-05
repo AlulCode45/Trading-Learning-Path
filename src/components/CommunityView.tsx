@@ -45,13 +45,13 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
             Jelajahi alur belajar trading yang dibuat dan dibagikan oleh praktisi pasar: strategi scalping emas, siklus rotasi altcoin, hingga model swing institusional. Buat dan bagikan roadmap versi Anda sendiri.
           </p>
           <div className="mt-5">
-            <button
-              onClick={onOpenCreateModal}
-              className="inline-flex items-center space-x-2 px-4 py-2.5 bg-[#10B981] text-[#090D16] rounded-xl font-semibold text-xs hover:bg-[#059669] transition-colors shadow-lg shadow-[#10B981]/20"
+            <Link
+              to="/roadmaps/create"
+              className="inline-flex items-center space-x-2 px-4 py-2.5 bg-[#10B981] text-[#090D16] rounded-xl font-bold text-xs hover:bg-[#059669] transition-colors shadow-lg shadow-[#10B981]/20"
             >
               <PlusCircle className="w-4 h-4" />
               <span>Publikasikan Roadmap Baru</span>
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -134,16 +134,14 @@ export const CommunityView: React.FC<CommunityViewProps> = ({
             <div className="mt-5 pt-3 border-t border-[#1E293B] flex items-center justify-between">
               <span className="text-[11px] font-mono text-[#94A3B8]">{item.nodes?.length || 0} Modul</span>
               <div className="flex items-center space-x-3">
-                {onForkRoadmap && (
-                  <button
-                    onClick={() => onForkRoadmap(item)}
-                    className="flex items-center space-x-1 text-xs font-mono text-[#94A3B8] hover:text-white transition-colors"
-                    title="Fork roadmap komunitas ini"
-                  >
-                    <GitFork className="w-3.5 h-3.5" />
-                    <span>Fork</span>
-                  </button>
-                )}
+                <Link
+                  to={`/roadmaps/create?fork=${item.slug}`}
+                  className="flex items-center space-x-1 text-xs font-mono text-[#94A3B8] hover:text-white transition-colors"
+                  title="Fork roadmap komunitas ini ke Roadmap Studio"
+                >
+                  <GitFork className="w-3.5 h-3.5" />
+                  <span>Fork</span>
+                </Link>
                 <Link
                   to={`/roadmaps/${item.slug}`}
                   className="text-xs font-mono font-bold text-[#10B981] hover:underline flex items-center space-x-1"

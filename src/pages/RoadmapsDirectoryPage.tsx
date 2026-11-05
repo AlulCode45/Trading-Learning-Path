@@ -155,15 +155,13 @@ export const RoadmapsDirectoryPage: React.FC<RoadmapsDirectoryPageProps> = ({
               />
             </div>
 
-            {onOpenCreateModal && (
-              <button
-                onClick={onOpenCreateModal}
-                className="w-full sm:w-auto px-4 py-2.5 bg-black dark:bg-white text-white dark:text-black font-bold rounded-xl text-xs flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-xs flex-shrink-0"
-              >
-                <PlusCircle className="w-4 h-4 text-[#10B981]" />
-                <span>Buat Roadmap Baru</span>
-              </button>
-            )}
+            <Link
+              to="/roadmaps/create"
+              className="w-full sm:w-auto px-4 py-2.5 bg-black dark:bg-white text-white dark:text-black font-bold rounded-xl text-xs flex items-center justify-center space-x-2 hover:opacity-90 transition-all shadow-xs flex-shrink-0"
+            >
+              <PlusCircle className="w-4 h-4 text-[#10B981]" />
+              <span>Buat Roadmap Baru</span>
+            </Link>
           </div>
 
           {/* Category Chips Filter */}
@@ -255,16 +253,14 @@ export const RoadmapsDirectoryPage: React.FC<RoadmapsDirectoryPageProps> = ({
                           </div>
 
                           <div className="flex items-center space-x-2">
-                            {onForkRoadmap && (
-                              <button
-                                onClick={() => onForkRoadmap(rm)}
-                                title="Fork kurikulum ini ke Roadmap Builder"
-                                className="inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-black/10 hover:bg-black/20 text-zinc-950 font-mono text-xs font-bold transition-all"
-                              >
-                                <GitFork className="w-3.5 h-3.5" />
-                                <span className="hidden sm:inline">Fork</span>
-                              </button>
-                            )}
+                            <Link
+                              to={`/roadmaps/create?fork=${rm.slug}`}
+                              title="Fork kurikulum ini ke Roadmap Studio"
+                              className="inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-black/10 hover:bg-black/20 text-zinc-950 font-mono text-xs font-bold transition-all"
+                            >
+                              <GitFork className="w-3.5 h-3.5" />
+                              <span className="hidden sm:inline">Fork</span>
+                            </Link>
 
                             <Link
                               to={`/roadmaps/${rm.slug}`}
@@ -331,16 +327,14 @@ export const RoadmapsDirectoryPage: React.FC<RoadmapsDirectoryPageProps> = ({
                         <div className="pt-4 mt-4 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between text-xs font-mono">
                           <span className="text-slate-500">{nodeCount} Modul Khusus</span>
                           <div className="flex items-center space-x-2.5">
-                            {onForkRoadmap && (
-                              <button
-                                onClick={() => onForkRoadmap(crm)}
-                                className="text-slate-500 hover:text-black dark:text-zinc-400 dark:hover:text-white flex items-center space-x-1 text-[11px]"
-                                title="Fork kurikulum ini"
-                              >
-                                <GitFork className="w-3 h-3" />
-                                <span>Fork</span>
-                              </button>
-                            )}
+                            <Link
+                              to={`/roadmaps/create?fork=${crm.slug}`}
+                              className="text-slate-500 hover:text-black dark:text-zinc-400 dark:hover:text-white flex items-center space-x-1 text-[11px]"
+                              title="Fork kurikulum ini ke Roadmap Studio"
+                            >
+                              <GitFork className="w-3 h-3" />
+                              <span>Fork</span>
+                            </Link>
                             <Link
                               to={`/roadmaps/${crm.slug}`}
                               className="text-[#10B981] font-bold hover:underline flex items-center space-x-1"

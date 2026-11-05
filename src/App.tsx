@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Header } from './components/Header';
 import { HomePage } from './pages/HomePage';
 import { RoadmapsDirectoryPage } from './pages/RoadmapsDirectoryPage';
+import { CreateRoadmapPage } from './pages/CreateRoadmapPage';
 import { RoadmapPage } from './pages/RoadmapPage';
 import { DocsHubPage } from './pages/DocsHubPage';
 import { DocPage } from './pages/DocPage';
@@ -55,6 +56,8 @@ export function App() {
                 />
               }
             />
+            <Route path="/roadmaps/create" element={<CreateRoadmapPage />} />
+            <Route path="/create-roadmap" element={<Navigate to="/roadmaps/create" replace />} />
             <Route path="/roadmaps/:slug" element={<RoadmapPage />} />
             <Route path="/docs" element={<DocsHubPage />} />
             <Route path="/docs/:slug" element={<DocPage />} />

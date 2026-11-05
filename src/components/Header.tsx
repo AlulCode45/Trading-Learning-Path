@@ -124,15 +124,15 @@ export const Header: React.FC<HeaderProps> = ({
             </Link>
           </nav>
 
-          {/* Right Actions: Create Modal & Theme Toggle */}
+          {/* Right Actions: Create Roadmap Page Link & Theme Toggle */}
           <div className="flex items-center space-x-2.5">
-            <button
-              onClick={onOpenCreateModal}
-              className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-[#161D2C] hover:bg-slate-200 dark:hover:bg-[#222B3D] border border-slate-200 dark:border-[#1E293B] text-slate-800 dark:text-slate-200 text-xs font-medium transition-colors"
+            <Link
+              to="/roadmaps/create"
+              className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-black dark:bg-white text-white dark:text-black hover:opacity-90 border border-slate-200 dark:border-[#1E293B] text-xs font-bold transition-all shadow-xs"
             >
               <PlusCircle className="w-3.5 h-3.5 text-[#10B981]" />
               <span>Buat Roadmap</span>
-            </button>
+            </Link>
 
             {/* Global Theme Toggle Button */}
             <button
