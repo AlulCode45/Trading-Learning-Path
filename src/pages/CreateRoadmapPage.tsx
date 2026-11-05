@@ -52,10 +52,12 @@ export const CreateRoadmapPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const forkSlug = searchParams.get('fork');
 
-  // Metadata State
+// Metadata State
   const [title, setTitle] = useState('');
   const [creatorName, setCreatorName] = useState('');
   const [category, setCategory] = useState('Price Action & Market Structure');
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategoryInput, setCustomCategoryInput] = useState('');
   const [difficulty, setDifficulty] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Intermediate');
   const [description, setDescription] = useState('');
   
@@ -120,6 +122,8 @@ export const CreateRoadmapPage: React.FC = () => {
         const rm = json.data.roadmap;
         setTitle(`${rm.title} (Komunitas Fork)`);
         setCategory(rm.category);
+        setIsCustomCategory(false);
+        setCustomCategoryInput('');
         setDescription(`Kurikulum adaptif yang dikembangkan dari silabus ${rm.title}. Dilengkapi studi kasus dan anotasi teknikal mandiri.`);
         setDifficulty((rm.difficulty as any) || 'Intermediate');
         
@@ -210,6 +214,13 @@ export const CreateRoadmapPage: React.FC = () => {
       return;
     }
 
+    const finalCategory = (isCustomCategory ? customCategoryInput.trim() : category.trim());
+    if (!finalCategory) {
+      setError('Mohon tentukan atau ketik kategori metodologi untuk kurikulum Anda.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     const hasEmptyNode = nodes.some(n => !n.title.trim());
     if (hasEmptyNode) {
       setError('Pastikan semua tahapan modul telah memiliki judul yang terisi.');
@@ -224,7 +235,7 @@ export const CreateRoadmapPage: React.FC = () => {
         body: JSON.stringify({
           title,
           creator_name: creatorName,
-          category,
+          category: finalCategory,
           description,
           difficulty,
           estimated_hours: totalEstimatedHours,
@@ -421,21 +432,80 @@ export const CreateRoadmapPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block font-mono font-semibold text-slate-700 dark:text-zinc-300 mb-1">
-                      Kategori Metodologi
-                    </label>
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#0A0D14] border border-slate-300 dark:border-zinc-700 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white outline-none focus:border-black dark:focus:border-white transition-all"
-                    >
-                      <option value="Price Action & Market Structure">Price Action &amp; Struktur</option>
-                      <option value="Institutional & SMC">Institutional &amp; SMC (ICT)</option>
-                      <option value="Wyckoff & Volume Analysis">Metode Wyckoff &amp; VSA</option>
-                      <option value="Risk Management & Psychology">Manajemen Risiko &amp; Psikologi</option>
-                      <option value="Quantitative & Algorithmic">Kuantitatif &amp; Algo Trading</option>
-                      <option value="Spesialisasi Pasar">Scalping / Kripto / Forex Khusus</option>
-                    </select>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block font-mono font-semibold text-slate-700 dark:text-zinc-300">
+                        Kategori Metodologi *
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!isCustomCategory) {
+                            setIsCustomCategory(true);
+                            setCustomCategoryInput(category);
+                          } else {
+                            setIsCustomCategory(false);
+                            setCategory('Price Action & Market Structure');
+                          }
+                        }}
+                        className="text-[10px] font-mono text-[#10B981] hover:underline flex items-center space-x-1 font-bold"
+                      >
+                        {isCustomCategory ? '← Gunakan Pilihan Bawaan' : '✨ + Ketik Kategori Kustom'}
+                      </button>
+                    </div>
+
+                    {isCustomCategory ? (
+                      <div className="space-y-2">
+                        <input
+                          type="text"
+                          required
+                          placeholder="Misal: Order Flow & Footprint, Harmonic Patterns, Elliott Wave..."
+                          value={customCategoryInput}
+                          onChange={(e) => setCustomCategoryInput(e.target.value)}
+                          className="w-full bg-slate-50 dark:bg-[#0A0D14] border-2 border-emerald-500 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white outline-none focus:ring-1 focus:ring-emerald-500 transition-all font-semibold"
+                        />
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="text-[10px] text-slate-500 dark:text-zinc-400 font-mono">Inspirasi Cepat:</span>
+                          {[
+                            'Order Flow & Footprint',
+                            'Harmonic Patterns & Fibonacci',
+                            'Elliott Wave Theory',
+                            'Auction Market Theory',
+                            'Scalping 1-Menit M1',
+                            'Crypto Rotation & Perp'
+                          ].map((sug) => (
+                            <button
+                              key={sug}
+                              type="button"
+                              onClick={() => setCustomCategoryInput(sug)}
+                              className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 hover:bg-emerald-100 dark:hover:bg-emerald-950/60 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors border border-slate-200 dark:border-zinc-700 font-medium"
+                            >
+                              + {sug}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <select
+                        value={category}
+                        onChange={(e) => {
+                          if (e.target.value === '__CUSTOM__') {
+                            setIsCustomCategory(true);
+                            setCustomCategoryInput('');
+                          } else {
+                            setCategory(e.target.value);
+                          }
+                        }}
+                        className="w-full bg-slate-50 dark:bg-[#0A0D14] border border-slate-300 dark:border-zinc-700 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-white outline-none focus:border-black dark:focus:border-white transition-all font-medium"
+                      >
+                        <option value="Price Action & Market Structure">Price Action &amp; Struktur</option>
+                        <option value="Institutional & SMC">Institutional &amp; SMC (ICT)</option>
+                        <option value="Wyckoff & Volume Analysis">Metode Wyckoff &amp; VSA</option>
+                        <option value="Risk Management & Psychology">Manajemen Risiko &amp; Psikologi</option>
+                        <option value="Quantitative & Algorithmic">Kuantitatif &amp; Algo Trading</option>
+                        <option value="Spesialisasi Pasar">Scalping / Kripto / Forex Khusus</option>
+                        <option value="__CUSTOM__">✨ + Ketik Kategori Kustom Sendiri...</option>
+                      </select>
+                    )}
                   </div>
                 </div>
 
@@ -487,7 +557,7 @@ export const CreateRoadmapPage: React.FC = () => {
               <div className="p-5 rounded-2xl border-2 border-black dark:border-zinc-300 bg-amber-100/90 dark:bg-[#1E293B] text-slate-900 dark:text-white shadow-[4px_4px_0px_#000] space-y-3">
                 <div className="flex items-center justify-between text-[10px] font-mono">
                   <span className="px-2 py-0.5 rounded font-extrabold uppercase bg-black text-amber-200">
-                    {category}
+                    {isCustomCategory ? (customCategoryInput.trim() || 'Kategori Kustom') : category}
                   </span>
                   <span className="bg-black/10 dark:bg-white/10 px-2 py-0.5 rounded font-bold">
                     {difficulty}

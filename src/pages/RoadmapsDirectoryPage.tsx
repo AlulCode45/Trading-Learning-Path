@@ -48,15 +48,28 @@ export const RoadmapsDirectoryPage: React.FC<RoadmapsDirectoryPageProps> = ({
       .finally(() => setLoading(false));
   }, []);
 
-  const categories = [
-    { id: 'all', label: 'Semua Jalur' },
-    { id: 'Technical Analysis', label: 'Price Action & Struktur' },
-    { id: 'Institutional Trading', label: 'Institusional & SMC' },
-    { id: 'Classical Analysis', label: 'Wyckoff & Volume' },
-    { id: 'Core Foundation', label: 'Manajemen Risiko' },
-    { id: 'Quantitative', label: 'Kuantitatif & Algo' },
-    { id: 'community', label: 'Kurikulum Komunitas' }
-  ];
+  const categories = useMemo(() => {
+    const base = [
+      { id: 'all', label: 'Semua Jalur' },
+      { id: 'Price Action', label: 'Price Action & Struktur' },
+      { id: 'Institutional', label: 'Institusional & SMC' },
+      { id: 'Wyckoff', label: 'Wyckoff & Volume' },
+      { id: 'Core Foundation', label: 'Manajemen Risiko' },
+      { id: 'Quantitative', label: 'Kuantitatif & Algo' },
+      { id: 'community', label: 'Kurikulum Komunitas' }
+    ];
+
+    // Ekstrak kategori kustom dari roadmap buatan komunitas secara dinamis
+    const customCats = Array.from(new Set(communityRoadmaps.map(c => c.category)))
+      .filter(cat => cat && !base.some(b => b.id.toLowerCase() === cat.toLowerCase() || b.label.toLowerCase() === cat.toLowerCase()));
+
+    const customPills = customCats.map(cat => ({
+      id: cat,
+      label: cat
+    }));
+
+    return [...base, ...customPills];
+  }, [communityRoadmaps]);
 
   const filteredOfficialRoadmaps = useMemo(() => {
     return roadmaps.filter(rm => {
@@ -64,18 +77,27 @@ export const RoadmapsDirectoryPage: React.FC<RoadmapsDirectoryPageProps> = ({
                           rm.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           rm.category.toLowerCase().includes(searchQuery.toLowerCase());
       const matchCategory = selectedCategory === 'all' || 
-                            (selectedCategory !== 'community' && rm.category === selectedCategory);
+                            (selectedCategory !== 'community' && (
+                              rm.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+                              selectedCategory.toLowerCase().includes(rm.category.toLowerCase())
+                            ));
       return matchSearch && matchCategory;
     });
   }, [roadmaps, searchQuery, selectedCategory]);
 
   const filteredCommunityRoadmaps = useMemo(() => {
-    if (selectedCategory !== 'all' && selectedCategory !== 'community') return [];
     return communityRoadmaps.filter(crm => {
       const matchSearch = crm.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           crm.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          crm.creator_name.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchSearch;
+                          crm.creator_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          crm.category.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchCategory = selectedCategory === 'all' || 
+                            selectedCategory === 'community' ||
+                            crm.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+                            selectedCategory.toLowerCase().includes(crm.category.toLowerCase());
+
+      return matchSearch && matchCategory;
     });
   }, [communityRoadmaps, searchQuery, selectedCategory]);
 

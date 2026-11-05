@@ -48,6 +48,8 @@ export const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
   const [title, setTitle] = useState(forkInitialData ? `${forkInitialData.title} (Custom Fork)` : '');
   const [creatorName, setCreatorName] = useState('');
   const [category, setCategory] = useState(forkInitialData?.category || 'Price Action & Technical');
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [customCategoryInput, setCustomCategoryInput] = useState('');
   const [description, setDescription] = useState(forkInitialData ? `Kustomisasi mandiri dari kurikulum resmi ${forkInitialData.title}` : '');
   const [expandedNodeIndex, setExpandedNodeIndex] = useState<number | null>(0);
   
@@ -150,6 +152,12 @@ export const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
       return;
     }
 
+    const finalCategory = (isCustomCategory ? customCategoryInput.trim() : category.trim());
+    if (!finalCategory) {
+      setError('Mohon tentukan atau ketik kategori metodologi untuk roadmap Anda.');
+      return;
+    }
+
     const hasEmptyNode = nodes.some(n => !n.title.trim());
     if (hasEmptyNode) {
       setError('Pastikan semua tahapan modul telah memiliki judul yang jelas.');
@@ -164,7 +172,7 @@ export const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
         body: JSON.stringify({
           title,
           creator_name: creatorName,
-          category,
+          category: finalCategory,
           description,
           nodes: nodes.map(n => ({
             title: n.title,
@@ -294,21 +302,79 @@ export const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-mono font-bold text-slate-300 mb-1.5">
-                Kategori Spesialisasi
-              </label>
-              <select
-                value={category}
-                onChange={e => setCategory(e.target.value)}
-                className="w-full bg-[#020617] border border-slate-800 rounded-xl px-3.5 py-2 text-xs font-mono text-white focus:outline-none focus:border-[#38BDF8]"
-              >
-                <option value="Price Action & Technical">Price Action &amp; Technical</option>
-                <option value="Institutional & SMC">Institutional &amp; SMC</option>
-                <option value="Classical & Wyckoff">Classical &amp; Wyckoff</option>
-                <option value="Crypto & Altcoin">Crypto &amp; Altcoin</option>
-                <option value="Scalping & Day Trading">Scalping &amp; Day Trading</option>
-                <option value="Quantitative & Algo">Quantitative &amp; Algo</option>
-              </select>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-mono font-bold text-slate-300">
+                  Kategori Metodologi *
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!isCustomCategory) {
+                      setIsCustomCategory(true);
+                      setCustomCategoryInput(category);
+                    } else {
+                      setIsCustomCategory(false);
+                      setCategory('Price Action & Technical');
+                    }
+                  }}
+                  className="text-[10px] font-mono text-[#10B981] hover:underline"
+                >
+                  {isCustomCategory ? '← Pilih Rekomendasi' : '✨ + Ketik Kategori Kustom'}
+                </button>
+              </div>
+
+              {isCustomCategory ? (
+                <div className="space-y-1.5">
+                  <input
+                    type="text"
+                    required
+                    value={customCategoryInput}
+                    onChange={e => setCustomCategoryInput(e.target.value)}
+                    placeholder="Misal: Order Flow & Footprint, Harmonic Patterns, Elliott Wave..."
+                    className="w-full bg-[#020617] border-2 border-emerald-500 rounded-xl px-3.5 py-2 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  />
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                    <span className="text-[10px] text-slate-500 font-mono">Inspirasi:</span>
+                    {[
+                      'Order Flow & Footprint',
+                      'Harmonic Patterns',
+                      'Elliott Wave Theory',
+                      'Auction Market Theory',
+                      'Scalping 1-Menit M1'
+                    ].map(sug => (
+                      <button
+                        key={sug}
+                        type="button"
+                        onClick={() => setCustomCategoryInput(sug)}
+                        className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-900 text-slate-300 hover:text-emerald-400 border border-slate-800 transition-colors"
+                      >
+                        + {sug}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <select
+                  value={category}
+                  onChange={e => {
+                    if (e.target.value === '__CUSTOM__') {
+                      setIsCustomCategory(true);
+                      setCustomCategoryInput('');
+                    } else {
+                      setCategory(e.target.value);
+                    }
+                  }}
+                  className="w-full bg-[#020617] border border-slate-800 rounded-xl px-3.5 py-2 text-xs font-mono text-white focus:outline-none focus:border-[#38BDF8]"
+                >
+                  <option value="Price Action & Technical">Price Action &amp; Technical</option>
+                  <option value="Institutional & SMC">Institutional &amp; SMC</option>
+                  <option value="Classical & Wyckoff">Classical &amp; Wyckoff</option>
+                  <option value="Crypto & Altcoin">Crypto &amp; Altcoin</option>
+                  <option value="Scalping & Day Trading">Scalping &amp; Day Trading</option>
+                  <option value="Quantitative & Algo">Quantitative &amp; Algo</option>
+                  <option value="__CUSTOM__">✨ + Ketik Kategori Kustom Sendiri...</option>
+                </select>
+              )}
             </div>
 
             <div>
