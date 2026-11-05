@@ -11,11 +11,8 @@ import {
   Smartphone, 
   Monitor, 
   Search, 
-  Filter,
   Navigation,
-  Layers,
-  ArrowRight,
-  Maximize2
+  ArrowRight
 } from 'lucide-react';
 
 interface RoadmapCanvasProps {
@@ -32,16 +29,138 @@ interface PositionedNode extends RoadmapNode {
   height: number;
 }
 
+interface LevelTheme {
+  name: string;
+  shortLabel: string;
+  colorHex: string;
+  glowColor: string;
+  cardBgDark: string;
+  cardBgLight: string;
+  cardBorderDark: string;
+  cardBorderLight: string;
+  hoverBorderDark: string;
+  hoverBorderLight: string;
+  stripBg: string;
+  pillBgDark: string;
+  pillBgLight: string;
+  pillBorderDark: string;
+  pillBorderLight: string;
+  pillTextDark: string;
+  pillTextLight: string;
+}
+
+const LEVEL_THEMES: Record<number, LevelTheme> = {
+  1: {
+    name: 'Fondasi Lelang',
+    shortLabel: 'Fase 1',
+    colorHex: '#10B981', // Emerald Mint
+    glowColor: 'rgba(16, 185, 129, 0.4)',
+    cardBgDark: 'bg-[#061812]',
+    cardBgLight: 'bg-[#F0FDF4]',
+    cardBorderDark: 'border-emerald-500/40',
+    cardBorderLight: 'border-emerald-300',
+    hoverBorderDark: 'hover:border-emerald-400',
+    hoverBorderLight: 'hover:border-emerald-500',
+    stripBg: 'bg-emerald-500',
+    pillBgDark: 'bg-emerald-950/80',
+    pillBgLight: 'bg-emerald-100',
+    pillBorderDark: 'border-emerald-500/40',
+    pillBorderLight: 'border-emerald-300',
+    pillTextDark: 'text-emerald-400',
+    pillTextLight: 'text-emerald-800'
+  },
+  2: {
+    name: 'Struktur Pasar',
+    shortLabel: 'Fase 2',
+    colorHex: '#0284C7', // Sky Cyan Blue
+    glowColor: 'rgba(2, 132, 199, 0.4)',
+    cardBgDark: 'bg-[#06182B]',
+    cardBgLight: 'bg-[#F0F9FF]',
+    cardBorderDark: 'border-sky-500/40',
+    cardBorderLight: 'border-sky-300',
+    hoverBorderDark: 'hover:border-sky-400',
+    hoverBorderLight: 'hover:border-sky-500',
+    stripBg: 'bg-sky-500',
+    pillBgDark: 'bg-sky-950/80',
+    pillBgLight: 'bg-sky-100',
+    pillBorderDark: 'border-sky-500/40',
+    pillBorderLight: 'border-sky-300',
+    pillTextDark: 'text-sky-400',
+    pillTextLight: 'text-sky-800'
+  },
+  3: {
+    name: 'Zona Nilai & FVG',
+    shortLabel: 'Fase 3',
+    colorHex: '#F59E0B', // Golden Amber
+    glowColor: 'rgba(245, 158, 11, 0.4)',
+    cardBgDark: 'bg-[#1C1405]',
+    cardBgLight: 'bg-[#FFFBEB]',
+    cardBorderDark: 'border-amber-500/40',
+    cardBorderLight: 'border-amber-300',
+    hoverBorderDark: 'hover:border-amber-400',
+    hoverBorderLight: 'hover:border-amber-500',
+    stripBg: 'bg-amber-500',
+    pillBgDark: 'bg-amber-950/80',
+    pillBgLight: 'bg-amber-100',
+    pillBorderDark: 'border-amber-500/40',
+    pillBorderLight: 'border-amber-300',
+    pillTextDark: 'text-amber-400',
+    pillTextLight: 'text-amber-800'
+  },
+  4: {
+    name: 'Likuiditas & Sweeps',
+    shortLabel: 'Fase 4',
+    colorHex: '#A855F7', // Royal Violet Purple
+    glowColor: 'rgba(168, 85, 247, 0.4)',
+    cardBgDark: 'bg-[#170928]',
+    cardBgLight: 'bg-[#FAF5FF]',
+    cardBorderDark: 'border-purple-500/40',
+    cardBorderLight: 'border-purple-300',
+    hoverBorderDark: 'hover:border-purple-400',
+    hoverBorderLight: 'hover:border-purple-500',
+    stripBg: 'bg-purple-500',
+    pillBgDark: 'bg-purple-950/80',
+    pillBgLight: 'bg-purple-100',
+    pillBorderDark: 'border-purple-500/40',
+    pillBorderLight: 'border-purple-300',
+    pillTextDark: 'text-purple-400',
+    pillTextLight: 'text-purple-800'
+  },
+  5: {
+    name: 'Eksekusi & Risiko',
+    shortLabel: 'Fase 5',
+    colorHex: '#F43F5E', // Rose Crimson
+    glowColor: 'rgba(244, 63, 94, 0.4)',
+    cardBgDark: 'bg-[#1F0713]',
+    cardBgLight: 'bg-[#FFF1F2]',
+    cardBorderDark: 'border-rose-500/40',
+    cardBorderLight: 'border-rose-300',
+    hoverBorderDark: 'hover:border-rose-400',
+    hoverBorderLight: 'hover:border-rose-500',
+    stripBg: 'bg-rose-500',
+    pillBgDark: 'bg-rose-950/80',
+    pillBgLight: 'bg-rose-100',
+    pillBorderDark: 'border-rose-500/40',
+    pillBorderLight: 'border-rose-300',
+    pillTextDark: 'text-rose-400',
+    pillTextLight: 'text-rose-800'
+  }
+};
+
+const getLevelTheme = (lvl: number): LevelTheme => {
+  return LEVEL_THEMES[lvl] || LEVEL_THEMES[((lvl - 1) % 5) + 1] || LEVEL_THEMES[1];
+};
+
 const CANVAS_WIDTH = 860;
-const NODE_WIDTH = 230;
-const NODE_HEIGHT = 112;
+const NODE_WIDTH = 236;
+const NODE_HEIGHT = 118;
 
 const STAGE_LABELS: Record<number, { title: string; subtitle: string }> = {
-  1: { title: 'FASE 1: FONDASI LELANG & HARGA', subtitle: 'Anatomi candlestick, sumbu, dan fraktalitas multi-timeframe' },
-  2: { title: 'FASE 2: STRUKTUR PASAR & KONFIRMASI TREN', subtitle: 'Break of Structure (BOS), CHoCH, dan titik swing ekstrem' },
-  3: { title: 'FASE 3: ZONA NILAI INSTITUSI & IMBALANCE', subtitle: 'Fair Value Gaps, Supply & Demand, serta diskon equilibrium' },
-  4: { title: 'FASE 4: KOLAM LIKUIDITAS & JEBAKAN', subtitle: 'Pemetaan BSL & SSL, Equal Highs, dan Liquidity Sweeps' },
-  5: { title: 'FASE 5: PROTOKOL EKSEKUSI & MANAJEMEN RISIKO', subtitle: 'Trigger LTF, aturan risiko 1%, dan audit jurnal trading' }
+  1: { title: 'FASE 1: FONDASI LELANG & ANATOMI HARGA', subtitle: 'Anatomi candlestick, sumbu, volume, dan fraktalitas multi-timeframe' },
+  2: { title: 'FASE 2: STRUKTUR PASAR & KONFIRMASI TREN', subtitle: 'Break of Structure (BOS), Change of Character (CHoCH), dan swing extremes' },
+  3: { title: 'FASE 3: ZONA NILAI INSTITUSI & IMBALANCE', subtitle: 'Fair Value Gaps (FVG), Supply & Demand, serta diskon equilibrium' },
+  4: { title: 'FASE 4: KOLAM LIKUIDITAS & JEBAKAN PASAR', subtitle: 'Pemetaan Buy-side & Sell-side Liquidity, Equal Highs, dan Liquidity Sweeps' },
+  5: { title: 'FASE 5: PROTOKOL EKSEKUSI & MANAJEMEN RISIKO', subtitle: 'Trigger konfirmasi LTF, aturan risiko 1% per posisi, dan audit jurnal trading' }
 };
 
 export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
@@ -62,7 +181,6 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
 
   // Calculate clean, mathematically symmetrical positions for each node
   const positionedNodes: PositionedNode[] = useMemo(() => {
-    // Group nodes by level
     const byLevel = new Map<number, RoadmapNode[]>();
     nodes.forEach(n => {
       const lvl = n.level || 1;
@@ -73,8 +191,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
     const result: PositionedNode[] = [];
     const sortedLevels = Array.from(byLevel.keys()).sort((a, b) => a - b);
 
-    // Calculate Y positions dynamically per level
-    let currentY = 70;
+    let currentY = 74;
 
     sortedLevels.forEach(lvl => {
       const nodesInLvl = byLevel.get(lvl)!;
@@ -83,55 +200,54 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
         // Perfectly centered spine
         result.push({
           ...nodesInLvl[0],
-          posX: (CANVAS_WIDTH - NODE_WIDTH) / 2, // 315px
+          posX: (CANVAS_WIDTH - NODE_WIDTH) / 2,
           posY: currentY,
           width: NODE_WIDTH,
           height: NODE_HEIGHT
         });
-        currentY += 160;
+        currentY += 166;
       } else if (nodesInLvl.length === 2) {
         // Balanced left and right lanes
         result.push({
           ...nodesInLvl[0],
-          posX: 140, // Left lane
+          posX: 130,
           posY: currentY,
           width: NODE_WIDTH,
           height: NODE_HEIGHT
         });
         result.push({
           ...nodesInLvl[1],
-          posX: 490, // Right lane
+          posX: 494,
           posY: currentY,
           width: NODE_WIDTH,
           height: NODE_HEIGHT
         });
-        currentY += 170;
+        currentY += 174;
       } else if (nodesInLvl.length === 3) {
         // 3-lane balanced grid
         result.push({
           ...nodesInLvl[0],
-          posX: 60,
+          posX: 50,
           posY: currentY,
           width: NODE_WIDTH,
           height: NODE_HEIGHT
         });
         result.push({
           ...nodesInLvl[1],
-          posX: 315,
+          posX: 312,
           posY: currentY,
           width: NODE_WIDTH,
           height: NODE_HEIGHT
         });
         result.push({
           ...nodesInLvl[2],
-          posX: 570,
+          posX: 574,
           posY: currentY,
           width: NODE_WIDTH,
           height: NODE_HEIGHT
         });
-        currentY += 180;
+        currentY += 184;
       } else {
-        // Fallback for larger groups
         nodesInLvl.forEach((n, idx) => {
           const spacing = CANVAS_WIDTH / (nodesInLvl.length + 1);
           result.push({
@@ -142,7 +258,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
             height: NODE_HEIGHT
           });
         });
-        currentY += 180;
+        currentY += 184;
       }
     });
 
@@ -152,17 +268,16 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
   const totalCanvasHeight = useMemo(() => {
     if (positionedNodes.length === 0) return 1200;
     const maxY = Math.max(...positionedNodes.map(n => n.posY));
-    return maxY + 180;
+    return maxY + 190;
   }, [positionedNodes]);
 
-  // Node position lookup map
   const posMap = useMemo(() => {
     const map = new Map<string, PositionedNode>();
     positionedNodes.forEach(n => map.set(n.id, n));
     return map;
   }, [positionedNodes]);
 
-  // Clean Bézier connections from bottom port of parent to top port of child
+  // Clean Bézier connections with parent and child level themes
   const connections = useMemo(() => {
     return positionedNodes
       .filter(child => child.parent_node_id && posMap.has(child.parent_node_id))
@@ -176,6 +291,9 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
         const toX = child.posX + NODE_WIDTH / 2;
         const toY = child.posY;
 
+        const parentTheme = getLevelTheme(parent.level);
+        const childTheme = getLevelTheme(child.level);
+
         return {
           id: `${parent.id}->${child.id}`,
           fromX,
@@ -183,14 +301,22 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
           toX,
           toY,
           isActive: isParentCompleted,
-          isCompleted: isParentCompleted && isChildCompleted
+          isCompleted: isParentCompleted && isChildCompleted,
+          parentColor: parentTheme.colorHex,
+          childColor: childTheme.colorHex
         };
       });
   }, [positionedNodes, posMap]);
 
-  // Distinct Stages for visual stage dividers
+  // Visual stage dividers per level with vibrant theme colors
   const stageDividers = useMemo(() => {
-    const stages: Array<{ level: number; y: number; title: string; subtitle: string }> = [];
+    const stages: Array<{ 
+      level: number; 
+      y: number; 
+      title: string; 
+      subtitle: string;
+      theme: LevelTheme;
+    }> = [];
     const seen = new Set<number>();
 
     positionedNodes.forEach(n => {
@@ -199,9 +325,10 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
         const info = STAGE_LABELS[n.level] || { title: `FASE ${n.level}`, subtitle: 'Modul Pembelajaran' };
         stages.push({
           level: n.level,
-          y: Math.max(n.posY - 35, 20),
+          y: Math.max(n.posY - 36, 18),
           title: info.title,
-          subtitle: info.subtitle
+          subtitle: info.subtitle,
+          theme: getLevelTheme(n.level)
         });
       }
     });
@@ -209,7 +336,6 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
     return stages;
   }, [positionedNodes]);
 
-  // Filtered nodes based on search and status
   const filteredNodes = useMemo(() => {
     return positionedNodes.filter(n => {
       const matchSearch = n.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -223,21 +349,21 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
     switch (status) {
       case 'completed':
         return (
-          <span className="flex items-center space-x-1 text-[10px] font-mono text-[#10B981] bg-[#10B981]/15 px-2 py-0.5 rounded-full border border-[#10B981]/30 font-semibold">
+          <span className="flex items-center space-x-1 text-[10px] font-mono text-[#10B981] bg-[#10B981]/15 px-2 py-0.5 rounded-full border border-[#10B981]/40 font-bold shadow-xs">
             <CheckCircle2 className="w-3 h-3" />
             <span>Mastered</span>
           </span>
         );
       case 'in_progress':
         return (
-          <span className="flex items-center space-x-1 text-[10px] font-mono text-[#F59E0B] bg-[#F59E0B]/15 px-2 py-0.5 rounded-full border border-[#F59E0B]/30 animate-pulse font-semibold">
+          <span className="flex items-center space-x-1 text-[10px] font-mono text-[#F59E0B] bg-[#F59E0B]/15 px-2 py-0.5 rounded-full border border-[#F59E0B]/40 animate-pulse font-bold shadow-xs">
             <Clock className="w-3 h-3" />
             <span>Aktif</span>
           </span>
         );
       case 'available':
         return (
-          <span className="flex items-center space-x-1 text-[10px] font-mono text-[#38BDF8] bg-[#38BDF8]/15 px-2 py-0.5 rounded-full border border-[#38BDF8]/30 font-semibold">
+          <span className="flex items-center space-x-1 text-[10px] font-mono text-[#0284C7] not-dark:text-sky-700 bg-[#0284C7]/15 px-2 py-0.5 rounded-full border border-[#0284C7]/40 font-bold shadow-xs">
             <Sparkles className="w-3 h-3" />
             <span>Terbuka</span>
           </span>
@@ -245,7 +371,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
       case 'locked':
       default:
         return (
-          <span className="flex items-center space-x-1 text-[10px] font-mono text-[#64748B] not-dark:text-slate-500 bg-[#1E293B]/60 not-dark:bg-slate-100 px-2 py-0.5 rounded-full border border-[#334155]/50 not-dark:border-slate-300">
+          <span className="flex items-center space-x-1 text-[10px] font-mono text-[#64748B] not-dark:text-slate-600 bg-[#1E293B]/60 not-dark:bg-slate-200/70 px-2 py-0.5 rounded-full border border-[#334155]/40 not-dark:border-slate-300">
             <Lock className="w-2.5 h-2.5" />
             <span>Lanjutan</span>
           </span>
@@ -365,7 +491,7 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
       {viewMode === 'canvas' ? (
         <div 
           ref={containerRef}
-          className="relative w-full h-[820px] overflow-auto bg-grid-tactical p-8 flex justify-center"
+          className="relative w-full h-[840px] overflow-auto bg-grid-tactical p-8 flex justify-center"
         >
           <div
             className="relative transition-transform duration-200 origin-top"
@@ -375,44 +501,66 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
               transform: `scale(${zoom})`
             }}
           >
-            {/* Stage Level Backdrop Dividers */}
-            {stageDividers.map(stage => (
-              <div
-                key={stage.level}
-                style={{ position: 'absolute', top: `${stage.y}px`, left: '10px', right: '10px' }}
-                className="pointer-events-none z-0"
-              >
-                <div className="flex items-center space-x-3 mb-1">
-                  <span className="text-[10px] font-mono tracking-widest text-[#10B981] font-bold px-2 py-0.5 rounded bg-[#10B981]/10 border border-[#10B981]/25">
-                    {stage.title}
-                  </span>
-                  <div className="flex-1 h-px bg-gradient-to-r from-[#10B981]/30 via-[#1D2532] not-dark:via-slate-300 to-transparent" />
+            {/* Colorful Stage Level Backdrop Dividers */}
+            {stageDividers.map(stage => {
+              const theme = stage.theme;
+              return (
+                <div
+                  key={stage.level}
+                  style={{ position: 'absolute', top: `${stage.y}px`, left: '10px', right: '10px' }}
+                  className="pointer-events-none z-0"
+                >
+                  <div className="flex items-center space-x-3 mb-1">
+                    <span 
+                      style={{ 
+                        borderColor: `${theme.colorHex}55`,
+                        color: theme.colorHex,
+                        backgroundColor: `${theme.colorHex}15`
+                      }}
+                      className="text-[10px] font-mono tracking-widest font-bold px-2.5 py-0.5 rounded-md border shadow-xs"
+                    >
+                      {stage.title}
+                    </span>
+                    <div 
+                      style={{
+                        background: `linear-gradient(to right, ${theme.colorHex}66, ${theme.colorHex}15, transparent)`
+                      }}
+                      className="flex-1 h-[1.5px]" 
+                    />
+                  </div>
+                  <p className="text-[10px] font-mono text-[#64748B] not-dark:text-slate-500 pl-1 font-medium">
+                    {stage.subtitle}
+                  </p>
                 </div>
-                <p className="text-[10px] font-mono text-[#64748B] pl-1">
-                  {stage.subtitle}
-                </p>
-              </div>
-            ))}
+              );
+            })}
 
-            {/* SVG Vector Connections (Smooth Bézier Curves) */}
+            {/* SVG Vector Connections (Smooth Bézier Curves with Chromatic Gradients) */}
             <svg
               className="absolute inset-0 w-full h-full pointer-events-none z-10"
               style={{ width: `${CANVAS_WIDTH}px`, height: `${totalCanvasHeight}px` }}
             >
               <defs>
-                <filter id="glow-emerald" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
+                <filter id="glow-connector" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3.5" result="blur" />
                   <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
-                <linearGradient id="gradient-active" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#10B981" />
-                  <stop offset="100%" stopColor="#38BDF8" />
-                </linearGradient>
+                {connections.map(conn => (
+                  <linearGradient 
+                    key={`grad-${conn.id}`} 
+                    id={`grad-${conn.id.replace(/[^a-zA-Z0-9]/g, '_')}`} 
+                    x1="0%" y1="0%" x2="0%" y2="100%"
+                  >
+                    <stop offset="0%" stopColor={conn.parentColor} />
+                    <stop offset="100%" stopColor={conn.childColor} />
+                  </linearGradient>
+                ))}
               </defs>
 
               {connections.map(conn => {
                 const dy = conn.toY - conn.fromY;
                 const pathD = `M ${conn.fromX} ${conn.fromY} C ${conn.fromX} ${conn.fromY + dy * 0.5}, ${conn.toX} ${conn.toY - dy * 0.5}, ${conn.toX} ${conn.toY}`;
+                const gradId = `grad-${conn.id.replace(/[^a-zA-Z0-9]/g, '_')}`;
 
                 return (
                   <g key={conn.id}>
@@ -420,11 +568,11 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
                     <path
                       d={pathD}
                       fill="none"
-                      stroke={conn.isActive ? (conn.isCompleted ? '#10B981' : 'url(#gradient-active)') : '#94A3B8'}
+                      stroke={conn.isActive ? `url(#${gradId})` : '#94A3B8'}
                       strokeWidth={conn.isActive ? 2.5 : 1.5}
                       strokeDasharray={conn.isActive ? 'none' : '4 4'}
                       strokeOpacity={conn.isActive ? 0.95 : 0.3}
-                      filter={conn.isCompleted ? 'url(#glow-emerald)' : undefined}
+                      filter={conn.isCompleted ? 'url(#glow-connector)' : undefined}
                     />
 
                     {/* Midpoint Pulse Indicator */}
@@ -433,27 +581,28 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
                         cx={(conn.fromX + conn.toX) / 2}
                         cy={(conn.fromY + conn.toY) / 2}
                         r="3.5"
-                        fill={conn.isCompleted ? '#10B981' : '#38BDF8'}
+                        fill={conn.childColor}
                         className="animate-pulse"
                       />
                     )}
 
-                    {/* Small Arrowhead Marker at Child */}
+                    {/* Terminal Arrowhead Marker at Child */}
                     <circle
                       cx={conn.toX}
                       cy={conn.toY}
-                      r="2.5"
-                      fill={conn.isActive ? '#10B981' : '#64748B'}
+                      r="3"
+                      fill={conn.isActive ? conn.childColor : '#64748B'}
                     />
                   </g>
                 );
               })}
             </svg>
 
-            {/* Interactive Node Cards */}
+            {/* Interactive Colorful Node Cards */}
             {filteredNodes.map(node => {
               const isSelected = selectedNodeId === node.id;
               const isLocked = node.status === 'locked';
+              const theme = getLevelTheme(node.level);
 
               return (
                 <div
@@ -464,43 +613,61 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
                     left: `${node.posX}px`,
                     top: `${node.posY}px`,
                     width: `${node.width}px`,
-                    height: `${node.height}px`
+                    height: `${node.height}px`,
+                    boxShadow: isSelected 
+                      ? `0 0 24px ${theme.glowColor}, 0 4px 16px rgba(0,0,0,0.2)` 
+                      : undefined
                   }}
-                  className={`group cursor-pointer rounded-xl p-3.5 transition-all duration-200 select-none flex flex-col justify-between ${
+                  className={`group cursor-pointer rounded-xl overflow-hidden transition-all duration-200 select-none flex flex-col justify-between border ${
                     isSelected
-                      ? 'bg-[#121722] not-dark:bg-white border-2 border-[#10B981] shadow-[0_0_20px_rgba(16,185,129,0.25)] scale-[1.02] z-30'
+                      ? `${theme.cardBgDark} not-dark:${theme.cardBgLight} border-2 border-[${theme.colorHex}] scale-[1.03] z-30`
                       : isLocked
-                      ? 'bg-[#0D1017]/90 not-dark:bg-slate-50 border border-[#1D2532] not-dark:border-slate-300 opacity-75 hover:opacity-95 z-20 shadow-sm'
-                      : node.status === 'completed'
-                      ? 'bg-[#121722] not-dark:bg-white border border-[#10B981]/50 shadow-[0_4px_12px_rgba(16,185,129,0.12)] hover:border-[#10B981] hover:scale-[1.02] z-20'
-                      : node.status === 'in_progress'
-                      ? 'bg-[#121722] not-dark:bg-white border border-[#F59E0B]/60 shadow-[0_4px_12px_rgba(245,158,11,0.12)] hover:border-[#F59E0B] hover:scale-[1.02] z-20'
-                      : 'bg-[#121722] not-dark:bg-white border border-[#2B3547] not-dark:border-slate-300 hover:border-[#38BDF8] hover:scale-[1.02] z-20 shadow-sm'
+                      ? 'bg-[#0D1017]/85 not-dark:bg-slate-50 border-[#1D2532] not-dark:border-slate-300 opacity-75 hover:opacity-95 z-20 shadow-xs'
+                      : `${theme.cardBgDark} not-dark:${theme.cardBgLight} ${theme.cardBorderDark} not-dark:${theme.cardBorderLight} ${theme.hoverBorderDark} not-dark:${theme.hoverBorderLight} hover:scale-[1.02] hover:shadow-md z-20`
                   }`}
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[10px] font-mono text-[#929BAA] not-dark:text-slate-500 font-semibold">
-                        Modul #{node.order_index}
-                      </span>
-                      {getStatusBadge(node.status)}
+                  {/* Colored Top Accent Strip for instant visual stage identification */}
+                  <div 
+                    style={{ backgroundColor: theme.colorHex }} 
+                    className="h-1.5 w-full flex-shrink-0"
+                  />
+
+                  <div className="p-3 flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        {/* Stage Phase Tag */}
+                        <span 
+                          style={{
+                            borderColor: `${theme.colorHex}55`,
+                            color: theme.colorHex,
+                            backgroundColor: `${theme.colorHex}18`
+                          }}
+                          className="text-[9.5px] font-mono px-1.5 py-0.5 rounded font-bold border"
+                        >
+                          {theme.shortLabel} #{node.order_index}
+                        </span>
+                        {getStatusBadge(node.status)}
+                      </div>
+
+                      <h3 className={`text-xs font-bold leading-snug line-clamp-2 transition-colors ${
+                        isLocked 
+                          ? 'text-[#929BAA] not-dark:text-slate-500' 
+                          : 'text-[#F8FAFC] not-dark:text-slate-900 group-hover:text-emerald-400 not-dark:group-hover:text-emerald-700'
+                      }`}>
+                        {node.title}
+                      </h3>
                     </div>
 
-                    <h3 className={`text-xs font-bold leading-snug line-clamp-2 transition-colors ${
-                      isLocked 
-                        ? 'text-[#929BAA] not-dark:text-slate-500' 
-                        : 'text-[#F8FAFC] not-dark:text-slate-900 group-hover:text-[#10B981]'
-                    }`}>
-                      {node.title}
-                    </h3>
-                  </div>
-
-                  <div className="pt-2 border-t border-[#1D2532] not-dark:border-slate-200 flex items-center justify-between text-[10px] font-mono text-[#929BAA] not-dark:text-slate-500">
-                    <span>{node.checklists?.length || 0} Verifikasi</span>
-                    <span className="text-[#10B981] group-hover:translate-x-0.5 transition-transform font-bold flex items-center space-x-0.5">
-                      <span>Buka</span>
-                      <ArrowRight className="w-2.5 h-2.5" />
-                    </span>
+                    <div className="pt-2 mt-1 border-t border-[#1D2532]/60 not-dark:border-slate-200/80 flex items-center justify-between text-[10px] font-mono text-[#929BAA] not-dark:text-slate-600">
+                      <span>{node.checklists?.length || 0} Verifikasi</span>
+                      <span 
+                        style={{ color: theme.colorHex }} 
+                        className="group-hover:translate-x-0.5 transition-transform font-bold flex items-center space-x-0.5"
+                      >
+                        <span>Buka</span>
+                        <ArrowRight className="w-2.5 h-2.5" />
+                      </span>
+                    </div>
                   </div>
                 </div>
               );
@@ -508,36 +675,55 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
           </div>
         </div>
       ) : (
-        /* Mobile-First Linear Order View */
+        /* Mobile-First Linear Order View with Colorful Stage Tiers */
         <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-4 w-full">
           <div className="text-xs text-[#929BAA] not-dark:text-slate-500 font-mono uppercase tracking-wider mb-2 flex items-center justify-between">
             <span>Alur Belajar Berurutan ({filteredNodes.length} Modul)</span>
-            <span className="text-[10px] text-[#10B981]">Sesuai Silabus Kurikulum</span>
+            <span className="text-[10px] text-[#10B981] font-bold">5 Fase Kurikulum</span>
           </div>
 
-          {filteredNodes.map((node, index) => (
-            <div
-              key={node.id}
-              onClick={() => onSelectNode(node)}
-              className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start space-x-4 ${
-                selectedNodeId === node.id
-                  ? 'bg-[#121722] not-dark:bg-white border-[#10B981] shadow-md'
-                  : 'bg-[#121722]/80 not-dark:bg-white border-[#1D2532] not-dark:border-slate-200 hover:border-[#10B981]/50'
-              }`}
-            >
-              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-[#08090D] not-dark:bg-slate-100 border border-[#1D2532] not-dark:border-slate-200 flex items-center justify-center font-mono text-xs font-bold text-[#10B981]">
-                {node.order_index}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono text-[#929BAA] not-dark:text-slate-500">Level {node.level}</span>
-                  {getStatusBadge(node.status)}
+          {filteredNodes.map((node) => {
+            const theme = getLevelTheme(node.level);
+            return (
+              <div
+                key={node.id}
+                onClick={() => onSelectNode(node)}
+                style={{
+                  borderLeftWidth: '5px',
+                  borderLeftColor: theme.colorHex
+                }}
+                className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start space-x-4 ${
+                  selectedNodeId === node.id
+                    ? `${theme.cardBgDark} not-dark:${theme.cardBgLight} border-[#10B981] shadow-md`
+                    : `${theme.cardBgDark} not-dark:${theme.cardBgLight} ${theme.cardBorderDark} not-dark:${theme.cardBorderLight} hover:shadow-sm`
+                }`}
+              >
+                <div 
+                  style={{ 
+                    backgroundColor: `${theme.colorHex}20`,
+                    borderColor: `${theme.colorHex}55`,
+                    color: theme.colorHex 
+                  }}
+                  className="flex-shrink-0 w-8 h-8 rounded-lg border flex items-center justify-center font-mono text-xs font-bold"
+                >
+                  {node.order_index}
                 </div>
-                <h3 className="text-sm font-bold text-[#F8FAFC] not-dark:text-slate-900 mt-1">{node.title}</h3>
-                <p className="text-xs text-[#929BAA] not-dark:text-slate-600 line-clamp-2 mt-1">{node.summary}</p>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span 
+                      style={{ color: theme.colorHex }} 
+                      className="text-xs font-mono font-bold"
+                    >
+                      {theme.shortLabel} — {theme.name}
+                    </span>
+                    {getStatusBadge(node.status)}
+                  </div>
+                  <h3 className="text-sm font-bold text-[#F8FAFC] not-dark:text-slate-900 mt-1">{node.title}</h3>
+                  <p className="text-xs text-[#929BAA] not-dark:text-slate-600 line-clamp-2 mt-1">{node.summary}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
