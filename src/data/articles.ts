@@ -55,7 +55,16 @@ Banyak trader pemula melakukan kesalahan fatal dengan mengambil keputusan saat c
         content: `Rasio antara ukuran tubuh (Body) dan sumbu (Wick) menyampaikan volume komitmen:
 - **Large Body, Short Wicks**: Mengindikasikan *Unidirectional Conviction* (keyakinan arah satu sisi). Satu kubu memegang kendali penuh tanpa perlawanan signifikan.
 - **Small Body, Long Opposing Wick**: Mengindikasikan *Failed Auction* atau penolakan harga (Rejection). Harga mencoba menembus level baru, namun langsung direspons oleh pesanan batas (limit orders) berlawanan dengan volume lebih besar.
-- **Narrow Range, Centered Body (Doji)**: Merepresentasikan ekuilibrium sesaat (Price Equilibrium). Bukan berarti pembalikan tren pasti terjadi, melainkan pasar sedang menanti likuiditas baru sebelum ekspansi berikutnya.`,
+- **Narrow Range, Centered Body (Doji)**: Merepresentasikan ekuilibrium sesaat (Price Equilibrium). Bukan berarti pembalikan tren pasti terjadi, melainkan pasar sedang menanti likuiditas baru sebelum ekspansi berikutnya.
+
+### Tabel Matriks Interpretasi Anatomi Candlestick:
+
+| Formasi Lilin | Rasio Body vs Sumbu | Implikasi Mekanisme Lelang | Sikap Tindakan Trader |
+| :--- | :--- | :--- | :--- |
+| **Marubozu / Full Body** | Body > 85%, Sumbu minimal | Komitmen volume satu arah sangat dominan | Ikuti arah ekspansi tren; hindari melawan arus |
+| **Long Upper Wick Rejection** | Sumbu atas > 60%, Body kecil di bawah | Penyerapan agresif oleh Sell Limit; kegagalan buyer | Cari konfirmasi entri Sell pasca sweep |
+| **Long Lower Wick Rejection** | Sumbu bawah > 60%, Body kecil di atas | Penyerapan agresif oleh Buy Limit; kegagalan seller | Cari konfirmasi entri Buy pasca sweep |
+| **Doji / Spinning Top** | Body tipis di tengah, sumbu simetris | Ekuilibrium harga; pembeli dan penjual seimbang | Menunggu konfirmasi breakout atau rilis data |`,
         visualType: 'candlestick_anatomy'
       },
       {
@@ -169,7 +178,16 @@ Ini bukan kebetulan atau "broker mencurangi Anda". Fenomena ini disebut **Liquid
         content: `Untuk memetakan Support dan Resistance dengan presisi institusional:
 1. **Gunakan Area (Zona), Bukan Garis**: Tarik rentang antara ujung sumbu (wick) hingga penutupan body candle pada swing high/low yang signifikan.
 2. **Prioritaskan Higher Timeframe (HTF)**: Zona pada timeframe Daily dan H4 memiliki bobot volume 100 kali lebih besar daripada M5 atau M15.
-3. **Cari Level yang Belum Pernah Disapu (Unmitigated)**: Level yang sudah berkali-kali disentuh justru rapuh dan rawan ditembus, bukan semakin kuat.`
+3. **Cari Level yang Belum Pernah Disapu (Unmitigated)**: Level yang sudah berkali-kali disentuh justru rapuh dan rawan ditembus, bukan semakin kuat.
+
+### Perbandingan Pola Pikir: Retail S/R vs. Realitas Likuiditas Institusi
+
+| Aspek Analisis | Pandangan Retail Tradisional | Realitas Algoritma Institusi |
+| :--- | :--- | :--- |
+| **Sentuhan Berulang (3+ Kali)** | Dianggap "Support/Resistance Semakin Kuat" | Kolam likuiditas tebal yang siap disapu (*Liquidity Purge*) |
+| **Penempatan Stop Loss** | Tepat 2-5 pip di balik garis support/resistance | Target utama pengisian pesanan batas institusional (*Liquidity Run*) |
+| **Breakout Menembus Level** | Sinyal beli/jual instan (*Breakout Momentum*) | Rawan manipulasi (*Bull/Bear Trap*) sebelum berbalik arah |
+| **Waktu Entri Paling Aman** | Langsung saat harga menyentuh garis pertama kali | Menunggu sapuan likuiditas (*Sweep*) selesai dan terjadi konfirmasi |`
       }
     ],
     commonMistakes: [
@@ -274,7 +292,17 @@ CHoCH tidak menjamin pembalikan tren jangka panjang secara instan. Namun, CHoCH 
         title: '5. Aturan Konfirmasi: Body Close vs. Wick Breach',
         content: `Apakah sumbu (wick) yang menembus level struktur sudah dihitung sebagai BOS atau CHoCH?
 - **Aturan Ketat (Recommended)**: Pemecahan struktur hanya diakui valid jika **Body Candlestick ditutup melampaui level swing** pada timeframe acuan Anda.
-- **Wick Breach Only**: Jika hanya sumbu yang menembus level lalu body ditutup kembali ke dalam struktur, ini diklasifikasikan sebagai **Liquidity Sweep (Fakeout)**, bukan perubahan struktur sejati.`
+- **Wick Breach Only**: Jika hanya sumbu yang menembus level lalu body ditutup kembali ke dalam struktur, ini diklasifikasikan sebagai **Liquidity Sweep (Fakeout)**, bukan perubahan struktur sejati.
+
+### Perbandingan Komprehensif: BOS vs. CHoCH
+
+| Parameter Karakteristik | Break of Structure (BOS) | Change of Character (CHoCH) |
+| :--- | :--- | :--- |
+| **Arah Penembusan** | Searah tren dominan (*Pro-trend*) | Berlawanan tren dominan (*Counter-trend*) |
+| **Signifikansi Pasar** | Konfirmasi kelanjutan tren (*Continuation*) | Peringatan awal perubahan arah (*Reversal Alert*) |
+| **Titik Level Acuan** | Swing High (Bullish) / Swing Low (Bearish) | Higher Low terakhir (Bullish) / Lower High terakhir (Bearish) |
+| **Syarat Validitas** | Wajib Body Close melampaui level | Wajib Body Close melampaui level |
+| **Tindakan Trader** | Tunggu koreksi ke zona diskon untuk entri searah | Waspada pembalikan arah; hentikan entri searah tren lama |`
       }
     ],
     commonMistakes: [
@@ -343,7 +371,15 @@ Pasar finansial bersifat fraktal: sebuah pola candlestick atau pemecahan struktu
    - Mengamati apakah harga sedang mendekati zona POI dari HTF.
 3. **Lower Timeframe (LTF - e.g., M5 / M1)**:
    - Digunakan murni untuk waktu eksekusi dan meminimalkan ukuran Stop Loss.
-   - Mencari CHoCH di dalam zona POI untuk mengonfirmasi bahwa penjual LTF telah menyerahkan kendali kembali ke pembeli HTF.`
+   - Mencari CHoCH di dalam zona POI untuk mengonfirmasi bahwa penjual LTF telah menyerahkan kendali kembali ke pembeli HTF.
+
+### Matriks Harmonisasi Multi-Timeframe (Top-Down Alignment):
+
+| Lapisan Timeframe | Skala Waktu Acuan | Peran Analitis | Output Keputusan |
+| :--- | :--- | :--- | :--- |
+| **Higher Timeframe (HTF)** | Daily / H4 | Bias Naratif & Likuiditas Makro | Menentukan arah: Long Only atau Short Only |
+| **Medium Timeframe (MTF)** | H1 / M15 | Struktur Tren Lokal & Dealing Range | Menemukan POI (Order Block / FVG) valid |
+| **Lower Timeframe (LTF)** | M5 / M1 | Trigger Eksekusi Presisi (CHoCH / Sweep) | Entry dengan Stop Loss tipis dan R:R asimetris |`
       },
       {
         id: 'top-down-workflow',
