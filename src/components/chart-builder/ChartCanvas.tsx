@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo, useEffect } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { 
   CustomCandle, 
   FibonacciDrawing, 
@@ -68,18 +68,8 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   const totalHeight = 480;
   const volumeHeight = showVolume ? 65 : 0;
 
-  // Lebar kanvas bertambah secara dinamis seiring bertambahnya candle
-  const width = Math.max(840, padding.left + candles.length * candleStep + padding.right + 80);
-
-  // Auto-scroll ke ujung kanan saat candle baru bertambah
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTo({
-        left: containerRef.current.scrollWidth,
-        behavior: 'smooth'
-      });
-    }
-  }, [candles.length]);
+  // Lebar kanvas bertambah secara dinamis seiring bertambahnya candle tanpa menggeser posisi scroll otomatis
+  const width = Math.max(580, padding.left + candles.length * candleStep + padding.right + 30);
 
   const { minPrice, maxPrice } = useMemo(() => {
     if (candles.length === 0) return { minPrice: 60, maxPrice: 180 };

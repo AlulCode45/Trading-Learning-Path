@@ -30,7 +30,7 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
   const totalHeight = 420;
   const volumeHeight = showVolume ? 60 : 0;
   const padding = { top: 35, right: 80, bottom: 35 + volumeHeight, left: 40 };
-  const width = Math.max(760, padding.left + candles.length * candleStep + padding.right + 60);
+  const width = Math.max(580, padding.left + candles.length * candleStep + padding.right + 30);
 
   const { minPrice, maxPrice } = useMemo(() => {
     if (candles.length === 0) return { minPrice: 60, maxPrice: 180 };
