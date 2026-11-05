@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+@custom-variant dark (html.dark &);
+@custom-variant not-dark (html:not(.dark) &);
+
 @layer base {
   :root {
     /* Market Atlas Editorial Palette */
@@ -53,6 +56,24 @@
 .divide-hairline > * + * {
   border-color: #DCD9D0;
 }
+
+/* Roadmap Canvas Tactical Grid Pattern (Light & Dark) */
+.bg-grid-tactical {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(203, 213, 225, 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(203, 213, 225, 0.5) 1px, transparent 1px);
+  background-color: #F8FAFC;
+}
+
+html.dark .bg-grid-tactical {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-color: #08090D;
+}
+
 
 /* Custom Scrollbar for Editorial Atlas */
 ::-webkit-scrollbar {
