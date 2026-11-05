@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Header } from './components/Header';
 import { HomePage } from './pages/HomePage';
+import { RoadmapsDirectoryPage } from './pages/RoadmapsDirectoryPage';
 import { RoadmapPage } from './pages/RoadmapPage';
 import { DocPage } from './pages/DocPage';
 import { PlaygroundPage } from './pages/PlaygroundPage';
@@ -38,7 +39,7 @@ export function App() {
         <main className="flex-1 flex flex-col">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/roadmaps" element={<Navigate to="/roadmaps/price-action-market-structure" replace />} />
+            <Route path="/roadmaps" element={<RoadmapsDirectoryPage onOpenCreateModal={() => setIsCreateModalOpen(true)} />} />
             <Route path="/roadmaps/:slug" element={<RoadmapPage />} />
             <Route path="/docs" element={<Navigate to="/docs/candlestick-anatomy-wick-dynamics" replace />} />
             <Route path="/docs/:slug" element={<DocPage />} />

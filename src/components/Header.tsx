@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
             </Link>
 
             <Link
-              to="/roadmaps/price-action-market-structure"
+              to="/roadmaps"
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 isActive('/roadmaps')
                   ? 'text-slate-950 dark:text-white font-semibold bg-slate-100 dark:bg-[#161D2C]'
@@ -80,7 +80,7 @@ export const Header: React.FC<HeaderProps> = ({
             </Link>
 
             <Link
-              to="/docs/candlestick-anatomy-wick-dynamics"
+              to="/docs"
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 isActive('/docs')
                   ? 'text-slate-950 dark:text-white font-semibold bg-slate-100 dark:bg-[#161D2C]'
@@ -149,8 +149,8 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex md:hidden items-center justify-between py-2 border-t border-slate-200 dark:border-[#1E293B] overflow-x-auto space-x-2">
           {[
             { to: '/', label: 'Beranda' },
-            { to: '/roadmaps/price-action-market-structure', label: 'Roadmap' },
-            { to: '/docs/candlestick-anatomy-wick-dynamics', label: 'Dokumentasi' },
+            { to: '/roadmaps', label: 'Roadmap' },
+            { to: '/docs', label: 'Dokumentasi' },
             { to: '/playground', label: 'Simulator' },
             { to: '/community', label: 'Komunitas' },
             { to: '/profile', label: 'Progres' }
