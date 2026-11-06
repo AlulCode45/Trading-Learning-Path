@@ -1,6 +1,12 @@
 {
   "name": "trading-learning-path",
   "version": "1.0.0",
+  "description": "Visual Interactive Roadmap & Technical Documentation Atlas untuk Trader Finansial (Price Action, SMC, Wyckoff, Risk Management, Quantitative)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlulCode45/Trading-Learning-Path.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "concurrently -n \"API,VITE\" -c \"cyan,green\" \"bun server/index.ts\" \"vite\"",
