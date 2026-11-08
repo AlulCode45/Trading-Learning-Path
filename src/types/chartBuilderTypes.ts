@@ -125,6 +125,8 @@ export interface InfoCardDrawing {
   candleIndex: number;
   price: number;
   width?: number;        // Card width in px (default 155)
+  alignX?: 'left' | 'center' | 'right'; // Horizontal anchor (default 'center')
+  alignY?: 'top' | 'middle' | 'bottom'; // Vertical anchor relative to price (default 'top')
   stepBadge?: string;    // Optional badge e.g. '1', '2', '3', '⚡'
   title: string;         // Header line e.g. 'FASE 1: BTC.D DOMINANCE'
   lines: string[];       // Body lines e.g. ['Modal masuk ke Bitcoin', 'Altcoin masih tertahan']
@@ -141,6 +143,9 @@ export interface TextBadgeAnnotation {
   candleIndex: number;
   price: number;
   text: string;          // 'BOS', 'CHoCH', 'BSL $$$', 'SSL $$$', 'Entry', 'SL', 'TP'
+  alignX?: 'left' | 'center' | 'right'; // Horizontal anchor (default 'center')
+  alignY?: 'top' | 'middle' | 'bottom'; // Vertical anchor relative to price (default 'middle')
+  size?: 'sm' | 'md' | 'lg';            // Badge sizing density (default 'md')
   style?: 'badge' | 'pill' | 'outline' | 'transparent' | 'callout';
   color?: string;        // Background color (legacy alias for bgColor)
   bgColor?: string;      // Background color
@@ -172,7 +177,9 @@ export interface CustomChartConfig {
   showVolume?: boolean;
   showEma?: boolean;
   emaPeriod?: number;
-  candleSpacing?: 'compact' | 'normal' | 'wide';
+  candleSpacing?: 'compact' | 'normal' | 'wide' | 'ultra-wide';
+  height?: number;       // Custom canvas height in px (default 520, or 550 if infoCards present)
+  minHeight?: number;
   isDarkMode?: boolean;
   title?: string;
   subtitle?: string;

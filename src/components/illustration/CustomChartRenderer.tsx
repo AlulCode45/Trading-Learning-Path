@@ -33,13 +33,22 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
   const candleSpacing = config.candleSpacing || 'normal';
 
   const [userZoom, setUserZoom] = useState<number>(1);
-  const candleStepBase = candleSpacing === 'compact' ? 36 : candleSpacing === 'wide' ? 62 : 48;
+  const candleStepBase =
+    candleSpacing === 'compact' ? 48 :
+    candleSpacing === 'wide' ? 92 :
+    candleSpacing === 'ultra-wide' ? 120 :
+    68;
   const candleStep = Math.round(candleStepBase * userZoom);
-  const candleWidth = Math.max(10, Math.round((candleSpacing === 'compact' ? 16 : candleSpacing === 'wide' ? 26 : 20) * Math.min(1.4, userZoom)));
+  const candleWidth = Math.max(12, Math.round((
+    candleSpacing === 'compact' ? 16 :
+    candleSpacing === 'wide' ? 26 :
+    candleSpacing === 'ultra-wide' ? 32 :
+    20
+  ) * Math.min(1.4, userZoom)));
 
   const hasLegend = legends.length > 0;
   const legendHeight = hasLegend ? 26 : 0;
-  const totalHeight = 460;
+  const totalHeight = config.height || (infoCards.length > 0 ? 540 : 490);
   const volumeHeight = showVolume ? 55 : 0;
   const padding = { top: 40, right: 90, bottom: 35 + volumeHeight + legendHeight, left: 50 };
 
@@ -50,12 +59,20 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
     positions.forEach(pos => { if (pos.endIndex + 2 > maxIdx) maxIdx = pos.endIndex + 2; });
     trendlines.forEach(tl => { if (Math.max(tl.x1Index, tl.x2Index) + 2 > maxIdx) maxIdx = Math.max(tl.x1Index, tl.x2Index) + 2; });
     arrows.forEach(arr => { if (Math.max(arr.startIndex, arr.endIndex) + 2 > maxIdx) maxIdx = Math.max(arr.startIndex, arr.endIndex) + 2; });
-    badges.forEach(bg => { if (bg.candleIndex + 2 > maxIdx) maxIdx = bg.candleIndex + 2; });
-    infoCards.forEach(c => { if (c.candleIndex + 4 > maxIdx) maxIdx = c.candleIndex + 4; });
+    badges.forEach(bg => {
+      const estBadgeBars = Math.ceil(((bg.text?.length || 10) * 7.5) / candleStepBase);
+      const reach = (bg.alignX === 'left' ? bg.candleIndex + estBadgeBars : bg.candleIndex + estBadgeBars / 2) + 1;
+      if (reach > maxIdx) maxIdx = reach;
+    });
+    infoCards.forEach(c => {
+      const estCardBars = Math.ceil((c.width || 210) / candleStepBase);
+      const reach = (c.alignX === 'left' ? c.candleIndex + estCardBars : c.candleIndex + estCardBars / 2) + 1.5;
+      if (reach > maxIdx) maxIdx = reach;
+    });
     return maxIdx;
-  }, [candles.length, polylines, boxes, positions, trendlines, arrows, badges, infoCards]);
+  }, [candles.length, polylines, boxes, positions, trendlines, arrows, badges, infoCards, candleStepBase]);
 
-  const width = Math.max(620, padding.left + maxBarIndex * candleStep + padding.right + 30);
+  const width = Math.max(760, padding.left + maxBarIndex * candleStep + padding.right + 30);
 
   const { minPrice, maxPrice } = useMemo(() => {
     let min = Infinity;
@@ -98,11 +115,19 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
     }
     if (!isFinite(min) || !isFinite(max)) return { minPrice: 60, maxPrice: 180 };
     const range = Math.max(20, max - min);
+    const hasTopCard = infoCards.some(c => c.price >= max);
+    const hasBottomCard = infoCards.some(c => c.price <= min) || badges.some(b => b.price <= min);
+    const topMargin = hasTopCard ? 0.32 : 0.22;
+    const bottomMargin = hasBottomCard ? 0.28 : 0.18;
     return {
-      minPrice: Math.floor(min - range * 0.20),
-      maxPrice: Math.ceil(max + range * 0.22)
+      minPrice: Math.floor(min - range * bottomMargin),
+      maxPrice: Math.ceil(max + range * topMargin)
     };
   }, [candles, polylines, boxes, positions, trendlines, badges, infoCards]);
+
+  const hasStaggeredLabels = useMemo(() => {
+    return candles.some((c, i) => c.label && (c.label.length > 8 || Boolean(candles[i + 1]?.label)));
+  }, [candles]);
 
   const maxVolume = useMemo(() => {
     if (candles.length === 0) return 1000;
@@ -655,17 +680,30 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
               />
               <line x1={x} y1={bodyTop + bodyHeight} x2={x} y2={yLow} stroke={wickColor} strokeWidth="1.8" />
               {candle.label && (
-                <text
-                  x={x}
-                  y={totalHeight - padding.bottom + 15}
-                  fill={candle.labelColor || labelTextFill}
-                  fontSize="8.5"
-                  fontWeight="bold"
-                  fontFamily="JetBrains Mono, monospace"
-                  textAnchor="middle"
-                >
-                  {candle.label}
-                </text>
+                <g>
+                  {hasStaggeredLabels && idx % 2 === 1 && (
+                    <line
+                      x1={x}
+                      y1={totalHeight - padding.bottom + 4}
+                      x2={x}
+                      y2={totalHeight - padding.bottom + 21}
+                      stroke={gridLineStroke}
+                      strokeWidth="1"
+                      strokeDasharray="2 2"
+                    />
+                  )}
+                  <text
+                    x={x}
+                    y={totalHeight - padding.bottom + (hasStaggeredLabels ? (idx % 2 === 0 ? 14 : 27) : 15)}
+                    fill={candle.labelColor || labelTextFill}
+                    fontSize="8.5"
+                    fontWeight="bold"
+                    fontFamily="JetBrains Mono, monospace"
+                    textAnchor="middle"
+                  >
+                    {candle.label}
+                  </text>
+                </g>
               )}
             </g>
           );
@@ -712,40 +750,52 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
           const cardW = card.width ? Math.max(card.width, computedCardW) : computedCardW;
           const cardH = 32 + wrappedLines.length * 14 + (hasFooter ? 24 : 8);
 
+          // Horizontal alignment: 'left' | 'center' | 'right'
+          const alignX = card.alignX || 'center';
+          const alignY = card.alignY || 'top';
+
+          let targetX = rawX - cardW / 2;
+          if (alignX === 'left') targetX = rawX;
+          else if (alignX === 'right') targetX = rawX - cardW;
+
+          let targetY = rawY;
+          if (alignY === 'bottom') targetY = rawY - cardH;
+          else if (alignY === 'middle') targetY = rawY - cardH / 2;
+
           // Boundary clamping to prevent info card overflowing SVG viewport edges
-          const x = Math.max(padding.left + cardW / 2 + 5, Math.min(width - padding.right - cardW / 2 - 5, rawX));
-          const y = Math.max(padding.top + 5, Math.min(totalHeight - padding.bottom - cardH - 10, rawY));
+          const x = Math.max(padding.left + 5, Math.min(width - padding.right - cardW - 5, targetX));
+          const y = Math.max(padding.top + 5, Math.min(totalHeight - padding.bottom - cardH - 10, targetY));
 
           return (
             <g key={card.id}>
               {/* Drop shadow / backplate for anti-clashing */}
-              <rect x={x - cardW / 2 + 2} y={y + 2} width={cardW} height={cardH} fill="#000000" fillOpacity={isDarkMode ? 0.45 : 0.08} rx="6" />
-              <rect x={x - cardW / 2} y={y} width={cardW} height={cardH} fill={isDarkMode ? '#0B1120' : '#FFFFFF'} fillOpacity={0.96} rx="6" />
-              <rect x={x - cardW / 2} y={y} width={cardW} height={cardH} fill={bgCol} fillOpacity={bgOp} stroke={accent} strokeWidth="1.5" rx="6" />
+              <rect x={x + 2} y={y + 2} width={cardW} height={cardH} fill="#000000" fillOpacity={isDarkMode ? 0.45 : 0.08} rx="6" />
+              <rect x={x} y={y} width={cardW} height={cardH} fill={isDarkMode ? '#0B1120' : '#FFFFFF'} fillOpacity={0.96} rx="6" />
+              <rect x={x} y={y} width={cardW} height={cardH} fill={bgCol} fillOpacity={bgOp} stroke={accent} strokeWidth="1.5" rx="6" />
               {card.stepBadge ? (
                 <>
-                  <circle cx={x - cardW / 2 + 15} cy={y + 15} r="8" fill={accent} />
-                  <text x={x - cardW / 2 + 15} y={y + 18.5} fill="#000" fontSize="9" fontWeight="900" fontFamily="JetBrains Mono" textAnchor="middle">
+                  <circle cx={x + 15} cy={y + 15} r="8" fill={accent} />
+                  <text x={x + 15} y={y + 18.5} fill="#000" fontSize="9" fontWeight="900" fontFamily="JetBrains Mono" textAnchor="middle">
                     {card.stepBadge}
                   </text>
-                  <text x={x - cardW / 2 + 28} y={y + 18.5} fill={accent} fontSize="9" fontWeight="900" fontFamily="JetBrains Mono">
+                  <text x={x + 28} y={y + 18.5} fill={accent} fontSize="9" fontWeight="900" fontFamily="JetBrains Mono">
                     {card.title}
                   </text>
                 </>
               ) : (
-                <text x={x - cardW / 2 + 10} y={y + 18.5} fill={accent} fontSize="9.5" fontWeight="900" fontFamily="JetBrains Mono">
+                <text x={x + 10} y={y + 18.5} fill={accent} fontSize="9.5" fontWeight="900" fontFamily="JetBrains Mono">
                   {card.title}
                 </text>
               )}
               {wrappedLines.map((ln, idx) => (
-                <text key={`${card.id}-l-${idx}`} x={x - cardW / 2 + 10} y={y + 34 + idx * 13.5} fill={bodyTextCol} fontSize="8.5" fontFamily="JetBrains Mono">
+                <text key={`${card.id}-l-${idx}`} x={x + 10} y={y + 34 + idx * 13.5} fill={bodyTextCol} fontSize="8.5" fontFamily="JetBrains Mono">
                   {ln}
                 </text>
               ))}
               {card.footerBadge && (
                 <g>
-                  <rect x={x - cardW / 2 + 10} y={y + cardH - 20} width={cardW - 20} height={15} fill={accent} fillOpacity={0.22} rx="3" />
-                  <text x={x} y={y + cardH - 10} fill={accent} fontSize="8" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">
+                  <rect x={x + 10} y={y + cardH - 20} width={cardW - 20} height={15} fill={accent} fillOpacity={0.22} rx="3" />
+                  <text x={x + cardW / 2} y={y + cardH - 10} fill={accent} fontSize="8" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">
                     {card.footerBadge}
                   </text>
                 </g>
@@ -775,19 +825,33 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
         {badges.map((badge) => {
           const rawX = indexToX(badge.candleIndex);
           const rawY = priceToY(badge.price);
-          const fontSize = badge.fontSize || 9;
+          const size = badge.size || 'md';
+          const fontSize = badge.fontSize || (size === 'sm' ? 8 : size === 'lg' ? 10.5 : 9);
+          const padH = size === 'sm' ? 10 : size === 'lg' ? 18 : 14;
+          const padV = size === 'sm' ? 6 : size === 'lg' ? 12 : 8;
           const bgColor = badge.bgColor || badge.color || '#FACC15';
           const bgOpacity = badge.style === 'transparent' ? 0 : (badge.bgOpacity ?? (badge.style === 'outline' ? 0.12 : 1));
           const textColor = badge.textColor || (badge.style === 'outline' || badge.style === 'transparent' ? bgColor : '#000000');
           const borderColor = badge.borderColor || (badge.style === 'outline' ? bgColor : '#000000');
           const borderWidth = badge.borderWidth ?? (badge.style === 'transparent' ? 0 : 1);
           const rx = badge.style === 'pill' ? 12 : 4;
-          const badgeW = Math.max(42, (badge.text?.length || 1) * (fontSize * 0.65) + 16);
-          const badgeH = Math.max(20, fontSize + 10);
+          const badgeW = Math.max(36, (badge.text?.length || 1) * (fontSize * 0.65) + padH);
+          const badgeH = Math.max(18, fontSize + padV);
+
+          const alignX = badge.alignX || 'center';
+          const alignY = badge.alignY || 'middle';
+
+          let targetX = rawX;
+          if (alignX === 'left') targetX = rawX + badgeW / 2;
+          else if (alignX === 'right') targetX = rawX - badgeW / 2;
+
+          let targetY = rawY;
+          if (alignY === 'top') targetY = rawY + badgeH / 2;
+          else if (alignY === 'bottom') targetY = rawY - badgeH / 2;
 
           // Keep badge safely inside SVG viewport
-          const x = Math.max(padding.left + badgeW / 2 + 2, Math.min(width - padding.right - badgeW / 2 - 2, rawX));
-          const y = Math.max(padding.top + badgeH / 2 + 2, Math.min(totalHeight - padding.bottom - badgeH / 2 - 4, rawY));
+          const x = Math.max(padding.left + badgeW / 2 + 2, Math.min(width - padding.right - badgeW / 2 - 2, targetX));
+          const y = Math.max(padding.top + badgeH / 2 + 2, Math.min(totalHeight - padding.bottom - badgeH / 2 - 4, targetY));
 
           return (
             <g key={badge.id}>

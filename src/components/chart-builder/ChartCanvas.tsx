@@ -31,7 +31,7 @@ interface ChartCanvasProps {
   showEma?: boolean;
   emaPeriod?: number;
   isDarkMode?: boolean;
-  candleSpacing?: 'compact' | 'normal' | 'wide';
+  candleSpacing?: 'compact' | 'normal' | 'wide' | 'ultra-wide';
   selectedId: string | null;
   onSelectId: (id: string | null, type: ChartObjectType) => void;
   onUpdateCandle: (candle: CustomCandle) => void;
@@ -103,9 +103,17 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   // Multi-point Polyline drawing state
   const [draftPoints, setDraftPoints] = useState<Array<{ index: number; price: number }>>([]);
 
-  // Spacing Configuration: Proporsional & Rapat seperti TradingView
-  const candleStep = candleSpacing === 'compact' ? 30 : candleSpacing === 'wide' ? 54 : 42;
-  const candleWidth = candleSpacing === 'compact' ? 14 : candleSpacing === 'wide' ? 24 : 18;
+  // Spacing Configuration: Proporsional & Lega
+  const candleStep =
+    candleSpacing === 'compact' ? 44 :
+    candleSpacing === 'wide' ? 84 :
+    candleSpacing === 'ultra-wide' ? 110 :
+    60;
+  const candleWidth =
+    candleSpacing === 'compact' ? 16 :
+    candleSpacing === 'wide' ? 26 :
+    candleSpacing === 'ultra-wide' ? 32 :
+    20;
 
   const hasLegend = legends.length > 0;
   const legendHeight = hasLegend ? 28 : 0;
@@ -116,17 +124,21 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
     bottom: 45 + volumeHeight + legendHeight,
     left: 45
   };
-  const totalHeight = 520;
+  const totalHeight = 540;
 
   // Lebar kanvas bertambah secara dinamis seiring bertambahnya candle tanpa menggeser posisi scroll otomatis
   const maxBarIndex = useMemo(() => {
     let maxIdx = Math.max(12, candles.length);
     polylines.forEach(p => p.points.forEach(pt => { if (pt.index + 2 > maxIdx) maxIdx = pt.index + 2; }));
-    infoCards.forEach(c => { if (c.candleIndex + 4 > maxIdx) maxIdx = c.candleIndex + 4; });
+    infoCards.forEach(c => {
+      const estCardBars = Math.ceil((c.width || 210) / candleStep);
+      const reach = (c.alignX === 'left' ? c.candleIndex + estCardBars : c.candleIndex + estCardBars / 2) + 1.5;
+      if (reach > maxIdx) maxIdx = reach;
+    });
     return maxIdx;
-  }, [candles.length, polylines, infoCards]);
+  }, [candles.length, polylines, infoCards, candleStep]);
 
-  const width = Math.max(680, padding.left + maxBarIndex * candleStep + padding.right + 30);
+  const width = Math.max(760, padding.left + maxBarIndex * candleStep + padding.right + 30);
 
   const { minPrice, maxPrice } = useMemo(() => {
     let min = Infinity;

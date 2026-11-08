@@ -70,8 +70,8 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
     return typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
   });
 
-  // Candle Spacing / Zoom: Rapat, Normal, Lebar
-  const [candleSpacing, setCandleSpacing] = useState<'compact' | 'normal' | 'wide'>(
+  // Candle Spacing / Zoom: Rapat, Normal, Lebar, Ultra
+  const [candleSpacing, setCandleSpacing] = useState<'compact' | 'normal' | 'wide' | 'ultra-wide'>(
     initialConfig?.candleSpacing || 'normal'
   );
 
@@ -592,7 +592,7 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
               isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
             }`}>
               <span className="px-1 text-[10px] font-bold">Jarak:</span>
-              {(['compact', 'normal', 'wide'] as const).map(sp => (
+              {(['compact', 'normal', 'wide', 'ultra-wide'] as const).map(sp => (
                 <button
                   key={sp}
                   type="button"
@@ -603,7 +603,7 @@ export const CustomChartBuilderModal: React.FC<CustomChartBuilderModalProps> = (
                       : 'hover:text-black dark:hover:text-white'
                   }`}
                 >
-                  {sp === 'compact' ? 'Rapat' : sp === 'normal' ? 'Standar' : 'Lebar'}
+                  {sp === 'compact' ? 'Rapat' : sp === 'normal' ? 'Standar' : sp === 'wide' ? 'Lebar' : 'Ekstra'}
                 </button>
               ))}
             </div>

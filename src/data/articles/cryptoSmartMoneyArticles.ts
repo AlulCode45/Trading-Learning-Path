@@ -247,6 +247,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               bottomPrice: 63200,
               boxType: 'liquidity_pool',
               label: 'Zona Likuidasi Long Ritel ($800M+ Cluster)',
+              labelPosition: 'bottom-left',
               color: '#F43F5E',
               opacity: 0.18,
               borderStyle: 'dashed'
@@ -259,6 +260,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               bottomPrice: 61500,
               boxType: 'order_block',
               label: 'Whale Limit Absorption & Buyback Zone',
+              labelPosition: 'top-left',
               color: '#10B981',
               opacity: 0.2,
               showMidLine: true,
@@ -306,28 +308,31 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           badges: [
             {
               id: 'b-trap',
-              candleIndex: 2,
-              price: 64100,
+              candleIndex: 1,
+              price: 66200,
               text: 'Funding Rate +0.08% (Greed Ekstrem)',
               style: 'pill',
+              size: 'sm',
               bgColor: '#EF4444',
               textColor: '#FFFFFF'
             },
             {
               id: 'b-sweep',
               candleIndex: 4,
-              price: 60700,
+              price: 60100,
               text: 'Stop Hunt $61.500 (Long Flushout)',
               style: 'badge',
+              size: 'sm',
               bgColor: '#F43F5E',
               textColor: '#FFFFFF'
             },
             {
               id: 'b-vshape',
               candleIndex: 6,
-              price: 66400,
+              price: 67400,
               text: 'Institutional Re-Absorption',
               style: 'pill',
+              size: 'sm',
               bgColor: '#10B981',
               textColor: '#FFFFFF'
             }
@@ -335,9 +340,11 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-1',
-              candleIndex: 0.6,
-              price: 67600,
-              width: 175,
+              candleIndex: 0,
+              price: 68600,
+              alignX: 'left',
+              alignY: 'top',
+              width: 195,
               stepBadge: '1',
               title: 'JEBAKAN LIQUIDITY',
               lines: [
@@ -349,9 +356,11 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             },
             {
               id: 'card-2',
-              candleIndex: 7.2,
-              price: 63800,
-              width: 175,
+              candleIndex: 8,
+              price: 64200,
+              alignX: 'left',
+              alignY: 'middle',
+              width: 205,
               stepBadge: '2',
               title: 'EKSEKUSI PEMBUNUHAN',
               lines: [
