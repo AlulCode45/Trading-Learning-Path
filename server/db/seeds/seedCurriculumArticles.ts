@@ -1,8 +1,26 @@
+import fs from 'fs';
+import path from 'path';
 import { db } from '../database.ts';
-import { EDUCATIONAL_ARTICLES, getModuleIdForArticle, getRoadmapSlugForArticle } from '../../../src/data/articles/index.ts';
 
 export function seedCurriculumArticlesAndCharts() {
+  const seedFile = path.resolve(import.meta.dir, 'curriculum_seed.json');
+  if (!fs.existsSync(seedFile)) {
+    console.warn('⚠️ curriculum_seed.json not found, skipping curriculum seed.');
+    return;
+  }
+
+  const existingCount = db.prepare('SELECT COUNT(*) as count FROM curriculum_articles').get() as { count: number };
+  const existingChartCount = db.prepare('SELECT COUNT(*) as count FROM chart_presets').get() as { count: number };
+
+  if (existingCount.count >= 100 && existingChartCount.count >= 30) {
+    console.log(`ℹ️ Database already initialized with ${existingCount.count} articles and ${existingChartCount.count} chart presets.`);
+    return;
+  }
+
   console.log('📦 Starting Migration: Seeding curriculum articles and chart presets into SQLite/DB...');
+
+  const raw = fs.readFileSync(seedFile, 'utf-8');
+  const { articles = [], charts = [] } = JSON.parse(raw);
 
   const upsertArticle = db.prepare(`
     INSERT INTO curriculum_articles (
@@ -11,7 +29,7 @@ export function seedCurriculumArticlesAndCharts() {
       sections_json, quiz_json, key_takeaways_json, common_mistakes_json,
       related_topics_json, references_json, is_official
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(slug) DO UPDATE SET
       title = excluded.title,
       summary = excluded.summary,
@@ -43,68 +61,45 @@ export function seedCurriculumArticlesAndCharts() {
       updated_at = CURRENT_TIMESTAMP
   `);
 
-  let articleCount = 0;
-  let chartCount = 0;
-  const seenArticleSlugs = new Set<string>();
-
-  for (const [key, article] of Object.entries(EDUCATIONAL_ARTICLES)) {
-    if (!article || !article.slug) continue;
-    if (seenArticleSlugs.has(article.slug)) continue;
-    seenArticleSlugs.add(article.slug);
-
-    const moduleId = getModuleIdForArticle(article);
-    const roadmapSlug = getRoadmapSlugForArticle(article);
-
-    // Extract any embedded customChartConfig into chart_presets table for modular reusability
-    if (article.sections && Array.isArray(article.sections)) {
-      article.sections.forEach((sec, sIdx) => {
-        if (sec.customChartConfig && (sec.customChartConfig.candles || sec.customChartConfig.trendlines)) {
-          const chartSlug = `${article.slug}-sec-${sIdx}-chart`;
-          const chartId = `ch-${article.slug}-${sIdx}`;
-          try {
-            upsertChart.run(
-              chartId,
-              chartSlug,
-              sec.customChartConfig.title || sec.title,
-              sec.customChartConfig.subtitle || '',
-              sec.illustrationMode || 'custom_builder',
-              moduleId,
-              sec.customChartConfig.timeframe || 'Daily',
-              JSON.stringify(sec.customChartConfig)
-            );
-            chartCount++;
-          } catch (cErr) {
-            console.warn(`Could not seed chart ${chartSlug}:`, cErr);
-          }
-        }
-      });
-    }
-
-    try {
+  const tx = db.transaction(() => {
+    for (const art of articles) {
       upsertArticle.run(
-        article.id || `art-${article.slug}`,
-        article.slug,
-        roadmapSlug,
-        article.nodeId || null,
-        moduleId,
-        article.title,
-        article.summary || '',
-        article.category || 'Trading Education',
-        article.level || 1,
-        article.readingTimeMinutes || 10,
-        article.difficulty || 'Intermediate',
-        JSON.stringify(article.sections || []),
-        JSON.stringify((article as any).quiz || []),
-        JSON.stringify(article.keyTakeaways || []),
-        JSON.stringify(article.commonMistakes || []),
-        JSON.stringify(article.relatedTopics || []),
-        JSON.stringify(article.references || [])
+        art.id,
+        art.slug,
+        art.roadmap_id,
+        art.node_id,
+        art.module_id,
+        art.title,
+        art.summary || '',
+        art.category || 'Trading Education',
+        art.level || 1,
+        art.reading_time_minutes || 10,
+        art.difficulty || 'Intermediate',
+        art.sections_json,
+        art.quiz_json || '[]',
+        art.key_takeaways_json || '[]',
+        art.common_mistakes_json || '[]',
+        art.related_topics_json || '[]',
+        art.references_json || '[]',
+        art.is_official ?? 1
       );
-      articleCount++;
-    } catch (err) {
-      console.error(`Error migrating article ${article.slug}:`, err);
     }
-  }
 
-  console.log(`✅ Successfully seeded ${articleCount} curriculum articles and ${chartCount} modular chart presets into database!`);
+    for (const ch of charts) {
+      upsertChart.run(
+        ch.id,
+        ch.slug,
+        ch.title,
+        ch.subtitle || '',
+        ch.engine_type || 'custom_builder',
+        ch.category || 'General',
+        ch.timeframe || 'Daily',
+        ch.config_json
+      );
+    }
+  });
+
+  tx();
+
+  console.log(`✅ Successfully seeded ${articles.length} curriculum articles and ${charts.length} modular chart presets into database!`);
 }
