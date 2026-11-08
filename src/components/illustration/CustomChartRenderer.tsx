@@ -34,45 +34,61 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
 
   const [userZoom, setUserZoom] = useState<number>(1);
   const candleStepBase =
-    candleSpacing === 'compact' ? 48 :
-    candleSpacing === 'wide' ? 92 :
-    candleSpacing === 'ultra-wide' ? 120 :
-    68;
+    candleSpacing === 'compact' ? 52 :
+    candleSpacing === 'wide' ? 98 :
+    candleSpacing === 'ultra-wide' ? 125 :
+    78;
   const candleStep = Math.round(candleStepBase * userZoom);
-  const candleWidth = Math.max(12, Math.round((
+  const candleWidth = Math.max(14, Math.round((
     candleSpacing === 'compact' ? 16 :
     candleSpacing === 'wide' ? 26 :
     candleSpacing === 'ultra-wide' ? 32 :
-    20
+    22
   ) * Math.min(1.4, userZoom)));
 
   const hasLegend = legends.length > 0;
   const legendHeight = hasLegend ? 26 : 0;
-  const totalHeight = config.height || (infoCards.length > 0 ? 540 : 490);
+  const totalHeight = config.height || (infoCards.length > 0 ? 550 : 490);
   const volumeHeight = showVolume ? 55 : 0;
-  const padding = { top: 40, right: 90, bottom: 35 + volumeHeight + legendHeight, left: 50 };
+  const padding = { top: 40, right: 90, bottom: 48 + volumeHeight + legendHeight, left: 55 };
 
-  const maxBarIndex = useMemo(() => {
-    let maxIdx = Math.max(10, candles.length);
-    polylines.forEach(p => p.points.forEach(pt => { if (pt.index + 2 > maxIdx) maxIdx = pt.index + 2; }));
-    boxes.forEach(b => { if (b.endIndex + 2 > maxIdx) maxIdx = b.endIndex + 2; });
-    positions.forEach(pos => { if (pos.endIndex + 2 > maxIdx) maxIdx = pos.endIndex + 2; });
-    trendlines.forEach(tl => { if (Math.max(tl.x1Index, tl.x2Index) + 2 > maxIdx) maxIdx = Math.max(tl.x1Index, tl.x2Index) + 2; });
-    arrows.forEach(arr => { if (Math.max(arr.startIndex, arr.endIndex) + 2 > maxIdx) maxIdx = Math.max(arr.startIndex, arr.endIndex) + 2; });
+  // Calculate the max action index across all price action elements
+  const maxPriceActionIndex = useMemo(() => {
+    let m = Math.max(7, candles.length - 1);
+    positions.forEach(pos => { if (pos.endIndex > m) m = pos.endIndex; });
+    boxes.forEach(b => { if (b.endIndex > m) m = b.endIndex; });
+    trendlines.forEach(tl => {
+      const end = Math.max(tl.x1Index, tl.x2Index);
+      if (end > m) m = end;
+    });
+    polylines.forEach(p => p.points.forEach(pt => { if (pt.index > m) m = pt.index; }));
+    arrows.forEach(arr => {
+      const end = Math.max(arr.startIndex, arr.endIndex);
+      if (end > m) m = end;
+    });
     badges.forEach(bg => {
       const estBadgeBars = Math.ceil(((bg.text?.length || 10) * 7.5) / candleStepBase);
-      const reach = (bg.alignX === 'left' ? bg.candleIndex + estBadgeBars : bg.candleIndex + estBadgeBars / 2) + 1;
-      if (reach > maxIdx) maxIdx = reach;
+      const reach = (bg.alignX === 'left' ? bg.candleIndex + estBadgeBars : bg.candleIndex + estBadgeBars / 2);
+      if (reach > m) m = reach;
     });
-    infoCards.forEach(c => {
-      const estCardBars = Math.ceil((c.width || 210) / candleStepBase);
-      const reach = (c.alignX === 'left' ? c.candleIndex + estCardBars : c.candleIndex + estCardBars / 2) + 1.5;
-      if (reach > maxIdx) maxIdx = reach;
-    });
-    return maxIdx;
-  }, [candles.length, polylines, boxes, positions, trendlines, arrows, badges, infoCards, candleStepBase]);
+    return m;
+  }, [candles.length, positions, boxes, trendlines, polylines, arrows, badges, candleStepBase]);
 
-  const width = Math.max(760, padding.left + maxBarIndex * candleStep + padding.right + 30);
+  const maxBarIndex = useMemo(() => {
+    let maxIdx = maxPriceActionIndex + 1;
+
+    // Allocate safe right-hand stage room for InfoCards
+    if (infoCards.length > 0) {
+      const maxCardWidthPx = Math.max(220, ...infoCards.map(c => c.width || 220));
+      const estCardBars = Math.ceil((maxCardWidthPx + 90) / candleStepBase);
+      const reach = maxIdx + estCardBars + 1;
+      if (reach > maxIdx) maxIdx = reach;
+    }
+
+    return maxIdx;
+  }, [maxPriceActionIndex, infoCards, candleStepBase]);
+
+  const width = Math.max(880, padding.left + maxBarIndex * candleStep + padding.right + 40);
 
   const { minPrice, maxPrice } = useMemo(() => {
     let min = Infinity;
@@ -164,6 +180,89 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
 
     return points;
   }, [candles, showEma, emaPeriod, minPrice, maxPrice, candleStep]);
+
+  // Guaranteed Stage Isolation & Multi-Card Layout Engine
+  const layoutedInfoCards = useMemo(() => {
+    if (infoCards.length === 0) return [];
+
+    const priceActionEndX = padding.left + (maxPriceActionIndex + 1) * candleStep;
+    const stageStartX = priceActionEndX + 35;
+    let currentStageY = padding.top + 10;
+
+    return infoCards.map((card, idx) => {
+      const rawX = indexToX(card.candleIndex);
+      const rawY = priceToY(card.price);
+      const rawLines = card.lines || [];
+      const hasFooter = Boolean(card.footerBadge);
+
+      // Dynamic text wrap
+      const maxCharPerLine = 34;
+      const wrappedLines: string[] = [];
+      rawLines.forEach(ln => {
+        if (ln.length <= maxCharPerLine) {
+          wrappedLines.push(ln);
+        } else {
+          const words = ln.split(' ');
+          let cur = '';
+          words.forEach(w => {
+            if ((cur + ' ' + w).trim().length <= maxCharPerLine) {
+              cur = (cur + ' ' + w).trim();
+            } else {
+              if (cur) wrappedLines.push(cur);
+              cur = w;
+            }
+          });
+          if (cur) wrappedLines.push(cur);
+        }
+      });
+
+      const longestLineChars = Math.max(
+        (card.title?.length || 10) + (card.stepBadge ? 4 : 0),
+        ...wrappedLines.map(l => l.length)
+      );
+      const computedCardW = Math.max(170, Math.min(260, longestLineChars * 6.8 + 28));
+      const cardW = card.width ? Math.max(card.width, computedCardW) : computedCardW;
+      const cardH = 32 + wrappedLines.length * 14 + (hasFooter ? 24 : 8);
+
+      const isStageCard = card.candleIndex >= candles.length - 1.5 || infoCards.length > 1;
+
+      let x: number;
+      let y: number;
+
+      if (isStageCard) {
+        x = Math.max(stageStartX, card.alignX === 'left' ? rawX : rawX - cardW / 2);
+        if (infoCards.length > 1) {
+          y = currentStageY;
+          currentStageY += cardH + 14;
+        } else {
+          let targetY = rawY;
+          if (card.alignY === 'middle') targetY = rawY - cardH / 2;
+          else if (card.alignY === 'bottom') targetY = rawY - cardH;
+          y = Math.max(padding.top + 8, Math.min(totalHeight - padding.bottom - cardH - 10, targetY));
+        }
+      } else {
+        let targetX = rawX - cardW / 2;
+        if (card.alignX === 'left') targetX = rawX;
+        else if (card.alignX === 'right') targetX = rawX - cardW;
+
+        let targetY = rawY;
+        if (card.alignY === 'bottom') targetY = rawY - cardH;
+        else if (card.alignY === 'middle') targetY = rawY - cardH / 2;
+
+        x = Math.max(padding.left + 5, Math.min(width - padding.right - cardW - 5, targetX));
+        y = Math.max(padding.top + 5, Math.min(totalHeight - padding.bottom - cardH - 10, targetY));
+      }
+
+      return {
+        card,
+        x,
+        y,
+        cardW,
+        cardH,
+        wrappedLines
+      };
+    });
+  }, [infoCards, maxPriceActionIndex, candleStep, padding, candles.length, totalHeight, width, minPrice, maxPrice]);
 
   const themeBg = isDarkMode ? '#070A12' : '#FFFFFF';
   const gridStroke = isDarkMode ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.05)';
@@ -367,7 +466,7 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
                     width={Math.min(boxW - 8, b.label.length * (fontSize * 0.62) + 10)}
                     height={fontSize + 6}
                     fill={isDarkMode ? '#070A12' : '#FFFFFF'}
-                    fillOpacity={0.92}
+                    fillOpacity={1.0}
                     stroke={strokeColor}
                     strokeWidth="0.8"
                     rx="3"
@@ -476,9 +575,9 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
                 strokeWidth="1"
               />
               <line x1={x1} y1={yEntry} x2={x2} y2={yEntry} stroke={isDarkMode ? '#F8FAFC' : '#0F172A'} strokeWidth="1.5" />
-              <rect x={x2 - 95} y={yEntry - 10} width="90" height="18" fill={badgeBgColor} stroke={badgeTextColor} rx="3" />
-              <text x={x2 - 50} y={yEntry + 2.5} fill={badgeTextColor} fontSize="8.5" fontWeight="900" fontFamily="JetBrains Mono" textAnchor="middle">
-                R:R = 1 : {rrRatio}
+              <rect x={x2 - 76} y={yEntry - 8} width="72" height="16" fill={badgeBgColor} stroke={badgeTextColor} strokeWidth="1" rx="3" />
+              <text x={x2 - 40} y={yEntry + 3} fill={badgeTextColor} fontSize="8" fontWeight="bold" fontFamily="JetBrains Mono" textAnchor="middle">
+                R:R 1:{rrRatio}
               </text>
             </g>
           );
@@ -596,8 +695,9 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
                       x={labelX - pillW / 2}
                       y={labelY - fontSize}
                       width={pillW}
-                      height={fontSize + 5}
+                      height={fontSize + 6}
                       fill={t.textBgColor || (isDarkMode ? '#090D16' : '#FFFFFF')}
+                      fillOpacity={1.0}
                       stroke={lineColor}
                       strokeWidth="1"
                       rx="3"
@@ -679,92 +779,80 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
                 rx="1.5"
               />
               <line x1={x} y1={bodyTop + bodyHeight} x2={x} y2={yLow} stroke={wickColor} strokeWidth="1.8" />
-              {candle.label && (
-                <g>
-                  {hasStaggeredLabels && idx % 2 === 1 && (
-                    <line
-                      x1={x}
-                      y1={totalHeight - padding.bottom + 4}
-                      x2={x}
-                      y2={totalHeight - padding.bottom + 21}
-                      stroke={gridLineStroke}
-                      strokeWidth="1"
-                      strokeDasharray="2 2"
-                    />
-                  )}
-                  <text
-                    x={x}
-                    y={totalHeight - padding.bottom + (hasStaggeredLabels ? (idx % 2 === 0 ? 14 : 27) : 15)}
-                    fill={candle.labelColor || labelTextFill}
-                    fontSize="8.5"
-                    fontWeight="bold"
-                    fontFamily="JetBrains Mono, monospace"
-                    textAnchor="middle"
-                  >
-                    {candle.label}
-                  </text>
-                </g>
-              )}
+              {candle.label && (() => {
+                const rawLabel = candle.label.trim();
+                const isOdd = idx % 2 === 1;
+                const baseY = totalHeight - padding.bottom + (hasStaggeredLabels ? (isOdd ? 27 : 13) : 14);
+
+                let line1 = rawLabel;
+                let line2 = '';
+                if (rawLabel.length > 8) {
+                  const parenIdx = rawLabel.indexOf(' (');
+                  const slashIdx = rawLabel.indexOf(' / ');
+                  const dashIdx = rawLabel.indexOf(' - ');
+                  const colonIdx = rawLabel.indexOf(': ');
+
+                  let splitAt = -1;
+                  let sepLen = 1;
+
+                  if (parenIdx !== -1) { splitAt = parenIdx; sepLen = 1; }
+                  else if (colonIdx !== -1) { splitAt = colonIdx + 1; sepLen = 1; }
+                  else if (slashIdx !== -1) { splitAt = slashIdx; sepLen = 3; }
+                  else if (dashIdx !== -1) { splitAt = dashIdx; sepLen = 3; }
+                  else {
+                    const words = rawLabel.split(' ');
+                    if (words.length > 1) {
+                      const mid = Math.ceil(words.length / 2);
+                      line1 = words.slice(0, mid).join(' ');
+                      line2 = words.slice(mid).join(' ');
+                      splitAt = -999;
+                    }
+                  }
+
+                  if (splitAt > 0) {
+                    line1 = rawLabel.substring(0, splitAt).trim();
+                    line2 = rawLabel.substring(splitAt + sepLen).trim();
+                  }
+                }
+
+                return (
+                  <g key={`lbl-${candle.id}`}>
+                    {hasStaggeredLabels && isOdd && (
+                      <line
+                        x1={x}
+                        y1={totalHeight - padding.bottom + 3}
+                        x2={x}
+                        y2={baseY - 10}
+                        stroke={gridLineStroke}
+                        strokeWidth="1"
+                        strokeDasharray="2 2"
+                      />
+                    )}
+                    <text
+                      x={x}
+                      y={baseY}
+                      fill={candle.labelColor || labelTextFill}
+                      fontSize="8"
+                      fontWeight="bold"
+                      fontFamily="JetBrains Mono, monospace"
+                      textAnchor="middle"
+                    >
+                      <tspan x={x} dy="0">{line1}</tspan>
+                      {line2 && <tspan x={x} dy="10.5">{line2}</tspan>}
+                    </text>
+                  </g>
+                );
+              })()}
             </g>
           );
         })}
 
-        {/* Multi-Line Info Cards */}
-        {infoCards.map((card) => {
-          const rawX = indexToX(card.candleIndex);
-          const rawY = priceToY(card.price);
-          const rawLines = card.lines || [];
-          const hasFooter = Boolean(card.footerBadge);
+        {/* Multi-Line Info Cards with Guaranteed Stage Isolation */}
+        {layoutedInfoCards.map(({ card, x, y, cardW, cardH, wrappedLines }) => {
           const accent = card.color || '#10B981';
           const bgCol = card.bgColor || accent;
           const bgOp = card.bgOpacity ?? 0.14;
           const bodyTextCol = card.textColor || (isDarkMode ? '#E2E8F0' : '#1E293B');
-
-          // Dynamic Text-Wrapping & Auto-Sizing
-          const maxCharPerLine = 34;
-          const wrappedLines: string[] = [];
-          rawLines.forEach(ln => {
-            if (ln.length <= maxCharPerLine) {
-              wrappedLines.push(ln);
-            } else {
-              const words = ln.split(' ');
-              let cur = '';
-              words.forEach(w => {
-                if ((cur + ' ' + w).trim().length <= maxCharPerLine) {
-                  cur = (cur + ' ' + w).trim();
-                } else {
-                  if (cur) wrappedLines.push(cur);
-                  cur = w;
-                }
-              });
-              if (cur) wrappedLines.push(cur);
-            }
-          });
-
-          // Compute optimal width based on content length
-          const longestLineChars = Math.max(
-            (card.title?.length || 10) + (card.stepBadge ? 4 : 0),
-            ...wrappedLines.map(l => l.length)
-          );
-          const computedCardW = Math.max(165, Math.min(260, longestLineChars * 6.8 + 28));
-          const cardW = card.width ? Math.max(card.width, computedCardW) : computedCardW;
-          const cardH = 32 + wrappedLines.length * 14 + (hasFooter ? 24 : 8);
-
-          // Horizontal alignment: 'left' | 'center' | 'right'
-          const alignX = card.alignX || 'center';
-          const alignY = card.alignY || 'top';
-
-          let targetX = rawX - cardW / 2;
-          if (alignX === 'left') targetX = rawX;
-          else if (alignX === 'right') targetX = rawX - cardW;
-
-          let targetY = rawY;
-          if (alignY === 'bottom') targetY = rawY - cardH;
-          else if (alignY === 'middle') targetY = rawY - cardH / 2;
-
-          // Boundary clamping to prevent info card overflowing SVG viewport edges
-          const x = Math.max(padding.left + 5, Math.min(width - padding.right - cardW - 5, targetX));
-          const y = Math.max(padding.top + 5, Math.min(totalHeight - padding.bottom - cardH - 10, targetY));
 
           return (
             <g key={card.id}>
@@ -855,14 +943,14 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
 
           return (
             <g key={badge.id}>
-              {/* Subtle backplate pill to prevent text bleeding through candle lines */}
+              {/* Solid backplate pill to prevent text bleeding through candle lines */}
               <rect
                 x={x - badgeW / 2 - 1}
                 y={y - badgeH / 2 - 1}
                 width={badgeW + 2}
                 height={badgeH + 2}
-                fill={isDarkMode ? '#090D16' : '#FFFFFF'}
-                fillOpacity={0.9}
+                fill={isDarkMode ? '#070A12' : '#FFFFFF'}
+                fillOpacity={1.0}
                 rx={rx + 1}
               />
               {badge.style === 'callout' && (
