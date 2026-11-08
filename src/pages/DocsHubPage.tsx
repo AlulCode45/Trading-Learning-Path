@@ -194,7 +194,7 @@ export const DocsHubPage: React.FC = () => {
         </div>
 
         {/* Featured Spotlight Article (Show when no specific search is active and 'all' is selected) */}
-        {!searchQuery && selectedModuleId === 'all' && (
+        {!searchQuery && selectedModuleId === 'all' && featuredArticle && (
           <div className="bg-gradient-to-br from-amber-500/10 via-slate-900/5 to-transparent dark:from-amber-500/15 dark:via-zinc-900/40 dark:to-transparent border-2 border-amber-500/40 dark:border-amber-500/30 rounded-3xl p-6 sm:p-8 lg:p-10 shadow-sm relative overflow-hidden">
             <div className="max-w-3xl space-y-4 relative z-10">
               <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
@@ -206,7 +206,7 @@ export const DocsHubPage: React.FC = () => {
                 </span>
                 <span className="text-slate-500 dark:text-zinc-400 flex items-center space-x-1">
                   <Clock className="w-3.5 h-3.5" />
-                  <span>{featuredArticle.readingTime} Menit Baca</span>
+                  <span>{featuredArticle.readingTimeMinutes || 10} Menit Baca</span>
                 </span>
               </div>
 
@@ -387,7 +387,7 @@ export const DocsHubPage: React.FC = () => {
                               </span>
                               <span className="text-slate-400 dark:text-zinc-500 flex items-center space-x-1">
                                 <Clock className="w-3 h-3" />
-                                <span>{article.readingTime}m</span>
+                                <span>{article.readingTimeMinutes || 10}m</span>
                               </span>
                             </div>
                           </div>
