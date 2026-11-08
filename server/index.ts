@@ -1,7 +1,11 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
+import { createYoga } from 'graphql-yoga';
 import { initDatabase } from './db/database.ts';
 import { RoadmapController } from './controllers/roadmapController.ts';
+import { schema } from './graphql/schema.ts';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -11,6 +15,15 @@ app.use(express.json());
 
 // Initialize SQLite Schema and Seed Data
 initDatabase();
+
+// GraphQL Yoga Endpoint
+const yoga = createYoga({
+  schema,
+  graphqlEndpoint: '/graphql',
+  landingPage: false,
+});
+
+app.use('/graphql', yoga);
 
 const controller = new RoadmapController();
 
@@ -41,6 +54,19 @@ app.post('/api/charts/presets', controller.saveChartPreset);
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
 });
+
+// Serve frontend static assets in production
+const distPath = path.resolve(process.cwd(), 'dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+  app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api') && !req.path.startsWith('/graphql')) {
+      res.sendFile(path.join(distPath, 'index.html'));
+    } else {
+      next();
+    }
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`⚡ Trading Learning Path API Server is running on http://localhost:${PORT}`);

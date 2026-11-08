@@ -29,7 +29,7 @@ COPY --from=build /app/src src
 COPY --from=build /app/data data
 COPY --from=build /app/package.json .
 
-# Expose ports: 3001 (API Server) & 3000 (Static / Client)
-EXPOSE 3001
+# Expose port: 3000 (Unified Web & API)
+EXPOSE 3000
 
 CMD ["bun", "server/index.ts"]

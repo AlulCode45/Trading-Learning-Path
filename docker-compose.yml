@@ -18,7 +18,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # TraderLearning-Path API & App Server
+  # TraderLearning-Path Web & API Server
   app:
     build:
       context: .
@@ -30,11 +30,11 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: production
-      PORT: 3001
+      PORT: 3000
       DB_DIALECT: postgres
       DATABASE_URL: postgres://${POSTGRES_USER:-tlp_user}:${POSTGRES_PASSWORD:-tlp_secret_password}@postgres:5432/${POSTGRES_DB:-tlp_trading_db}
     ports:
-      - "3001:3001"
+      - "3000:3000"
     volumes:
       - ./data:/app/data
 

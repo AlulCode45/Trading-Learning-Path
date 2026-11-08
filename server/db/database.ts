@@ -10,18 +10,10 @@ if (!fs.existsSync(dataDir)) {
 
 const dbPath = path.join(dataDir, 'trading_learning_path.db');
 
-let dbInstance: any;
-if (typeof (globalThis as any).Bun !== 'undefined') {
-  const { Database } = await import('bun:sqlite');
-  dbInstance = new Database(dbPath);
-  dbInstance.exec('PRAGMA journal_mode = WAL;');
-  dbInstance.exec('PRAGMA foreign_keys = ON;');
-} else {
-  const BetterSqlite3 = (await import('better-sqlite3')).default;
-  dbInstance = new BetterSqlite3(dbPath);
-  dbInstance.pragma('journal_mode = WAL');
-  dbInstance.pragma('foreign_keys = ON');
-}
+const { Database } = await import('bun:sqlite');
+const dbInstance = new Database(dbPath);
+dbInstance.exec('PRAGMA journal_mode = WAL;');
+dbInstance.exec('PRAGMA foreign_keys = ON;');
 
 export const db = dbInstance;
 
