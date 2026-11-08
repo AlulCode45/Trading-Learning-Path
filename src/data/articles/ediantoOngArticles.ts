@@ -898,6 +898,874 @@ export const EO_FIBONACCI_RETRACEMENT_EXPANSION_CHART: CustomChartConfig = {
   ]
 };
 
+export const EO_XAUUSD_HAMMER_STUDY_CHART: CustomChartConfig = {
+  title: 'Studi Kasus Emas Dunia (XAUUSD): Membaca Sumbu Penolakan (Hammer Rejection)',
+  subtitle: 'Koreksi Menembus Support $2.270 ke $2.260 Ditolak Balik Institusi Menjadi Lilin Hammer, Konfirmasi Entri Long R:R 1:2',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'xau-0', index: 0, open: 2336, high: 2342, low: 2330, close: 2338, volume: 32000, label: 'Puncak $2.340' },
+    { id: 'xau-1', index: 1, open: 2338, high: 2340, low: 2315, close: 2318, volume: 28000, label: 'Koreksi Turun' },
+    { id: 'xau-2', index: 2, open: 2318, high: 2322, low: 2292, close: 2295, volume: 34000 },
+    { id: 'xau-3', index: 3, open: 2295, high: 2298, low: 2268, close: 2272, volume: 41000, label: 'Area $2.270' },
+    { id: 'xau-4', index: 4, open: 2272, high: 2288, low: 2260, close: 2285, volume: 89000, label: 'Hammer Rejection' },
+    { id: 'xau-5', index: 5, open: 2285, high: 2316, low: 2283, close: 2312, volume: 67000, label: 'Konfirmasi Bullish' },
+    { id: 'xau-6', index: 6, open: 2312, high: 2335, low: 2308, close: 2330, volume: 58000 },
+    { id: 'xau-7', index: 7, open: 2330, high: 2358, low: 2326, close: 2354, volume: 76000, label: 'TP $2.354 Hit!' }
+  ],
+  boxes: [
+    {
+      id: 'box-xau-support',
+      startIndex: 2.5,
+      endIndex: 6.5,
+      topPrice: 2275,
+      bottomPrice: 2265,
+      label: 'Zona Support Kunci ($2.265 - $2.275)',
+      labelPosition: 'bottom-left',
+      color: '#10B981',
+      opacity: 0.18,
+      boxType: 'order_block',
+      showMidLine: true,
+      midLineLabel: '$2.270 Pivot'
+    },
+    {
+      id: 'box-xau-resistance',
+      startIndex: 0,
+      endIndex: 7.5,
+      topPrice: 2355,
+      bottomPrice: 2345,
+      label: 'Target Profit Resistance ($2.345 - $2.355)',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.16,
+      boxType: 'supply_demand'
+    }
+  ],
+  trendlines: [
+    {
+      id: 'tl-xau-entry',
+      x1Index: 4,
+      y1Price: 2290,
+      x2Index: 7.5,
+      y2Price: 2290,
+      color: '#38BDF8',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Titik Beli / Entry: $2.290',
+      labelAlignment: 'start'
+    },
+    {
+      id: 'tl-xau-sl',
+      x1Index: 4,
+      y1Price: 2258,
+      x2Index: 7.5,
+      y2Price: 2258,
+      color: '#EF4444',
+      strokeWidth: 1.6,
+      lineStyle: 'dashed',
+      label: 'Stop Loss: $2.258 (Di Bawah Ekor Jarum $2.260)',
+      labelAlignment: 'start'
+    },
+    {
+      id: 'tl-xau-tp',
+      x1Index: 0,
+      y1Price: 2354,
+      x2Index: 7.5,
+      y2Price: 2354,
+      color: '#10B981',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Take Profit: $2.354 (Target Puncak)',
+      labelAlignment: 'end'
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-xau-long',
+      type: 'long',
+      label: 'Long Swing XAUUSD (R:R 1:2)',
+      entryPrice: 2290,
+      stopPrice: 2258,
+      targetPrice: 2354,
+      startIndex: 4.8,
+      endIndex: 7.2
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-xau-wick',
+      candleIndex: 4,
+      price: 2252,
+      text: 'Jarum Penolakan Terendah: $2.260 (Institutional Buying)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-xau-entry',
+      candleIndex: 5,
+      price: 2302,
+      text: 'Entry Konfirmasi: $2.290',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-xau-tp',
+      candleIndex: 7,
+      price: 2365,
+      text: 'TP Hit: $2.354 (+64 Pts)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-xau-plan',
+      candleIndex: 9.5,
+      price: 2335,
+      width: 175,
+      stepBadge: 'R:R 1:2',
+      title: 'KALKULASI TRADING XAUUSD',
+      lines: [
+        '• Entry: $2.290 (Konfirmasi Candle)',
+        '• Stop Loss: $2.258 (Risiko $32/oz)',
+        '• Target Profit: $2.354 (Cuan $64/oz)',
+        '• Hasil: Sukses capai TP dalam 4 hari'
+      ],
+      footerBadge: '✓ Disiplin Eksekusi Rejection',
+      color: '#10B981'
+    }
+  ],
+  legends: [
+    { id: 'leg-xau-sup', label: 'Zona Support Kunci $2.270', color: '#10B981' },
+    { id: 'leg-xau-res', label: 'Resistance Target $2.350', color: '#EF4444' },
+    { id: 'leg-xau-pos', label: 'Posisi Long (Risk:Reward 1:2)', color: '#38BDF8' }
+  ]
+};
+
+export const EO_BBCA_STUDY_CHART: CustomChartConfig = {
+  title: 'Studi Kasus Transaksi BBCA: Rebound Support & Manajemen Risiko',
+  subtitle: 'Kaidah Entry Rebound Support Rp9.500 dengan Rasio Risk-to-Reward 1:2 (SL Rp9.450, Target TP Rp10.500)',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'bbca-0', index: 0, open: 10300, high: 10450, low: 10250, close: 10400, volume: 45000, label: 'Puncak 10.400' },
+    { id: 'bbca-1', index: 1, open: 10400, high: 10400, low: 10050, close: 10100, volume: 38000, label: 'Koreksi Sehat' },
+    { id: 'bbca-2', index: 2, open: 10100, high: 10150, low: 9800, close: 9850, volume: 42000 },
+    { id: 'bbca-3', index: 3, open: 9850, high: 9900, low: 9550, close: 9600, volume: 51000, label: 'Dekati Support' },
+    { id: 'bbca-4', index: 4, open: 9600, high: 9800, low: 9500, close: 9780, volume: 82000, label: 'Hammer Rp9.500' },
+    { id: 'bbca-5', index: 5, open: 9780, high: 9950, low: 9750, close: 9850, volume: 76000, label: 'Entry Rp9.800' },
+    { id: 'bbca-6', index: 6, open: 9850, high: 10250, low: 9820, close: 10200, volume: 68000, label: 'Ekspansi Reli' },
+    { id: 'bbca-7', index: 7, open: 10200, high: 10550, low: 10180, close: 10500, volume: 94000, label: 'TP Rp10.500 Hit!' }
+  ],
+  boxes: [
+    {
+      id: 'box-bbca-support',
+      startIndex: 2.5,
+      endIndex: 5.5,
+      topPrice: 9650,
+      bottomPrice: 9480,
+      label: 'Lantai Support Historis (Rp9.500 - Rp9.600)',
+      labelPosition: 'bottom-left',
+      color: '#10B981',
+      opacity: 0.18,
+      boxType: 'order_block'
+    },
+    {
+      id: 'box-bbca-resistance',
+      startIndex: 0,
+      endIndex: 7.5,
+      topPrice: 10600,
+      bottomPrice: 10450,
+      label: 'Resistance Mayor (Rp10.500)',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.16,
+      boxType: 'supply_demand'
+    }
+  ],
+  trendlines: [
+    {
+      id: 'tl-bbca-entry',
+      x1Index: 4,
+      y1Price: 9800,
+      x2Index: 7.5,
+      y2Price: 9800,
+      color: '#38BDF8',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Titik Beli / Entry: Rp9.800',
+      labelAlignment: 'start'
+    },
+    {
+      id: 'tl-bbca-sl',
+      x1Index: 3.5,
+      y1Price: 9450,
+      x2Index: 7.5,
+      y2Price: 9450,
+      color: '#EF4444',
+      strokeWidth: 1.6,
+      lineStyle: 'dashed',
+      label: 'Stop Loss: Rp9.450 (-3,57%)',
+      labelAlignment: 'start'
+    },
+    {
+      id: 'tl-bbca-tp',
+      x1Index: 0,
+      y1Price: 10500,
+      x2Index: 7.5,
+      y2Price: 10500,
+      color: '#10B981',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Target Profit: Rp10.500 (+7,14%)',
+      labelAlignment: 'end'
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-bbca-long',
+      type: 'long',
+      label: 'Swing Trade BBCA (R:R 1:2)',
+      entryPrice: 9800,
+      stopPrice: 9450,
+      targetPrice: 10500,
+      startIndex: 4.8,
+      endIndex: 7.2
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-bbca-hammer',
+      candleIndex: 4,
+      price: 9380,
+      text: 'Rejection Hammer di Rp9.500 + Volume Surge',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-bbca-entry',
+      candleIndex: 5,
+      price: 9950,
+      text: 'Beli Rp9.800 (Risiko Rp350)',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-bbca-tp',
+      candleIndex: 7,
+      price: 10650,
+      text: 'TP Hit: Rp10.500 (+Rp700)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-bbca-calc',
+      candleIndex: 9.5,
+      price: 10300,
+      width: 175,
+      stepBadge: 'R:R 1:2',
+      title: 'KALKULASI TRANSAKSI BBCA',
+      lines: [
+        '• Entry: Rp9.800 (Rebound Support)',
+        '• Stop Loss: Rp9.450 (-3,57% / -Rp350)',
+        '• Target Profit: Rp10.500 (+7,14% / +Rp700)',
+        '• Rasio Risk to Reward: 1 : 2'
+      ],
+      footerBadge: '✓ High Probability Trade',
+      color: '#10B981'
+    }
+  ],
+  legends: [
+    { id: 'leg-bbca-sup', label: 'Support Kuat Rp9.500', color: '#10B981' },
+    { id: 'leg-bbca-res', label: 'Target Resistance Rp10.500', color: '#EF4444' },
+    { id: 'leg-bbca-pos', label: 'Setup Long R:R 1:2', color: '#38BDF8' }
+  ]
+};
+
+export const EO_DOW_PHASES_BBRI_CHART: CustomChartConfig = {
+  title: 'Siklus Teori Dow Saham BBRI: Tiga Fase Pasar',
+  subtitle: 'Fase 1 Akumulasi Smart Money (Rp3.800) -> Fase 2 Partisipasi Publik Ritel (Rp4.500-Rp5.500) -> Fase 3 Distribusi Pucuk (Rp6.000)',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'bbri-0', index: 0, open: 3820, high: 3900, low: 3750, close: 3850, volume: 85000, label: 'Fase 1: Akumulasi' },
+    { id: 'bbri-1', index: 1, open: 3850, high: 3980, low: 3800, close: 3950, volume: 92000, label: 'Serapan Senyap' },
+    { id: 'bbri-2', index: 2, open: 3950, high: 4250, low: 3930, close: 4200, volume: 165000, label: 'Breakout Rp4.000!' },
+    { id: 'bbri-3', index: 3, open: 4200, high: 4750, low: 4180, close: 4700, volume: 142000, label: 'Fase 2: Publik' },
+    { id: 'bbri-4', index: 4, open: 4700, high: 5400, low: 4680, close: 5350, volume: 158000, label: 'Ritel FOMO' },
+    { id: 'bbri-5', index: 5, open: 5350, high: 6050, low: 5300, close: 5950, volume: 198000, label: 'Puncak Rp6.000' },
+    { id: 'bbri-6', index: 6, open: 5950, high: 6000, low: 5500, close: 5550, volume: 245000, label: 'Fase 3: Distribusi' },
+    { id: 'bbri-7', index: 7, open: 5550, high: 5600, low: 5050, close: 5100, volume: 182000, label: 'Awal Downtrend' }
+  ],
+  boxes: [
+    {
+      id: 'box-dow-acc',
+      startIndex: 0,
+      endIndex: 1.8,
+      topPrice: 4000,
+      bottomPrice: 3750,
+      label: 'FASE 1: AKUMULASI (Smart Money Beli Senyap)',
+      labelPosition: 'bottom-left',
+      color: '#10B981',
+      opacity: 0.18,
+      boxType: 'order_block'
+    },
+    {
+      id: 'box-dow-part',
+      startIndex: 2.2,
+      endIndex: 4.5,
+      topPrice: 5400,
+      bottomPrice: 4100,
+      label: 'FASE 2: PARTISIPASI PUBLIK (Tren Naik Kencang)',
+      labelPosition: 'top-left',
+      color: '#38BDF8',
+      opacity: 0.16,
+      boxType: 'supply_demand'
+    },
+    {
+      id: 'box-dow-dist',
+      startIndex: 5,
+      endIndex: 7.5,
+      topPrice: 6050,
+      bottomPrice: 5500,
+      label: 'FASE 3: DISTRIBUSI (Smart Money Jual ke Ritel Euforia)',
+      labelPosition: 'top-right',
+      color: '#EF4444',
+      opacity: 0.2,
+      boxType: 'supply_demand'
+    }
+  ],
+  trendlines: [
+    {
+      id: 'tl-dow-res-acc',
+      x1Index: 0,
+      y1Price: 4000,
+      x2Index: 2.5,
+      y2Price: 4000,
+      color: '#F59E0B',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Plafon Akumulasi Rp4.000 (Ditembus)',
+      labelAlignment: 'start'
+    },
+    {
+      id: 'tl-dow-uptrend',
+      x1Index: 1,
+      y1Price: 3800,
+      x2Index: 5,
+      y2Price: 5400,
+      color: '#10B981',
+      strokeWidth: 2.2,
+      lineStyle: 'solid',
+      label: 'Uptrend Pasang Laut Teori Dow',
+      labelAlignment: 'center',
+      showArrow: true
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-dow-b1',
+      candleIndex: 2,
+      price: 4350,
+      text: 'Breakout Akumulasi: Vol Masif 165k',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-dow-b2',
+      candleIndex: 5,
+      price: 6150,
+      text: 'Puncak Euforia Rp6.000: Berita Heboh di Medsos',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-dow-b3',
+      candleIndex: 6,
+      price: 5420,
+      text: 'Distribusi Nyata: Volume 245k Guyuran Smart Money',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-dow-phases',
+      candleIndex: 9.5,
+      price: 5300,
+      width: 175,
+      stepBadge: 'SIKLUS DOW',
+      title: 'ANATOMI SIKLUS BBRI',
+      lines: [
+        '1. Akumulasi di Rp3.800 saat berita makro suram.',
+        '2. Partisipasi publik memacu harga ke Rp5.500.',
+        '3. Distribusi di Rp6.000 saat ritel FOMO berita.',
+        '4. Downtrend membakar ritel yang beli di pucuk.'
+      ],
+      footerBadge: '✓ Hindari Beli di Puncak Distribusi',
+      color: '#EF4444'
+    }
+  ],
+  legends: [
+    { id: 'leg-dow-acc', label: 'Fase 1: Akumulasi', color: '#10B981' },
+    { id: 'leg-dow-pub', label: 'Fase 2: Partisipasi Publik', color: '#38BDF8' },
+    { id: 'leg-dow-dis', label: 'Fase 3: Distribusi Puncak', color: '#EF4444' }
+  ]
+};
+
+export const EO_TRAPS_BULL_BEAR_CHART: CustomChartConfig = {
+  title: 'Anatomi False Breakout: Jebakan Pucuk (Bull Trap) vs Jebakan Dasar (Bear Trap)',
+  subtitle: 'Perangkap Likuiditas Institusi: Menembus Garis Kunci Sesaat untuk Memicu Stop Loss / FOMO Ritel Lalu Berbalik Arah Tajam',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'trap-0', index: 0, open: 104, high: 109, low: 103, close: 108, volume: 2600, label: 'Uji Resistance' },
+    { id: 'trap-1', index: 1, open: 108, high: 116, low: 107, close: 109, volume: 4900, label: 'Bull Trap Wick' },
+    { id: 'trap-2', index: 2, open: 109, high: 110, low: 98, close: 99, volume: 6800, label: 'Guyuran Runtuh' },
+    { id: 'trap-3', index: 3, open: 99, high: 101, low: 95, close: 96, volume: 3100, label: 'Uji Support' },
+    { id: 'trap-4', index: 4, open: 96, high: 97, low: 88, close: 95, volume: 5400, label: 'Bear Trap Wick' },
+    { id: 'trap-5', index: 5, open: 95, high: 108, low: 94, close: 107, volume: 7800, label: 'Melesat Rebound' },
+    { id: 'trap-6', index: 6, open: 107, high: 118, low: 106, close: 117, volume: 8200, label: 'Ekspansi Baru' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-res-trap',
+      x1Index: 0,
+      y1Price: 110,
+      x2Index: 3,
+      y2Price: 110,
+      color: '#EF4444',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Resistance Kuat ($110.00)',
+      labelAlignment: 'start'
+    },
+    {
+      id: 'tl-sup-trap',
+      x1Index: 2.5,
+      y1Price: 95,
+      x2Index: 6.5,
+      y2Price: 95,
+      color: '#10B981',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Support Kuat ($95.00)',
+      labelAlignment: 'start'
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-bull-trap',
+      startIndex: 0.8,
+      endIndex: 2.2,
+      topPrice: 116,
+      bottomPrice: 110,
+      label: 'Zona Jebakan Beli Pucuk (Bull Trap Zone)',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.22,
+      boxType: 'liquidity_pool'
+    },
+    {
+      id: 'box-bear-trap',
+      startIndex: 3.8,
+      endIndex: 5.2,
+      topPrice: 95,
+      bottomPrice: 88,
+      label: 'Zona Jebakan Jual Bawah (Bear Trap Zone)',
+      labelPosition: 'bottom-left',
+      color: '#10B981',
+      opacity: 0.22,
+      boxType: 'liquidity_pool'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-bull-wick',
+      candleIndex: 1,
+      price: 118,
+      text: 'Jarum Menembus $116 Lalu Rontok (Bull Trap)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-bear-wick',
+      candleIndex: 4,
+      price: 85,
+      text: 'Jarum Anjlok ke $88 Lalu Diserap Institusi (Bear Trap)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-trap-fly',
+      candleIndex: 6,
+      price: 121,
+      text: 'Short Squeeze Reli: Ritel Cut Loss Terbakar',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-traps-mechanics',
+      candleIndex: 8.5,
+      price: 112,
+      width: 175,
+      stepBadge: 'TRAPS',
+      title: 'MEKANIKA FALSE BREAKOUT',
+      lines: [
+        '• Bull Trap: Ritel FOMO beli pucuk saat jarum menembus plafon, lalu dihantam guyuran.',
+        '• Bear Trap: Ritel panik cut loss saat lantai support jebol sesaat, lalu harga meroket.',
+        '• Filter: Selalu tunggu konfirmasi candle penutupan & filter volume!'
+      ],
+      footerBadge: '✓ Disiplin Whipsaw Filter',
+      color: '#F59E0B'
+    }
+  ],
+  legends: [
+    { id: 'leg-trap-res', label: 'Resistance $110.00', color: '#EF4444' },
+    { id: 'leg-trap-sup', label: 'Support $95.00', color: '#10B981' },
+    { id: 'leg-trap-box', label: 'Perangkap Likuiditas Ritel', color: '#F59E0B' }
+  ]
+};
+
+export const EO_CHANNEL_BREAKOUT_CHART: CustomChartConfig = {
+  title: 'Anatomi Garis Channel: Failure Swing vs Channel Breakout Akselerasi',
+  subtitle: 'Kaidah Menembus Plafon Channel (Parabolic Advance) vs Kegagalan Mencapai Plafon (Failure Swing Sinyal Pembalikan)',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'ch-0', index: 0, open: 100, high: 106, low: 98, close: 105, volume: 3200, label: 'Lembah 1 (L1)' },
+    { id: 'ch-1', index: 1, open: 105, high: 122, low: 104, close: 120, volume: 5400, label: 'Puncak 1 (P1)' },
+    { id: 'ch-2', index: 2, open: 120, high: 121, low: 110, close: 112, volume: 2900, label: 'Lembah 2 (L2)' },
+    { id: 'ch-3', index: 3, open: 112, high: 135, low: 111, close: 134, volume: 6100, label: 'Puncak 2 (P2)' },
+    { id: 'ch-4', index: 4, open: 134, high: 135, low: 122, close: 124, volume: 3400, label: 'Lembah 3 (L3)' },
+    { id: 'ch-5', index: 5, open: 124, high: 156, low: 123, close: 154, volume: 9800, label: 'Channel Breakout!' },
+    { id: 'ch-6', index: 6, open: 154, high: 165, low: 151, close: 163, volume: 11200, label: 'Blow-Off Top' },
+    { id: 'ch-7', index: 7, open: 163, high: 164, low: 142, close: 145, volume: 8600, label: 'Reversal Tajam' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-channel-base',
+      x1Index: 0,
+      y1Price: 98,
+      x2Index: 5,
+      y2Price: 128,
+      color: '#10B981',
+      strokeWidth: 2,
+      lineStyle: 'solid',
+      label: 'Garis Tren Dasar (Channel Support)',
+      labelAlignment: 'start',
+      showArrow: true
+    },
+    {
+      id: 'tl-channel-roof',
+      x1Index: 1,
+      y1Price: 122,
+      x2Index: 7.5,
+      y2Price: 155,
+      color: '#38BDF8',
+      strokeWidth: 2,
+      lineStyle: 'solid',
+      label: 'Garis Channel Atas (Return Line Plafon)',
+      labelAlignment: 'start',
+      showArrow: true
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-ch-overextend',
+      startIndex: 4.8,
+      endIndex: 6.8,
+      topPrice: 165,
+      bottomPrice: 148,
+      label: 'Zona Over-Extension (Akselerasi Parabolik / Blow-Off)',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.2,
+      boxType: 'supply_demand'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-ch-break',
+      candleIndex: 5,
+      price: 158,
+      text: 'Channel Breakout: Ledakan Euforia Vol 9.8k',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-ch-climax',
+      candleIndex: 6,
+      price: 168,
+      text: 'Blow-Off Top: Klimaks Beli Ritel Sebelum Runtuh',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-ch-mechanics',
+      candleIndex: 9.5,
+      price: 145,
+      width: 175,
+      stepBadge: 'CHANNEL',
+      title: 'AKSELERASI CHANNEL',
+      lines: [
+        '• Penembusan channel atas = akselerasi tren liar (parabolic advance).',
+        '• Bukan sinyal beli santai, melainkan tarikan terakhir (blow-off top).',
+        '• Amankan profit bertahap (Sell on Strength) sebelum koreksi tajam.'
+      ],
+      footerBadge: '✓ Waspada Exhaustion Move',
+      color: '#EF4444'
+    }
+  ],
+  legends: [
+    { id: 'leg-ch-base', label: 'Garis Dasar (Support)', color: '#10B981' },
+    { id: 'leg-ch-roof', label: 'Garis Plafon (Return Line)', color: '#38BDF8' },
+    { id: 'leg-ch-blow', label: 'Zona Akselerasi Parabolik', color: '#EF4444' }
+  ]
+};
+
+export const EO_MA200_REBOUND_SCHELLING_CHART: CustomChartConfig = {
+  title: 'Self-Fulfilling Prophecy: Pantulan Konsensus Moving Average 200 Hari',
+  subtitle: 'Ketika Jutaan Analis, Algoritma Institusi, dan Trader Melihat Garis MA 200 yang Sama -> Order Beli Kolektif Memantulkan Harga Saham',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'ma-0', index: 0, open: 3950, high: 4050, low: 3900, close: 4000, volume: 45000, label: 'Koreksi Makro' },
+    { id: 'ma-1', index: 1, open: 4000, high: 4020, low: 3750, close: 3780, volume: 38000 },
+    { id: 'ma-2', index: 2, open: 3780, high: 3800, low: 3520, close: 3550, volume: 52000, label: 'Dekati MA 200' },
+    { id: 'ma-3', index: 3, open: 3550, high: 3620, low: 3480, close: 3600, volume: 115000, label: 'Hammer Touch 1' },
+    { id: 'ma-4', index: 4, open: 3600, high: 3780, low: 3580, close: 3750, volume: 84000, label: 'Rebound Pantulan' },
+    { id: 'ma-5', index: 5, open: 3750, high: 3760, low: 3520, close: 3540, volume: 41000, label: 'Retest MA 200' },
+    { id: 'ma-6', index: 6, open: 3540, high: 3660, low: 3510, close: 3650, volume: 128000, label: 'Hammer Touch 2' },
+    { id: 'ma-7', index: 7, open: 3650, high: 3950, low: 3640, close: 3920, volume: 145000, label: 'Ekspansi Reli!' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-ma200-schelling',
+      x1Index: 0,
+      y1Price: 3500,
+      x2Index: 7.5,
+      y2Price: 3520,
+      color: '#38BDF8',
+      strokeWidth: 2.5,
+      lineStyle: 'solid',
+      label: 'MA 200 Hari (Titik Konsensus Bersama / Schelling Point ~Rp3.500)',
+      labelAlignment: 'start',
+      showArrow: false
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-ma-consensus',
+      startIndex: 2,
+      endIndex: 6.8,
+      topPrice: 3560,
+      bottomPrice: 3470,
+      label: 'Zona Konsensus Institusi (Support Keramat MA 200)',
+      labelPosition: 'bottom-left',
+      color: '#10B981',
+      opacity: 0.2,
+      boxType: 'order_block'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-ma-t1',
+      candleIndex: 3,
+      price: 3430,
+      text: 'Touch 1: Vol Surge 115k (Order Beli Kolektif)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-ma-t2',
+      candleIndex: 6,
+      price: 3460,
+      text: 'Touch 2: Konfirmasi Konsensus Vol 128k',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-ma-rally',
+      candleIndex: 7,
+      price: 4020,
+      text: 'Self-Fulfilling Prophecy Terwujud Sempurna!',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-ma-schelling',
+      candleIndex: 9.5,
+      price: 3880,
+      width: 175,
+      stepBadge: 'SCHELLING',
+      title: 'TITIK KONSENSUS MA 200',
+      lines: [
+        '• MA 200 bukan sihir gaib, melainkan titik fokus koordinasi massa.',
+        '• Jutaan trader & algoritma menaruh antrean bid di level yang sama.',
+        '• Terwujudnya ramalan terjadi karena tindakan eksekusi serentak.'
+      ],
+      footerBadge: '✓ Sinkronisasi Likuiditas Pasar',
+      color: '#38BDF8'
+    }
+  ],
+  legends: [
+    { id: 'leg-ma-line', label: 'Garis Moving Average 200', color: '#38BDF8' },
+    { id: 'leg-ma-box', label: 'Zona Konsensus Titik Schelling', color: '#10B981' }
+  ]
+};
+
+export const EO_AVERAGING_DOWN_TRAP_CHART: CustomChartConfig = {
+  title: 'Ilusi Fatal Averaging Down pada Tren Turun (Suicide Anomaly)',
+  subtitle: 'Trader Menambah Muatan Lot Saat Harga Jatuh Demi Menurunkan Rata-Rata Beli -> Menghasilkan Kehancuran Modal Portofolio Total (-72%)',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'ad-0', index: 0, open: 1020, high: 1040, low: 990, close: 1000, volume: 15000, label: 'Beli 1 (Rp1.000)' },
+    { id: 'ad-1', index: 1, open: 1000, high: 1010, low: 880, close: 890, volume: 22000, label: 'Downtrend Runtuh' },
+    { id: 'ad-2', index: 2, open: 890, high: 900, low: 790, close: 800, volume: 34000, label: 'Beli 2 (Rp800)' },
+    { id: 'ad-3', index: 3, open: 800, high: 810, low: 680, close: 690, volume: 41000, label: 'Jebol Parah' },
+    { id: 'ad-4', index: 4, open: 690, high: 700, low: 590, close: 600, volume: 55000, label: 'Beli 3 (Rp600)' },
+    { id: 'ad-5', index: 5, open: 600, high: 610, low: 440, close: 450, volume: 62000, label: 'Panic Selling' },
+    { id: 'ad-6', index: 6, open: 450, high: 460, low: 290, close: 300, volume: 78000, label: 'Margin Call' },
+    { id: 'ad-7', index: 7, open: 300, high: 310, low: 190, close: 200, volume: 92000, label: 'Ambles Rp200' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-downtrend-death',
+      x1Index: 0,
+      y1Price: 1040,
+      x2Index: 7.5,
+      y2Price: 220,
+      color: '#EF4444',
+      strokeWidth: 2.4,
+      lineStyle: 'solid',
+      label: 'Downtrend Parah (Pisau Jatuh Jangan Ditangkap)',
+      labelAlignment: 'start',
+      showArrow: true
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-avg-loss',
+      startIndex: 0,
+      endIndex: 7.5,
+      topPrice: 1000,
+      bottomPrice: 200,
+      label: 'Zona Spiral Kehancuran Modal: -72% (Rp50 Juta Jadi Rp14 Juta)',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.18,
+      boxType: 'supply_demand'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-buy1',
+      candleIndex: 0,
+      price: 1070,
+      text: 'Beli 1: Rp1.000 (100 Lot - Modal Rp10 Jt)',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-buy2',
+      candleIndex: 2,
+      price: 840,
+      text: 'Averaging Down 1: Rp800 (200 Lot - Tambah Rp16 Jt, Avg Rp866)',
+      style: 'pill',
+      bgColor: '#F59E0B',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-buy3',
+      candleIndex: 4,
+      price: 640,
+      text: 'Averaging Down 2: Rp600 (400 Lot - Tambah Rp24 Jt, Avg Rp714)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-wipeout',
+      candleIndex: 7,
+      price: 150,
+      text: 'Harga Rp200: Nilai Portofolio Ludes Rp36 Jt (-72%)!',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-avg-trap',
+      candleIndex: 9.5,
+      price: 650,
+      width: 175,
+      stepBadge: 'ANOMALY',
+      title: 'ILUSI AVERAGING DOWN',
+      lines: [
+        '• Menurunkan rata-rata beli di saham downtrend adalah racun modal.',
+        '• Setiap pembelian baru melipatgandakan bobot risiko portofolio.',
+        '• Trader pro disiplin cut loss 2%-3% alih-alih melawan arah pasar.'
+      ],
+      footerBadge: '✓ Never Average Down a Loser!',
+      color: '#EF4444'
+    }
+  ],
+  legends: [
+    { id: 'leg-ad-down', label: 'Garis Kejatuhan Downtrend', color: '#EF4444' },
+    { id: 'leg-ad-trap', label: 'Titik Averaging Down Beruntun', color: '#F59E0B' }
+  ]
+};
+
 export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
   "edianto-ong-01-pengenalan-technical-analysis": {
     "id": "art-eo-1",
@@ -944,7 +1812,9 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-7",
         "title": "6. Studi Kasus Konkret: Transaksi Saham Bank Central Asia (BBCA)",
-        "content": "Mari kita bedah skenario riil transaksi pada saham berkapitalisasi terbesar di Bursa Efek Indonesia, **BBCA**:\n\n```\nHarga\n  Rp10.500 |------------------------- Target Profit (Resistance Mayor) -> +7,14%\n           |                     /\n  Rp10.200 |                    /\n           |         /\\        /\n   Rp9.800 |--------+--\\------/------ Titik Beli / Entry (Rebound di Area Support)\n           |        |   \\    /\n   Rp9.500 |========+====\\==/======== Support Kuat (Titik Pantulan Masa Lalu)\n   Rp9.450 |------------------------- Stop Loss (Batas Toleransi Risiko) -> -3,57%\n```\n\n* **Situasi Pasar:**  \n  Saham BBCA sedang berada dalam fase tren naik jangka panjang (*primary uptrend*), namun mengalami koreksi sehat selama 2 minggu dari level Rp10.400 kembali mendekati area lantai support kuat di Rp9.500 - Rp9.600.\n* **Titik Masuk (Entry):**  \n  Pada grafik harian, muncul candle lilin hijau bertangkai bawah panjang (*Hammer*) di area Rp9.750 dengan konfirmasi lonjakan volume. Trader masuk posisi beli di harga **Rp9.800**.\n* **Proteksi Risiko (Stop Loss):**  \n  Level support kunci berada di Rp9.500. Trader memasang *Stop Loss* di level **Rp9.450** (sedikit di bawah support untuk mengantisipasi jarum palsu).\n  * *Risiko Kerugian per Lembar:* Rp9.800 - Rp9.450 = Rp350 per lembar (-3,57%).\n* **Target Keuntungan (Take Profit):**  \n  Target resistensi sebelumnya berada di kisaran puncak **Rp10.500**.\n  * *Potensi Keuntungan per Lembar:* Rp10.500 - Rp9.800 = Rp700 per lembar (+7,14%).\n* **Evaluasi Rasio:**  \n  Rasio *Risk to Reward* adalah **Rp350 : Rp700 = 1 : 2**.  \n  Ini adalah transaksi berprobabilitas unggul (*high probability trade*). Bahkan jika trader hanya memiliki tingkat akurasi 50%, portofolio secara matematis akan terus bertumbuh karena saat untung mendapat Rp2, saat rugi hanya kehilangan Rp1.\n\n---"
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_BBCA_STUDY_CHART,
+        "content": "Mari kita bedah skenario riil transaksi pada saham berkapitalisasi terbesar di Bursa Efek Indonesia, **BBCA**:\n\n* **Situasi Pasar:**  \n  Saham BBCA sedang berada dalam fase tren naik jangka panjang (*primary uptrend*), namun mengalami koreksi sehat selama 2 minggu dari level Rp10.400 kembali mendekati area lantai support kuat di Rp9.500 - Rp9.600.\n* **Titik Masuk (Entry):**  \n  Pada grafik harian, muncul candle lilin hijau bertangkai bawah panjang (*Hammer*) di area Rp9.750 dengan konfirmasi lonjakan volume. Trader masuk posisi beli di harga **Rp9.800**.\n* **Proteksi Risiko (Stop Loss):**  \n  Level support kunci berada di Rp9.500. Trader memasang *Stop Loss* di level **Rp9.450** (sedikit di bawah support untuk mengantisipasi jarum palsu).\n  * *Risiko Kerugian per Lembar:* Rp9.800 - Rp9.450 = Rp350 per lembar (-3,57%).\n* **Target Keuntungan (Take Profit):**  \n  Target resistensi sebelumnya berada di kisaran puncak **Rp10.500**.\n  * *Potensi Keuntungan per Lembar:* Rp10.500 - Rp9.800 = Rp700 per lembar (+7,14%).\n* **Evaluasi Rasio:**  \n  Rasio *Risk to Reward* adalah **Rp350 : Rp700 = 1 : 2**.  \n  Ini adalah transaksi berprobabilitas unggul (*high probability trade*). Bahkan jika trader hanya memiliki tingkat akurasi 50%, portofolio secara matematis akan terus bertumbuh karena saat untung mendapat Rp2, saat rugi hanya kehilangan Rp1.\n\n---"
       },
       {
         "id": "sec-8",
@@ -1025,7 +1895,9 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-8",
         "title": "7. Studi Kasus Konkret: Membaca Siklus 3 Fase Dow pada Saham BBRI",
-        "content": "Mari kita pelajari contoh riil pergerakan siklus pasar menurut Teori Dow pada saham **Bank Rakyat Indonesia (BBRI)**:\n\n```\nHarga\n Rp6.000 |                                       [FASE 3: DISTRIBUSI]\n         |                                       Smart Money menjual ke publik euforia\n Rp5.500 |                        /\\  /\\\n         |                       /  \\/  \\        <- Muncul berita fantastis di medsos\n Rp5.000 |                      /        \\\n         |       [FASE 2: PARTISIPASI PUBLIK]\n Rp4.500 |       Tren naik cepat, ritel mulai FOMO\n         |             /\\      /\n Rp4.000 |  ==========/==\\====/================= Resistance Akumulasi ditembus\n         | [FASE 1: AKUMULASI] \n Rp3.800 | Diam-diam dikumpulkan Institusi saat berita suram\n```\n\n* **Fase 1: Akumulasi (*Accumulation Phase*):**  \n  Ketika sentimen ekonomi makro sedang lesu dan pemberitaan media dipenuhi ketakutan, saham BBRI tertahan di area Rp3.700 - Rp3.900. Pelaku ritel takut membeli, namun grafik menunjukkan volume transaksi besar yang diserap diam-diam oleh investor institusi (*smart money*).\n* **Fase 2: Partisipasi Publik (*Public Participation Phase*):**  \n  Harga menembus level resistensi Rp4.000 dengan volume raksasa. Kinerja laba kuartalan mulai membaik. Analis sekuritas mulai menaikkan target harga. Masyarakat luas dan trader harian mulai berbondong-bondong membeli. Harga melesat kencang menuju Rp5.500.\n* **Fase 3: Distribusi (*Distribution Phase*):**  \n  Ketika saham BBRI menyentuh puncak rekor baru di Rp6.000, berita utama di televisi dan media sosial membicarakan betapa hebatnya prospek perbankan. Para pemula yang baru pertama kali membuka rekening saham berbondong-bondong membeli di harga Rp6.000 karena takut tertinggal (*FOMO*). Di saat inilah, institusi besar diam-diam melepas barang kepemilikan mereka kepada publik. Tak lama kemudian, tren berbalik menjadi *downtrend* tajam.\n\n---"
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_DOW_PHASES_BBRI_CHART,
+        "content": "Mari kita pelajari contoh riil pergerakan siklus pasar menurut Teori Dow pada saham **Bank Rakyat Indonesia (BBRI)**:\n\n* **Fase 1: Akumulasi (*Accumulation Phase*):**  \n  Ketika sentimen ekonomi makro sedang lesu dan pemberitaan media dipenuhi ketakutan, saham BBRI tertahan di area Rp3.700 - Rp3.900. Pelaku ritel takut membeli, namun grafik menunjukkan volume transaksi besar yang diserap diam-diam oleh investor institusi (*smart money*).\n* **Fase 2: Partisipasi Publik (*Public Participation Phase*):**  \n  Harga menembus level resistensi Rp4.000 dengan volume raksasa. Kinerja laba kuartalan mulai membaik. Analis sekuritas mulai menaikkan target harga. Masyarakat luas dan trader harian mulai berbondong-bondong membeli. Harga melesat kencang menuju Rp5.500.\n* **Fase 3: Distribusi (*Distribution Phase*):**  \n  Ketika saham BBRI menyentuh puncak rekor baru di Rp6.000, berita utama di televisi dan media sosial membicarakan betapa hebatnya prospek perbankan. Para pemula yang baru pertama kali membuka rekening saham berbondong-bondong membeli di harga Rp6.000 karena takut tertinggal (*FOMO*). Di saat inilah, institusi besar diam-diam melepas barang kepemilikan mereka kepada publik. Tak lama kemudian, tren berbalik menjadi *downtrend* tajam.\n\n---"
       },
       {
         "id": "sec-9",
@@ -1107,7 +1979,9 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-8",
         "title": "7. Studi Kasus Konkret: Membaca Sumbu Penolakan pada Komoditas Emas (XAUUSD)",
-        "content": "Mari kita amati pertarungan harga nyata pada pasar spot emas dunia (**XAUUSD**):\n\n```\nHarga (USD/oz)\n $2.350 |----------------------------- Target Profit (Resistance Kuat)\n        |                         /\n $2.320 |                        /  <- Candlestick Bullish Mengikuti Tren\n        |          /\\           /\n $2.290 |---------+--\\---------/------ Titik Beli (Konfirmasi Candle Berikutnya)\n        |         |   \\   |   /\n $2.270 |=========|====\\==|==/======== Level Support Kunci ($2.270)\n        |         |       +-- Candle Pinbar / Hammer\n $2.260 |---------|-------|----------- Jarum Terendah ($2.260) - Titik Stop Loss: $2.258\n```\n\n* **Situasi Awal:**  \n  Harga emas terkoreksi dari puncak $2.340 turun mendekati area angka bulat psikologis di sekitar $2.270.\n* **Pertarungan Intraday:**  \n  Pada sesi London, penjual menyerang agresif hingga harga emas menembus ke bawah lantai support menuju $2.260. Para trader pemula panik dan berbondong-bondong melakukan aksi jual rugi (*panic selling*).\n* **Munculnya Ekor Rejection (Hammer):**  \n  Tepat di level $2.260, institusi kakap memborong emas secara masif. Sebelum pasar New York ditutup, harga didorong meroket kembali dan ditutup di $2.285.  \n  Hasil akhir candle harian: sebuah lilin bertubuh kecil dengan **sumbu bawah sangat panjang (Hammer)**.\n* **Eksekusi Trading Plan:**  \n  * **Titik Beli (Entry):** Trader masuk di pembukaan candle berikutnya pada level **$2.290**.\n  * **Titik Pengaman (Stop Loss):** Dipasang di **$2.258** (2 dolar di bawah ekor jarum terendah). Risiko rugi = $32.\n  * **Target Keuntungan (Take Profit):** Level resistensi puncak di **$2.354**. Potensi keuntungan = $64.\n  * **Rasio Risk-to-Reward:** 1 : 2. Transaksi sukses menyentuh TP dalam 4 hari perdagangan.\n\n---"
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_XAUUSD_HAMMER_STUDY_CHART,
+        "content": "Mari kita amati pertarungan harga nyata pada pasar spot emas dunia (**XAUUSD**):\n\n* **Situasi Awal:**  \n  Harga emas terkoreksi dari puncak $2.340 turun mendekati area angka bulat psikologis di sekitar $2.270.\n* **Pertarungan Intraday:**  \n  Pada sesi London, penjual menyerang agresif hingga harga emas menembus ke bawah lantai support menuju $2.260. Para trader pemula panik dan berbondong-bondong melakukan aksi jual rugi (*panic selling*).\n* **Munculnya Ekor Rejection (Hammer):**  \n  Tepat di level $2.260, institusi kakap memborong emas secara masif. Sebelum pasar New York ditutup, harga didorong meroket kembali dan ditutup di $2.285.  \n  Hasil akhir candle harian: sebuah lilin bertubuh kecil dengan **sumbu bawah sangat panjang (Hammer)**.\n* **Eksekusi Trading Plan:**  \n  * **Titik Beli (Entry):** Trader masuk di pembukaan candle berikutnya pada level **$2.290**.\n  * **Titik Pengaman (Stop Loss):** Dipasang di **$2.258** (2 dolar di bawah ekor jarum terendah). Risiko rugi = $32.\n  * **Target Keuntungan (Take Profit):** Level resistensi puncak di **$2.354**. Potensi keuntungan = $64.\n  * **Rasio Risk-to-Reward:** 1 : 2. Transaksi sukses menyentuh TP dalam 4 hari perdagangan.\n\n---"
       },
       {
         "id": "sec-9",
@@ -1413,7 +2287,7 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
         "title": "4. Prinsip Role Reversal: Pertukaran Peran Support & Resistance",
         "illustrationMode": "custom_builder",
         "customChartConfig": EO_SUPPORT_RESISTANCE_ROLE_REVERSAL_CHART,
-        "content": "Hukum aksi harga yang paling fundamental menurut Edianto Ong adalah:\n> **Level teknikal tidak pernah mati setelah ditembus; perannya hanya tertukar 180 derajat.**\n\n```\n          SKENARIO ROLE REVERSAL: RESISTANCE MENJADI SUPPORT\n  \n  Harga\n    ^                 (Puncak Reli Baru)\n    |                       /\\\n    |                      /  \\     (Throwback / Retest)\n    |                     /    \\     /\\  <=== Titik Entri Berprobabilitas Tinggi!\n    |      (Breakout)    /      \\   /  \\      (Low Risk, High Reward)\n  ==|=======/====\\======/========\\_/====\\================== BEKAS RESISTANCE\n    |      /      \\    /                                    Kini Resmi Menjadi SUPPORT\n    |     /        \\  / \n    |    /          \\/  (Support Lama)\n    +--------------------------------------------------------> Waktu\n```\n\n### Mengapa Role Reversal Terjadi?\nSaat Resistance Rp 1.500 berhasil dijebol dengan volume masif:\n- Para pelaku pasar yang tadinya ragu kini menyadari bahwa pasokan barang di Rp 1.500 telah habis diserap oleh institusi (*smart money*).\n- Ketika harga mengalami koreksi teknikal (*throwback*) kembali ke Rp 1.500, para pembeli baru menganggap level tersebut sebagai harga murah yang aman. \n- Di sisi lain, para penjual yang tadinya menjual di Rp 1.500 berusaha membeli kembali barang mereka sebelum tertinggal lebih jauh.\n- Akibatnya, dinding atap Rp 1.500 berubah seketika menjadi lantai pelindung baru yang kokoh.\n\n---"
+        "content": "Hukum aksi harga yang paling fundamental menurut Edianto Ong adalah:\n> **Level teknikal tidak pernah mati setelah ditembus; perannya hanya tertukar 180 derajat.**\n\n### Mengapa Role Reversal Terjadi?\nSaat Resistance Rp 1.500 berhasil dijebol dengan volume masif:\n- Para pelaku pasar yang tadinya ragu kini menyadari bahwa pasokan barang di Rp 1.500 telah habis diserap oleh institusi (*smart money*).\n- Ketika harga mengalami koreksi teknikal (*throwback*) kembali ke Rp 1.500, para pembeli baru menganggap level tersebut sebagai harga murah yang aman. \n- Di sisi lain, para penjual yang tadinya menjual di Rp 1.500 berusaha membeli kembali barang mereka sebelum tertinggal lebih jauh.\n- Akibatnya, dinding atap Rp 1.500 berubah seketika menjadi lantai pelindung baru yang kokoh.\n\n---"
       },
       {
         "id": "sec-6",
@@ -1639,7 +2513,9 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-4",
         "title": "3. Anatomi Dua Jebakan Klasik: Bull Trap vs Bear Trap",
-        "content": "Edianto Ong membagi false breakout ke dalam dua skenario perang psikologis:\n\n```\n        BULL TRAP (Jebakan Pucuk Beli)               BEAR TRAP (Jebakan Dasar Jual)\n        \n        Harga                                        Harga\n          |         /\\ (Palsu! Ekor Penetrasi)         |\n  ========|========/==\\================= RESISTENSI    |====================================\n          |       /    \\                               |    \\          / (Palsu! Guyuran Sesaat)\n          |      /      \\                              |=====\\========/===================== SUPPORT\n          |     /        \\ (Anjlok Menghancurkan       |      \\      /\n          |    /          v Ritel yang Beli Pucuk)     |       \\    /  (Melesat Terbang Membakar\n          +------------------------------------        |        \\  /    Posisi Ritel yang Cutloss)\n                                                       |         \\/\n                                                       +------------------------------------\n```\n\n### A. Anatomi Bull Trap (Jebakan Banteng)\n1. **Fase Pancingan**: Saham berkonsolidasi di bawah resistance Rp 2.000 selama berminggu-minggu. Tiba-tiba di pertengahan sesi 1, harga melesat ke Rp 2.050.\n2. **Euforia Massa**: Berita saham di forum media sosial dipenuhi ajakan membeli (*\"Breakout kencang! Siap terbang ke Rp 3.000!\"*). Trader pemula berbondong-bondong memasang order HAKA (*Hajar Kanan*).\n3. **Penyergapan Institusi**: Institusi besar yang memiliki persediaan jutaan lot memanfaatkan lonjakan antrean beli ritel ini untuk menjual seluruh inventaris mereka tanpa membuat harga anjlok saat proses jualan (*distribusi terselubung*).\n4. **Kehancuran**: Menjelang penutupan sesi 2, seluruh pasokan beli ritel habis. Saham ditutup anjlok kembali di Rp 1.960. Candle harian membentuk jarum panjang (*Shooting Star / Upper Wick*). Keesokan harinya harga anjlok beruntun.\n\n### B. Anatomi Bear Trap (Jebakan Beruang)\n1. **Fase Teror**: Saham menguji support krusial Rp 1.000. Tiba-tiba harga diguyur turun ke Rp 960.\n2. **Kepanikan Massal**: Muncul narasi menakutkan tentang prospek emiten. Trader pemula panik dan buru-buru memasang order jual *Cut Loss* demi \"menyelamatkan sisa modal\".\n3. **Akumulasi Tersembunyi**: *Smart money* dengan tenang memasang jaring beli di harga Rp 960 - Rp 980 untuk menampung seluruh barang jualan panik ritel dengan harga obral diskon.\n4. **Pembalikan Arah**: Setelah barang ritel diserap habis, harga ditarik kencang kembali ke Rp 1.040 sebelum penutupan. Candle harian membentuk pola *Hammer / Pinbar*. Pemula hanya bisa meratapi saham yang baru saja mereka jual melesat naik tanpa mereka.\n\n---"
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_TRAPS_BULL_BEAR_CHART,
+        "content": "Edianto Ong membagi false breakout ke dalam dua skenario perang psikologis:\n\n### A. Anatomi Bull Trap (Jebakan Banteng)\n1. **Fase Pancingan**: Saham berkonsolidasi di bawah resistance Rp 2.000 selama berminggu-minggu. Tiba-tiba di pertengahan sesi 1, harga melesat ke Rp 2.050.\n2. **Euforia Massa**: Berita saham di forum media sosial dipenuhi ajakan membeli (*\"Breakout kencang! Siap terbang ke Rp 3.000!\"*). Trader pemula berbondong-bondong memasang order HAKA (*Hajar Kanan*).\n3. **Penyergapan Institusi**: Institusi besar yang memiliki persediaan jutaan lot memanfaatkan lonjakan antrean beli ritel ini untuk menjual seluruh inventaris mereka tanpa membuat harga anjlok saat proses jualan (*distribusi terselubung*).\n4. **Kehancuran**: Menjelang penutupan sesi 2, seluruh pasokan beli ritel habis. Saham ditutup anjlok kembali di Rp 1.960. Candle harian membentuk jarum panjang (*Shooting Star / Upper Wick*). Keesokan harinya harga anjlok beruntun.\n\n### B. Anatomi Bear Trap (Jebakan Beruang)\n1. **Fase Teror**: Saham menguji support krusial Rp 1.000. Tiba-tiba harga diguyur turun ke Rp 960.\n2. **Kepanikan Massal**: Muncul narasi menakutkan tentang prospek emiten. Trader pemula panik dan buru-buru memasang order jual *Cut Loss* demi \"menyelamatkan sisa modal\".\n3. **Akumulasi Tersembunyi**: *Smart money* dengan tenang memasang jaring beli di harga Rp 960 - Rp 980 untuk menampung seluruh barang jualan panik ritel dengan harga obral diskon.\n4. **Pembalikan Arah**: Setelah barang ritel diserap habis, harga ditarik kencang kembali ke Rp 1.040 sebelum penutupan. Candle harian membentuk pola *Hammer / Pinbar*. Pemula hanya bisa meratapi saham yang baru saja mereka jual melesat naik tanpa mereka.\n\n---"
       },
       {
         "id": "sec-5",
@@ -1803,7 +2679,9 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-6",
         "title": "5. Over-Extension: Penembusan Garis Channel (*Channel Breakout*)",
-        "content": "Apa yang terjadi jika harga justru meledak menembus garis channel atas pada *uptrend*?\n\n```\nIlustrasi Channel Breakout:\n                                          /\\  (Akselerasi Liar / Parabolik)\n                                         /  \\\nGaris Channel Atas --------------/------/----\\------------------------\n                                /      /\n                               /  /\\  /\n                              /  /  \\/\nGaris Tren Dasar ------------+--/-------------------------------------\n```\n\n1. **Akselerasi Tren (*Parabolic Advance*)**: Penembusan garis channel atas bukan berarti saluran turun, melainkan ledakan euforia luar biasa (*super bullish*). Tren mengalami percepatan drastis.\n2. **Kebutuhan Menggambar Saluran Baru**: Saluran lama sudah usang (*obsolete*). Trader harus menggambar channel baru dengan sudut kemiringan yang lebih curam.\n3. **Peringatan Klimaks Beli (*Exhaustion Move*)**: Penembusan garis channel atas jarang sekali bertahan lama secara sehat. Sering kali ini adalah manuver tarikan terakhir bandar (*blow-off top*) untuk memancing ritel FOMO sebelum pembalikan arah tajam terjadi.\n\n---"
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_CHANNEL_BREAKOUT_CHART,
+        "content": "Apa yang terjadi jika harga justru meledak menembus garis channel atas pada *uptrend*?\n\n1. **Akselerasi Tren (*Parabolic Advance*)**: Penembusan garis channel atas bukan berarti saluran turun, melainkan ledakan euforia luar biasa (*super bullish*). Tren mengalami percepatan drastis.\n2. **Kebutuhan Menggambar Saluran Baru**: Saluran lama sudah usang (*obsolete*). Trader harus menggambar channel baru dengan sudut kemiringan yang lebih curam.\n3. **Peringatan Klimaks Beli (*Exhaustion Move*)**: Penembusan garis channel atas jarang sekali bertahan lama secara sehat. Sering kali ini adalah manuver tarikan terakhir bandar (*blow-off top*) untuk memancing ritel FOMO sebelum pembalikan arah tajam terjadi.\n\n---"
       },
       {
         "id": "sec-7",
@@ -2957,7 +3835,9 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-4",
         "title": "3. Mengapa Indikator Teknikal Populer Selalu Bekerja? (Konsep Titik Schelling)",
-        "content": "Pertanyaan klasik yang sering diajukan oleh pemula:\n> *\"Apakah garis Moving Average 200 hari atau garis Fibonacci Retracement 61.8% memiliki rumus mistis dari alam semesta sehingga harga selalu berbalik arah tepat di titik itu?\"*\n\nJawaban tegas Edianto Ong: **Sama sekali tidak!**  \nSecara matematika dasar, Simple Moving Average 200 hanyalah penjumlahan harga penutupan selama 200 hari dibagi angka 200. Garis itu tidak memiliki nyawa intrinsik. Namun, indikator itu bekerja luar biasa efektif karena bertindak sebagai **Titik Fokus Schelling (*Schelling Focal Point*)** dalam teori permainan (*Game Theory*).\n\n### Konsep Titik Schelling:\nJika Anda dan seorang kawan lama diminta bertemu di kota Jakarta pada hari ini jam 12.00 siang, namun Anda berdua sama sekali tidak bisa berkomunikasi lewat telepon atau pesan, ke mana Anda akan pergi?  \nMayoritas orang akan memilih **Monas (Monumen Nasional)** tepat di depan pintu cawan jam 12.00. Mengapa? Karena Monas adalah titik fokus yang paling menonjol dan disepakati secara alami tanpa perlu bicara.\n\nDi bursa saham:\n1. **Titik Konsensus Institusional:**\n   Bank investasi dunia (seperti JP Morgan, Goldman Sachs) dan manajer reksa dana besar menjadikan MA 200 harian (*200-day SMA*) sebagai batas resmi antara tren *bullish* sehat dan tren *bearish* berbahaya.\n2. **Pemrograman Algoritma Robot & HFT (*High-Frequency Trading*):**\n   Ratusan mesin perdagangan otomatis diprogram dengan logika matematis yang sama: *Buy Limit* di dekat MA 200 atau *Breakout Buy* di atas Resistance horizontal.\n3. **Penyusutan Pasokan Jual (*Supply Drying Up*):**\n   Ketika harga mendekati garis support yang diakui semua orang, para pemilik saham menolak menjual murah karena mereka tahu pantulan segera tiba. Pada saat yang sama, pembeli baru membanjiri antrean *bid*. Karena penawaran jual kering sementara permintaan beli melimpah, harga tidak punya pilihan lain selain **melonjak naik**!\n\n```\n       Visualisasi Pantulan Self-Fulfilling Prophecy pada Support MA 200\n\n  Harga\n    ^\n    |             *     *\n    |            * *   * *\n    |           *   * *   *\n    |----------*-----*-----*-------------------- MA 200 (Titik Konsensus Bersama)\n    |         ^     ^     ^\n    |         |     |     |\n    |       Order Beli Kolektif Muncul Karena Jutaan Trader Melihat Garis Yang Sama!\n    +--------------------------------------------> Waktu\n```\n\n---"
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_MA200_REBOUND_SCHELLING_CHART,
+        "content": "Pertanyaan klasik yang sering diajukan oleh pemula:\n> *\"Apakah garis Moving Average 200 hari atau garis Fibonacci Retracement 61.8% memiliki rumus mistis dari alam semesta sehingga harga selalu berbalik arah tepat di titik itu?\"*\n\nJawaban tegas Edianto Ong: **Sama sekali tidak!**  \nSecara matematika dasar, Simple Moving Average 200 hanyalah penjumlahan harga penutupan selama 200 hari dibagi angka 200. Garis itu tidak memiliki nyawa intrinsik. Namun, indikator itu bekerja luar biasa efektif karena bertindak sebagai **Titik Fokus Schelling (*Schelling Focal Point*)** dalam teori permainan (*Game Theory*).\n\n### Konsep Titik Schelling:\nJika Anda dan seorang kawan lama diminta bertemu di kota Jakarta pada hari ini jam 12.00 siang, namun Anda berdua sama sekali tidak bisa berkomunikasi lewat telepon atau pesan, ke mana Anda akan pergi?  \nMayoritas orang akan memilih **Monas (Monumen Nasional)** tepat di depan pintu cawan jam 12.00. Mengapa? Karena Monas adalah titik fokus yang paling menonjol dan disepakati secara alami tanpa perlu bicara.\n\nDi bursa saham:\n1. **Titik Konsensus Institusional:**\n   Bank investasi dunia (seperti JP Morgan, Goldman Sachs) dan manajer reksa dana besar menjadikan MA 200 harian (*200-day SMA*) sebagai batas resmi antara tren *bullish* sehat dan tren *bearish* berbahaya.\n2. **Pemrograman Algoritma Robot & HFT (*High-Frequency Trading*):**\n   Ratusan mesin perdagangan otomatis diprogram dengan logika matematis yang sama: *Buy Limit* di dekat MA 200 atau *Breakout Buy* di atas Resistance horizontal.\n3. **Penyusutan Pasokan Jual (*Supply Drying Up*):**\n   Ketika harga mendekati garis support yang diakui semua orang, para pemilik saham menolak menjual murah karena mereka tahu pantulan segera tiba. Pada saat yang sama, pembeli baru membanjiri antrean *bid*. Karena penawaran jual kering sementara permintaan beli melimpah, harga tidak punya pilihan lain selain **melonjak naik**!\n\n---"
       },
       {
         "id": "sec-5",
@@ -3029,7 +3909,9 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-4",
         "title": "3. Empat Anatomi Jebakan Bunuh Diri Finansial",
-        "content": "Edianto Ong mengupas tuntas empat tahapan proses patologis yang menjebak trader dalam spiral kehancuran:\n\n### A. Ego yang Menolak Salah (*Refusal to Admit Mistakes*)\nKetika harga menembus level Stop Loss yang telah direncanakan (misalnya batas toleransi risiko 5%), trader pemula mengalami pergulatan batin (*cognitive dissonance*). Alih-alih menekan tombol jual, mereka mulai mencari-cari pembenaran palsu:\n* Membuka grup obrolan saham untuk mencari orang lain yang juga sedang menyangkut agar merasa ada kawan senasib (*confirmation bias*).\n* Menghibur diri dengan ungkapan klise paling menyesatkan di pasar saham:  \n  > *\"Selama belum ditekan tombol jual, saya belum rugi (*paper loss*). Nanti juga harganya pasti balik lagi!\"*\n* **Realitas Brutal:** Kerugian di portofolio adalah kenyataan finansial yang nyata. Nilai daya beli uang Anda sudah berkurang seketika. Menolak melihat layar tidak akan membuat harga saham berbalik naik.\n\n### B. Bahaya Mematikan *Averaging Down* pada Tren Turun (*Downtrend*)\nSetelah harga saham turun lebih dalam (misalnya minus 15%), godaan paling mematikan muncul: **Averaging Down** (membeli lebih banyak lot saham di harga yang lebih murah dengan maksud menurunkan harga beli rata-rata modal).\n\n```\n         Ilusi Fatal Averaging Down pada Saham Downtrend\n\n  Harga\n    ^\n    |  Beli Awal (Rp1.000) -> 100 Lot (Modal Rp10 Juta)\n    |      \\\n    |       \\  Beli Lagi (Rp800) -> 200 Lot (Modal Tambah Rp16 Juta, Rata-rata Rp866)\n    |        \\\n    |         \\  Beli Lagi (Rp600) -> 400 Lot (Modal Tambah Rp24 Juta, Rata-rata Rp714)\n    |          \\\n    |           \\  Harga Ambles ke Rp200 -> Total Modal Rp50 Juta Sekarang Tinggal Rp14 Juta!\n    |            \\  (Kerugian Menjadi Rp36 Juta / -72% dari Portofolio Total!)\n    +------------------------------------------------------------> Waktu\n```\n\nEdianto Ong menggarisbawahi peringatan keras ini:\n> *\"Averaging down pada saham yang berada dalam siklus Downtrend struktural adalah tindakan menyiram bensin ke kobaran api. Anda sedang melipatgandakan ukuran taruhan Anda pada sebuah posisi yang secara nyata telah terbukti salah!\"*\n\n### C. Sindrom \"Investor Terpaksa\" (*The Reluctant Investor Syndrome*)\nKetika kerugian telah membengkak melampaui -40% hingga -70%, kapasitas rasional trader telah lumpuh (*emotional numbness*). Pada fase inilah terjadi transformasi identitas yang tragis:\n* Awalnya membeli saham lapis tiga (*penny stocks*) untuk trading cepat 3 hari (*scalping / swing*).\n* Begitu harga anjlok parah, sang trader tiba-tiba bersabda: *\"Saya sekarang berubah menjadi investor fundamental jangka panjang. Saham ini prospeknya bagus untuk tabungan anak cucu nanti.\"*\n* Modal kerja terikat mati (*capital lock-up*), kehilangan peluang emas (*opportunity cost*) untuk membeli saham-saham lain yang sedang *uptrend* perkasa, dan energi batin terkuras habis setiap hari karena rasa sesak melihat porto merah padam.\n\n### D. Perdagangan Balas Dendam (*Revenge Trading*)\nKetika penderitaan mental mencapai titik jenuh, trader akhirnya menyerah dan menjual seluruh sahamnya dalam kondisi panik (*capitulation selling*) tepat di titik terendah pasar (*market bottom*).\n\nNamun alih-alih beristirahat dan menenangkan pikiran, amarah membakar akal sehat. Muncul dendam membara untuk \"mengambil kembali uang saya dari bursa hari ini juga\":\n* Membeli saham-saham gorengan yang bergerak liar tanpa analisa apa pun.\n* Menggunakan fasilitas pinjaman broker (*margin trading*) secara maksimal (2x s/d 3x limit portofolio).\n* Hasil akhirnya sudah pasti: terkena *Margin Call*, *Forced Sell* oleh pihak sekuritas pada penutupan sesi bursa, dan rekening modal ludes tak bersisa.\n\n---"
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_AVERAGING_DOWN_TRAP_CHART,
+        "content": "Edianto Ong mengupas tuntas empat tahapan proses patologis yang menjebak trader dalam spiral kehancuran:\n\n### A. Ego yang Menolak Salah (*Refusal to Admit Mistakes*)\nKetika harga menembus level Stop Loss yang telah direncanakan (misalnya batas toleransi risiko 5%), trader pemula mengalami pergulatan batin (*cognitive dissonance*). Alih-alih menekan tombol jual, mereka mulai mencari-cari pembenaran palsu:\n* Membuka grup obrolan saham untuk mencari orang lain yang juga sedang menyangkut agar merasa ada kawan senasib (*confirmation bias*).\n* Menghibur diri dengan ungkapan klise paling menyesatkan di pasar saham:  \n  > *\"Selama belum ditekan tombol jual, saya belum rugi (*paper loss*). Nanti juga harganya pasti balik lagi!\"*\n* **Realitas Brutal:** Kerugian di portofolio adalah kenyataan finansial yang nyata. Nilai daya beli uang Anda sudah berkurang seketika. Menolak melihat layar tidak akan membuat harga saham berbalik naik.\n\n### B. Bahaya Mematikan *Averaging Down* pada Tren Turun (*Downtrend*)\nSetelah harga saham turun lebih dalam (misalnya minus 15%), godaan paling mematikan muncul: **Averaging Down** (membeli lebih banyak lot saham di harga yang lebih murah dengan maksud menurunkan harga beli rata-rata modal).\n\nEdianto Ong menggarisbawahi peringatan keras ini:\n> *\"Averaging down pada saham yang berada dalam siklus Downtrend struktural adalah tindakan menyiram bensin ke kobaran api. Anda sedang melipatgandakan ukuran taruhan Anda pada sebuah posisi yang secara nyata telah terbukti salah!\"*\n\n### C. Sindrom \"Investor Terpaksa\" (*The Reluctant Investor Syndrome*)\nKetika kerugian telah membengkak melampaui -40% hingga -70%, kapasitas rasional trader telah lumpuh (*emotional numbness*). Pada fase inilah terjadi transformasi identitas yang tragis:\n* Awalnya membeli saham lapis tiga (*penny stocks*) untuk trading cepat 3 hari (*scalping / swing*).\n* Begitu harga anjlok parah, sang trader tiba-tiba bersabda: *\"Saya sekarang berubah menjadi investor fundamental jangka panjang. Saham ini prospeknya bagus untuk tabungan anak cucu nanti.\"*\n* Modal kerja terikat mati (*capital lock-up*), kehilangan peluang emas (*opportunity cost*) untuk membeli saham-saham lain yang sedang *uptrend* perkasa, dan energi batin terkuras habis setiap hari karena rasa sesak melihat porto merah padam.\n\n### D. Perdagangan Balas Dendam (*Revenge Trading*)\nKetika penderitaan mental mencapai titik jenuh, trader akhirnya menyerah dan menjual seluruh sahamnya dalam kondisi panik (*capitulation selling*) tepat di titik terendah pasar (*market bottom*).\n\nNamun alih-alih beristirahat dan menenangkan pikiran, amarah membakar akal sehat. Muncul dendam membara untuk \"mengambil kembali uang saya dari bursa hari ini juga\":\n* Membeli saham-saham gorengan yang bergerak liar tanpa analisa apa pun.\n* Menggunakan fasilitas pinjaman broker (*margin trading*) secara maksimal (2x s/d 3x limit portofolio).\n* Hasil akhirnya sudah pasti: terkena *Margin Call*, *Forced Sell* oleh pihak sekuritas pada penutupan sesi bursa, dan rekening modal ludes tak bersisa.\n\n---"
       },
       {
         "id": "sec-5",

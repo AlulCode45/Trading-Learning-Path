@@ -469,8 +469,8 @@ export const WYCKOFF_VSA_EFFORT_RESULT_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-vsa-logic',
-      candleIndex: 7.5,
-      price: 122,
+      candleIndex: 6.8,
+      price: 125,
       width: 175,
       stepBadge: 'VSA',
       title: 'HUKUM EFFORT VS RESULT',

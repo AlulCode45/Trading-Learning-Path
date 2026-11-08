@@ -307,7 +307,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-trap',
               candleIndex: 2,
-              price: 65700,
+              price: 64100,
               text: 'Funding Rate +0.08% (Greed Ekstrem)',
               style: 'pill',
               bgColor: '#EF4444',
@@ -335,8 +335,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-1',
-              candleIndex: 1,
-              price: 67300,
+              candleIndex: 0.6,
+              price: 67600,
               width: 175,
               stepBadge: '1',
               title: 'JEBAKAN LIQUIDITY',
@@ -349,8 +349,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             },
             {
               id: 'card-2',
-              candleIndex: 7,
-              price: 63600,
+              candleIndex: 7.2,
+              price: 63800,
               width: 175,
               stepBadge: '2',
               title: 'EKSEKUSI PEMBUNUHAN',
@@ -703,8 +703,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-judas',
-              candleIndex: 2,
-              price: 152,
+              candleIndex: 0.5,
+              price: 159,
               width: 175,
               stepBadge: '⚡',
               title: 'JUDAS SWING TRIGGER',
@@ -887,8 +887,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-bos-rule',
-              candleIndex: 1,
-              price: 3620,
+              candleIndex: 0.5,
+              price: 3680,
               width: 175,
               stepBadge: '✓',
               title: 'ATURAN BODY CLOSE BOS',
@@ -1074,8 +1074,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-choch-step',
-              candleIndex: 7,
-              price: 67800,
+              candleIndex: 7.5,
+              price: 68600,
               width: 175,
               stepBadge: '⚡',
               title: '3 SYARAT MUTLAK CHOCH',
@@ -1294,7 +1294,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'card-ob-criteria',
               candleIndex: 4,
-              price: 66800,
+              price: 67300,
               width: 175,
               stepBadge: '⭐',
               title: 'ANATOMI VALID OB',

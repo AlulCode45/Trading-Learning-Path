@@ -81,7 +81,7 @@ const CANDLESTICK_ANATOMY_CHART: CustomChartConfig = {
     {
       id: 'bdg-close-valid',
       candleIndex: 4,
-      price: 108,
+      price: 104,
       text: 'Bearish Expansion Confirmed',
       style: 'pill',
       bgColor: '#F43F5E',
@@ -91,7 +91,7 @@ const CANDLESTICK_ANATOMY_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-candle-mechanics',
-      candleIndex: 4.8,
+      candleIndex: 6.2,
       price: 132,
       stepBadge: '1',
       title: 'ANATOMI REJEKSI LELANG',
@@ -217,8 +217,8 @@ const VALID_SWING_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-swing-rule',
-      candleIndex: 0.8,
-      price: 135,
+      candleIndex: 0.5,
+      price: 145,
       stepBadge: '2',
       title: 'ATURAN 3-CANDLE OBJEKTIF',
       lines: [
@@ -441,8 +441,8 @@ const SUPPLY_DEMAND_FRESH_MITIGATED_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-ob-freshness',
-      candleIndex: 7.2,
-      price: 134,
+      candleIndex: 8.5,
+      price: 136,
       stepBadge: '4',
       title: 'EVALUASI KUALITAS ORDER BLOCK',
       lines: [
@@ -560,8 +560,8 @@ const INDUCEMENT_FALSE_BREAKOUT_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-sweep-phases',
-      candleIndex: 6.8,
-      price: 124,
+      candleIndex: 7.5,
+      price: 126,
       stepBadge: '5',
       title: 'MEKANIKA FALSE BREAKOUT',
       lines: [
