@@ -36,18 +36,23 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
 
   const hasLegend = legends.length > 0;
   const legendHeight = hasLegend ? 26 : 0;
-  const totalHeight = 440;
+  const totalHeight = 460;
   const volumeHeight = showVolume ? 55 : 0;
-  const padding = { top: 35, right: 80, bottom: 35 + volumeHeight + legendHeight, left: 40 };
+  const padding = { top: 40, right: 80, bottom: 35 + volumeHeight + legendHeight, left: 45 };
 
   const maxBarIndex = useMemo(() => {
     let maxIdx = Math.max(10, candles.length);
     polylines.forEach(p => p.points.forEach(pt => { if (pt.index + 2 > maxIdx) maxIdx = pt.index + 2; }));
+    boxes.forEach(b => { if (b.endIndex + 2 > maxIdx) maxIdx = b.endIndex + 2; });
+    positions.forEach(pos => { if (pos.endIndex + 2 > maxIdx) maxIdx = pos.endIndex + 2; });
+    trendlines.forEach(tl => { if (Math.max(tl.x1Index, tl.x2Index) + 2 > maxIdx) maxIdx = Math.max(tl.x1Index, tl.x2Index) + 2; });
+    arrows.forEach(arr => { if (Math.max(arr.startIndex, arr.endIndex) + 2 > maxIdx) maxIdx = Math.max(arr.startIndex, arr.endIndex) + 2; });
+    badges.forEach(bg => { if (bg.candleIndex + 2 > maxIdx) maxIdx = bg.candleIndex + 2; });
     infoCards.forEach(c => { if (c.candleIndex + 4 > maxIdx) maxIdx = c.candleIndex + 4; });
     return maxIdx;
-  }, [candles.length, polylines, infoCards]);
+  }, [candles.length, polylines, boxes, positions, trendlines, arrows, badges, infoCards]);
 
-  const width = Math.max(580, padding.left + maxBarIndex * candleStep + padding.right + 30);
+  const width = Math.max(620, padding.left + maxBarIndex * candleStep + padding.right + 30);
 
   const { minPrice, maxPrice } = useMemo(() => {
     let min = Infinity;
@@ -66,13 +71,35 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
       if (b.bottomPrice < min) min = b.bottomPrice;
       if (b.topPrice > max) max = b.topPrice;
     }
+    for (const pos of positions) {
+      if (pos.stopPrice < min) min = pos.stopPrice;
+      if (pos.targetPrice < min) min = pos.targetPrice;
+      if (pos.stopPrice > max) max = pos.stopPrice;
+      if (pos.targetPrice > max) max = pos.targetPrice;
+      if (pos.entryPrice < min) min = pos.entryPrice;
+      if (pos.entryPrice > max) max = pos.entryPrice;
+    }
+    for (const tl of trendlines) {
+      if (tl.y1Price < min) min = tl.y1Price;
+      if (tl.y2Price < min) min = tl.y2Price;
+      if (tl.y1Price > max) max = tl.y1Price;
+      if (tl.y2Price > max) max = tl.y2Price;
+    }
+    for (const bg of badges) {
+      if (bg.price < min) min = bg.price;
+      if (bg.price > max) max = bg.price;
+    }
+    for (const card of infoCards) {
+      if (card.price < min) min = card.price;
+      if (card.price > max) max = card.price;
+    }
     if (!isFinite(min) || !isFinite(max)) return { minPrice: 60, maxPrice: 180 };
     const range = Math.max(20, max - min);
     return {
-      minPrice: Math.floor(min - range * 0.16),
-      maxPrice: Math.ceil(max + range * 0.16)
+      minPrice: Math.floor(min - range * 0.20),
+      maxPrice: Math.ceil(max + range * 0.22)
     };
-  }, [candles, polylines, boxes]);
+  }, [candles, polylines, boxes, positions, trendlines, badges, infoCards]);
 
   const maxVolume = useMemo(() => {
     if (candles.length === 0) return 1000;
@@ -588,8 +615,8 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
 
         {/* Multi-Line Info Cards */}
         {infoCards.map((card) => {
-          const x = indexToX(card.candleIndex);
-          const y = priceToY(card.price);
+          const rawX = indexToX(card.candleIndex);
+          const rawY = priceToY(card.price);
           const cardW = card.width || 155;
           const lines = card.lines || [];
           const hasFooter = Boolean(card.footerBadge);
@@ -599,9 +626,15 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
           const bgOp = card.bgOpacity ?? 0.14;
           const bodyTextCol = card.textColor || (isDarkMode ? '#E2E8F0' : '#1E293B');
 
+          // Boundary clamping to prevent info card overflowing SVG viewport edges
+          const x = Math.max(padding.left + cardW / 2 + 5, Math.min(width - padding.right - cardW / 2 - 5, rawX));
+          const y = Math.max(padding.top + 5, Math.min(totalHeight - padding.bottom - cardH - 10, rawY));
+
           return (
             <g key={card.id}>
-              <rect x={x - cardW / 2} y={y} width={cardW} height={cardH} fill={isDarkMode ? '#0B1120' : '#FFFFFF'} fillOpacity={0.92} rx="6" />
+              {/* Drop shadow / backplate for anti-clashing */}
+              <rect x={x - cardW / 2 + 2} y={y + 2} width={cardW} height={cardH} fill="#000000" fillOpacity={isDarkMode ? 0.45 : 0.08} rx="6" />
+              <rect x={x - cardW / 2} y={y} width={cardW} height={cardH} fill={isDarkMode ? '#0B1120' : '#FFFFFF'} fillOpacity={0.96} rx="6" />
               <rect x={x - cardW / 2} y={y} width={cardW} height={cardH} fill={bgCol} fillOpacity={bgOp} stroke={accent} strokeWidth="1.5" rx="6" />
               {card.stepBadge ? (
                 <>
@@ -654,8 +687,8 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
 
         {/* Badges */}
         {badges.map((badge) => {
-          const x = indexToX(badge.candleIndex);
-          const y = priceToY(badge.price);
+          const rawX = indexToX(badge.candleIndex);
+          const rawY = priceToY(badge.price);
           const fontSize = badge.fontSize || 9;
           const bgColor = badge.bgColor || badge.color || '#FACC15';
           const bgOpacity = badge.style === 'transparent' ? 0 : (badge.bgOpacity ?? (badge.style === 'outline' ? 0.12 : 1));
@@ -663,11 +696,25 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
           const borderColor = badge.borderColor || (badge.style === 'outline' ? bgColor : '#000000');
           const borderWidth = badge.borderWidth ?? (badge.style === 'transparent' ? 0 : 1);
           const rx = badge.style === 'pill' ? 12 : 4;
-          const badgeW = Math.max(40, (badge.text?.length || 1) * (fontSize * 0.65) + 14);
-          const badgeH = Math.max(19, fontSize + 10);
+          const badgeW = Math.max(42, (badge.text?.length || 1) * (fontSize * 0.65) + 16);
+          const badgeH = Math.max(20, fontSize + 10);
+
+          // Keep badge safely inside SVG viewport
+          const x = Math.max(padding.left + badgeW / 2 + 2, Math.min(width - padding.right - badgeW / 2 - 2, rawX));
+          const y = Math.max(padding.top + badgeH / 2 + 2, Math.min(totalHeight - padding.bottom - badgeH / 2 - 4, rawY));
 
           return (
             <g key={badge.id}>
+              {/* Subtle backplate pill to prevent text bleeding through candle lines */}
+              <rect
+                x={x - badgeW / 2 - 1}
+                y={y - badgeH / 2 - 1}
+                width={badgeW + 2}
+                height={badgeH + 2}
+                fill={isDarkMode ? '#090D16' : '#FFFFFF'}
+                fillOpacity={0.9}
+                rx={rx + 1}
+              />
               {badge.style === 'callout' && (
                 <polygon
                   points={`${x - 4},${y + badgeH / 2 - 1} ${x + 4},${y + badgeH / 2 - 1} ${x},${y + badgeH / 2 + 5}`}

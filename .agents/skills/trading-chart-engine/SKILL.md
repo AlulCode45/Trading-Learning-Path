@@ -3,132 +3,175 @@ name: trading-chart-engine
 description: Design, generate, and validate rich educational trading charts using the app's native illustration engines (Custom SVG Chart Builder and Lightweight Charts). Activate whenever creating or updating educational articles, roadmap nodes, or technical analysis guides that need visual candlestick charts, market structure annotations (BOS/CHoCH), Order Blocks, FVGs, Fibonacci OTE, Liquidity Pools, or Long/Short risk-reward positions.
 ---
 
-# Trading Chart Engine Skill
+# Trading Chart Engine Skill & Layout Anti-Clashing Rules
 
-Skill ini memandu AI untuk menghasilkan konfigurasi ilustrasi chart visual yang presisi, mendalam, dan langsung dapat dirender oleh sistem web **TraderLearning-Path**.
+Skill ini memandu AI untuk menghasilkan konfigurasi ilustrasi chart visual yang **rapi, presisi, bernafas lega (spacious), dan bebas dari tumpukan elemen (zero overlapping)** menggunakan sistem web **TraderLearning-Path**.
 
 Terdapat dua mode engine utama dalam aplikasi:
-1. **`custom_builder` (Custom SVG Chart Builder - DIREKOMENDASIKAN UNTUK EDUKASI)**:
-   - Digunakan untuk penjelasan konsep presisi, skematik, dan pola anatomi: BOS, CHoCH, Order Block, Fair Value Gap (FVG), Fibonacci OTE, Long/Short Position Box, Polyline Zigzag / Smooth Wave, Info Cards, dan Text Badges.
+1. **`custom_builder` (Custom SVG Chart Builder - UTAMA UNTUK ANATOMI & KONSEP)**:
+   - Digunakan untuk visualisasi konsep presisi: Candlestick, BOS/CHoCH, Order Block, FVG, Fibonacci OTE, Long/Short Box, Polyline Zigzag / Smooth Wave, Info Cards, dan Badges.
    - Didukung oleh [`CustomChartRenderer.tsx`](file:///Users/macbookair/Project/TraderLearning-Path/src/components/illustration/CustomChartRenderer.tsx).
 2. **`interactive_chart` (TradingView Lightweight Charts v5)**:
-   - Digunakan untuk chart candlestick interaktif berbasis data deret waktu (M5, H1, D1) dengan indikator volume, garis level harga horizontal, dan markers.
+   - Digunakan untuk simulasi deret waktu pasar riil (M5, H1, D1) dengan indikator volume, garis level harga horizontal, dan markers.
    - Didukung oleh [`InteractiveTradingChart.tsx`](file:///Users/macbookair/Project/TraderLearning-Path/src/components/illustration/InteractiveTradingChart.tsx).
 
 ---
 
-## 1. Custom SVG Chart Builder (`custom_builder`)
+## 1. Aturan Emas Anti-Tumpukan Elemen (Anti-Clashing & Breathing Space)
+
+Seringkali elemen chart bertumpuk dan berantakan jika koordinat ditaruh sembarangan. **Patuhi 6 aturan layout berikut**:
+
+### A. Alokasi Koordinat Vertikal (Price Staggering)
+- **Jangan menaruh `Badge`, `Trendline Label`, dan `InfoCard` pada koordinat harga (`price`) yang sama di candle index yang berdekatan!**
+- Terapkan sistem zonasi vertikal 3 lapis:
+  1. **Lantai Bawah (Harga Terendah / Di Bawah Candle Low)**:
+     - Khusus untuk anotasi Support, Demand Zone, SSL Sweep, atau Stop Loss Long.
+     - Contoh: Jika candle low ada di $100, letakkan badge sweep di $96 atau $95.
+  2. **Lantai Tengah (Area Body Candle)**:
+     - Khusus untuk garis ekuilibrium (50% MT / 50% CE) dan garis Entry position.
+  3. **Lantai Atas (Harga Tertinggi / Di Atas Candle High)**:
+     - Khusus untuk penanda Resistance, Supply Zone, BSL Sweep, atau Target Take Profit.
+     - Letakkan `infoCards` penjelasan fase pada ruang lapang di bagian atas atau samping kanan.
+
+### B. Posisi Info Cards yang Bernapas
+- **Info Card memiliki lebar 150-180px dan tinggi 60-110px.**
+- **Hindari menaruh `infoCard` tepat di atas lilin yang sedang padat dengan garis BOS/Trendline.**
+- Letakkan `infoCard` di bar awal (misal index 1-3) jika aksi breakout terjadi di bar kanan (index 5-8), atau letakkan di bar kosong setelah rangkaian candle (misal `candleIndex: lastIndex + 1`).
+- Berikan harga `price` yang berada di puncak atau dasar chart dengan selisih minimal 10-15% dari candle terdekat.
+
+### C. Jarak Indeks Horizontal (Candle Spacing)
+- Jangan menumpuk lebih dari 1 `badge` pada satu candle index.
+- Jika ada 2 event berdekatan (misal Candle 3 adalah Sweep dan Candle 4 adalah CHoCH), pasang badge pertama di Candle 3 (di bawah low) dan badge kedua di Candle 4 (di atas high), bukan pada sisi yang sama.
+- Berikan `candleSpacing: 'normal'` (42px) atau `'wide'` (54px) jika chart memuat banyak anotasi detail.
+
+### D. Rentang Box & Label Alignment
+- Pada `boxes` (Order Block / FVG):
+  - Atur `labelPosition`:
+    - Gunakan `'top-left'` untuk Bullish Order Block / Demand.
+    - Gunakan `'bottom-left'` atau `'top-right'` untuk Bearish Order Block / Supply.
+  - Jangan biarkan label box menabrak label trendline BOS.
+
+### E. Polylines & Trendlines
+- Polylines (`zigzag`) menghubungkan titik-titik ekstrim (Wick High ke Wick Low). Pastikan koordinat `price` sama persis dengan `high` atau `low` candle yang bersangkutan.
+- Pada `trendlines`, gunakan `labelAlignment: 'center'` jika garis mendatar panjang (misal penembusan BOS), atau `labelAlignment: 'end'` jika garis miring tren.
+
+---
+
+## 2. Struktur Konfigurasi `CustomChartConfig` Lengkap
 
 Model data didefinisikan pada [`src/types/chartBuilderTypes.ts`](file:///Users/macbookair/Project/TraderLearning-Path/src/types/chartBuilderTypes.ts).
-
-### Struktur Konfigurasi `CustomChartConfig`
 
 ```typescript
 import { CustomChartConfig } from '../../types/chartBuilderTypes';
 
-const myCustomChart: CustomChartConfig = {
+const myCleanChart: CustomChartConfig = {
   candles: [
     // Indeks urut dari 0 ke N
-    { id: 'c0', index: 0, open: 100, high: 105, low: 98, close: 104, volume: 1200, label: 'Origin' },
-    { id: 'c1', index: 1, open: 104, high: 110, low: 103, close: 108, volume: 1800 },
-    { id: 'c2', index: 2, open: 108, high: 115, low: 107, close: 114, volume: 2400, label: 'BOS' },
+    { id: 'c0', index: 0, open: 100, high: 104, low: 98, close: 103, volume: 1200, label: 'Konsolidasi' },
+    { id: 'c1', index: 1, open: 103, high: 105, low: 95, close: 99, volume: 2800, label: 'Judas Sweep' },
+    { id: 'c2', index: 2, open: 99, high: 110, low: 98, close: 108, volume: 3900, label: 'Displacement' },
+    { id: 'c3', index: 3, open: 108, high: 116, low: 107, close: 115, volume: 3400, label: 'BOS High' },
+    { id: 'c4', index: 4, open: 115, high: 116, low: 106, close: 107, volume: 1400, label: 'Pullback Retest' },
+    { id: 'c5', index: 5, open: 107, high: 124, low: 106, close: 122, volume: 4200, label: 'Ekspansi TP' },
   ],
   boxes: [
-    // Area Order Block, FVG, Supply/Demand, atau Liquidity
+    // Box Order Block di area diskon
     {
-      id: 'ob-1',
+      id: 'ob-demand',
       boxType: 'order_block',
-      startIndex: 0,
-      endIndex: 4,
-      topPrice: 104,
-      bottomPrice: 100,
+      startIndex: 1,
+      endIndex: 5,
+      topPrice: 105,
+      bottomPrice: 97,
       label: 'Bullish Order Block (OB)',
       labelPosition: 'top-left',
-      color: '#10B981', // Hijau untuk Demand/Bullish
+      color: '#10B981',
       opacity: 0.18,
       showMidLine: true,
       midLineLabel: '50% MT'
     },
+    // FVG Imbalance di atas OB
     {
-      id: 'fvg-1',
+      id: 'fvg-gap',
       boxType: 'fvg',
-      startIndex: 1,
-      endIndex: 3,
+      startIndex: 2,
+      endIndex: 4,
       topPrice: 107,
       bottomPrice: 105,
       label: 'Fair Value Gap (FVG)',
-      color: '#38BDF8', // Biru/Cyan untuk FVG
-      opacity: 0.2
+      color: '#38BDF8',
+      opacity: 0.22
     }
   ],
   trendlines: [
-    // Garis struktur BOS / CHoCH / Trendline
+    // Garis BOS horizontal di puncak C0-C1
     {
       id: 'tl-bos',
       x1Index: 1,
-      y1Price: 110,
+      y1Price: 105,
       x2Index: 4,
-      y2Price: 110,
+      y2Price: 105,
       color: '#10B981',
-      strokeWidth: 1.5,
+      strokeWidth: 1.6,
       lineStyle: 'dashed',
-      label: 'BOS (Break of Structure)',
+      label: 'BOS Valid Body Close',
       labelAlignment: 'center',
       showArrow: true
     }
   ],
   polylines: [
-    // Garis gelombang pergerakan harga makro / micro
+    // Garis struktur swing High/Low
     {
-      id: 'wave-1',
+      id: 'poly-wave',
       points: [
         { index: 0, price: 98 },
-        { index: 2, price: 115 },
-        { index: 3, price: 105 },
-        { index: 5, price: 125 }
+        { index: 1, price: 95 },
+        { index: 3, price: 116 },
+        { index: 4, price: 106 },
+        { index: 5, price: 124 }
       ],
       color: '#F59E0B',
       strokeWidth: 2,
-      curveType: 'zigzag', // atau 'smooth'
+      curveType: 'zigzag',
       showDots: true,
-      label: 'Swing Wave H1'
+      label: 'Struktur Swing H1'
     }
   ],
   positions: [
-    // Kalkulator Risk to Reward (Long / Short)
+    // Kalkulasi R:R yang jelas dan tidak berhimpitan
     {
-      id: 'pos-1',
+      id: 'pos-entry',
       type: 'long',
-      label: 'Optimal Trade Entry (OTE)',
-      entryPrice: 104,
-      stopPrice: 97,
-      targetPrice: 125,
+      label: 'Limit Buy di 50% MT',
+      entryPrice: 101,
+      stopPrice: 94,
+      targetPrice: 122,
       startIndex: 3,
       endIndex: 6
     }
   ],
   infoCards: [
-    // Kartu penjelasan langkah edukasi bertahap
+    // Ditaruh di koordinat lapang (candleIndex 1, harga 128 di atas range)
     {
-      id: 'step-1',
+      id: 'card-step1',
       candleIndex: 1,
-      price: 118,
-      title: 'FASE 1: DISPLACEMENT',
+      price: 128,
+      title: 'FASE 1: SWEEP & ABSORPTION',
       stepBadge: '1',
       lines: [
-        'Candle impulsif bervolume tinggi menembus swing high terdahulu.',
-        'Meninggalkan ketidakseimbangan (FVG).'
+        'Lilin C1 menusuk SSL di $95 (Stop Hunt).',
+        'Whale menyerap likuiditas jual ritel.'
       ],
-      footerBadge: '✓ Konfirmasi Bullish',
+      footerBadge: '✓ Konfirmasi Reversal',
       color: '#10B981'
     }
   ],
   badges: [
-    // Label teks singkat di chart
+    // Badge terpisah jauh: di bawah candle low ($92)
     {
-      id: 'b-sweep',
-      candleIndex: 0,
-      price: 96,
+      id: 'badge-ssl',
+      candleIndex: 1,
+      price: 92,
       text: 'Liquidity Sweep (SSL)',
       style: 'pill',
       bgColor: '#EF4444',
@@ -138,66 +181,13 @@ const myCustomChart: CustomChartConfig = {
   showCandles: true,
   showVolume: true,
   showEma: false,
-  candleSpacing: 'normal' // 'compact' | 'normal' | 'wide'
+  candleSpacing: 'normal'
 };
 ```
 
 ---
 
-## 2. Interactive Lightweight Chart (`interactive_chart`)
-
-Gunakan saat menyajikan simulasi pergerakan harga realistik:
-
-```typescript
-const myInteractiveChart = {
-  illustrationMode: 'interactive_chart',
-  chartConfig: {
-    symbol: 'BTC/USDT',
-    title: 'Wyckoff Spring & Sign of Strength (SOS)',
-    timeframe: 'H1',
-    data: [
-      { time: '2026-05-10 08:00', open: 62100, high: 62300, low: 61500, close: 61600, volume: 2890 },
-      { time: '2026-05-10 12:00', open: 61600, high: 63400, low: 61550, close: 63200, volume: 3400 },
-      { time: '2026-05-11 04:00', open: 62200, high: 62300, low: 61100, close: 61850, volume: 850 }
-    ],
-    markers: [
-      { time: '2026-05-11 04:00', position: 'belowBar', color: '#FACC15', shape: 'arrowUp', text: 'Spring Test' }
-    ],
-    keyLevels: [
-      { price: 61100, title: 'Spring Low Sweep', color: '#F43F5E' },
-      { price: 63800, title: 'Resistance Creek', color: '#38BDF8' }
-    ]
-  }
-};
-```
-
-> [!IMPORTANT]
-> **Aturan Waktu Lightweight Charts**:
-> - Gunakan format `'YYYY-MM-DD HH:mm'` atau `'YYYY-MM-DD'` secara berurutan waktu (menaik).
-> - Engine kami secara otomatis menormalisasi waktu ke UTC Unix Timestamp di latar belakang.
-
----
-
-## 3. Cara Memasukkan Chart ke Materi Artikel (`ArticleSection`)
-
-Setiap artikel tersusun atas array `sections`. Tambahkan konfigurasi chart pada section yang membutuhkan visualisasi:
-
-```typescript
-{
-  id: 'sec-fvg-concept',
-  title: 'Anatomi Pembentukan Fair Value Gap (FVG)',
-  content: `### Bagaimana FVG Terbentuk?
-Fair Value Gap terbentuk ketika pergerakan pasar bergerak sangat kencang (impulsif)...`,
-  illustrationMode: 'custom_builder',
-  customChartConfig: {
-    // Masukkan CustomChartConfig di sini
-  }
-}
-```
-
----
-
-## 4. Standar Warna & Visual Pedoman
+## 3. Standar Warna & Visual Pedoman
 
 | Elemen | Kode Warna Hex | Makna & Penggunaan |
 | :--- | :--- | :--- |
@@ -209,9 +199,9 @@ Fair Value Gap terbentuk ketika pergerakan pasar bergerak sangat kencang (impuls
 
 ---
 
-## 5. Checklist Validasi AI Saat Membuat Materi
-- [ ] Apakah setiap candle memiliki `index` berurutan dari 0, 1, 2, ...?
-- [ ] Apakah `high >= open`, `high >= close`, `low <= open`, dan `low <= close`?
-- [ ] Apakah `box` memiliki `startIndex` dan `endIndex` yang masuk akal terhadap rentang candle?
-- [ ] Apakah label teks singkat dan langsung merujuk pada konsep trading?
-- [ ] Apakah warna selaras dengan standar palet aplikasi di atas?
+## 4. Checklist Pra-Eksekusi (Wajib Dicek Sebelum Simpan)
+- [ ] **Anti-Overlap Badge & Card**: Apakah ada `badge` dan `infoCard` di bar index yang sama dan harga yang berdekatan? Jika ya, geser salah satunya.
+- [ ] **Breathing Space Vertikal**: Apakah harga tertinggi `infoCard` atau `trendline` memiliki jarak minimal 5-10% dari candle ekstrim agar tidak berhimpitan dengan frame atas/bawah?
+- [ ] **Batas Horizontal**: Apakah `endIndex` box dan position tidak melampaui jumlah candle secara berlebihan?
+- [ ] **Kesesuaian Candle**: Apakah `high >= open`, `high >= close`, `low <= open`, dan `low <= close`?
+- [ ] **Validasi Build**: Jalankan `bun run build` untuk memastikan tipe data `CustomChartConfig` valid 100%.
