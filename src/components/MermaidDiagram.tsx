@@ -5,6 +5,40 @@ interface MermaidDiagramProps {
   chart: string;
 }
 
+// Function to clean up common Markdown / Mermaid syntax issues automatically
+function sanitizeMermaidChart(rawChart: string): string {
+  let cleaned = rawChart.trim();
+
+  // Fix unquoted subgraphs like: subgraph Trader Ritel (95%) -> subgraph Trader_Ritel_95 ["Trader Ritel (95%)"]
+  cleaned = cleaned
+    .split('\n')
+    .map((line) => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('subgraph ')) {
+        const rest = trimmed.replace(/^subgraph\s+/, '').trim();
+        // If already correct: subgraph id ["Title"]
+        if (/^[a-zA-Z0-9_-]+\s*\[".*"\]$/.test(rest)) {
+          return line;
+        }
+        // If subgraph "Title"
+        if (/^"[^"]+"$/.test(rest)) {
+          const title = rest.replace(/^"|"$/g, '');
+          const id = title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
+          return line.replace(trimmed, `subgraph ${id}["${title}"]`);
+        }
+        // If has spaces, parens, percentages, slashes
+        if (/[ ()/%]/.test(rest) && !rest.includes('["')) {
+          const id = rest.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
+          return line.replace(trimmed, `subgraph ${id}["${rest}"]`);
+        }
+      }
+      return line;
+    })
+    .join('\n');
+
+  return cleaned;
+}
+
 export const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [svgContent, setSvgContent] = useState<string>('');
@@ -30,10 +64,11 @@ export const MermaidDiagram: React.FC<MermaidDiagramProps> = ({ chart }) => {
       }
     });
 
+    const sanitized = sanitizeMermaidChart(chart);
     const uniqueId = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
 
     mermaid
-      .render(uniqueId, chart.trim())
+      .render(uniqueId, sanitized)
       .then(({ svg }) => {
         if (isMounted) {
           setSvgContent(svg);

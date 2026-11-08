@@ -63,7 +63,7 @@ Edianto Ong mengklasifikasikan kekuatan angka psikologis menjadi 3 tingkatan hir
 
 ```mermaid
 graph TD
-    subgraph "Hirarki Magnet Likuiditas Pasar"
+    subgraph Hirarki_Magnet_Likuiditas_Pasa["Hirarki Magnet Likuiditas Pasar"]
         L1["Tingkat 1: Major Milestones (Rp 1.000, Rp 5.000, Rp 10.000, $100, $1.000)<br/>Dinding Likuiditas Raksasa & Liputan Media"]
         L2["Tingkat 2: Paruh & Ratusan (Rp 500, Rp 1.500, Rp 2.500, $50, $150)<br/>Target Swing & Konsolidasi Berkala"]
         L3["Tingkat 3: Minor Puluhan (Rp 50, Rp 100, Rp 200, $10, $20)<br/>Area Fluktuasi Intraday Cepat"]
@@ -79,7 +79,7 @@ Pelaku pasar institusi (*Smart Money*) sangat memahami psikologi ritel. Mereka m
 
 ```mermaid
 flowchart TD
-    subgraph "Perangkap Front-Running vs Stop Hunt Institusi"
+    subgraph Perangkap_Front_Running_vs_Sto["Perangkap Front-Running vs Stop Hunt Institusi"]
         A[Trader Ritel Berbondong-Bondong Pasang Jual di Rp 5.000 Tepat] --> B[Institusi Memasang Antrean Jual Masif di Rp 4.975 - Rp 4.990]
         B --> C[Harga Tertahan dan Terbanting Turun di Rp 4.985!]
         C --> D["Hasil: Order Institusi Lunas Terjual di Pucuk;<br/>Order Ritel di Rp 5.000 Menumpuk Tak Terjemput!"]

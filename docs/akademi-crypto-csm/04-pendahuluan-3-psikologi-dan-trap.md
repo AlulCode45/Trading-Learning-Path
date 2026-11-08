@@ -59,17 +59,17 @@ Di dalam paradigma Smart Money Concept: **Harga digerakkan terlebih dahulu oleh 
 
 ```mermaid
 flowchart TD
-    subgraph Aksi Tersembunyi Institusi
+    subgraph Aksi_Tersembunyi_Institusi["Aksi Tersembunyi Institusi"]
         A1["Institusi Selesai Akumulasi di Bawah"] --> A2["Harga Didorong Naik Cepat"]
         A3["Institusi Siap Take Profit di Pucuk"] --> A4["Harga Siap Ditumpahkan"]
     end
 
-    subgraph Sinkronisasi Media
+    subgraph Sinkronisasi_Media["Sinkronisasi Media"]
         A2 --> N1["Media Rilis Berita Super Bullish / FOMO"]
         A4 --> N2["Media Rilis Berita Horor Regulasi / FUD"]
     end
 
-    subgraph Respon Ritel
+    subgraph Respon_Ritel["Respon Ritel"]
         N1 --> R1["Ritel Serbu Beli Pucuk (Exit Liquidity)"]
         N2 --> R2["Ritel Panik Jual di Dasar (Donasi Koin Murah)"]
     end

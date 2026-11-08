@@ -12,7 +12,7 @@ Banyak pemula yang mencampuradukkan kedua istilah ini hingga berakhir dengan keb
 
 ```mermaid
 flowchart TD
-    subgraph Perbedaan Konseptual BOS vs CHoCH
+    subgraph Perbedaan_Konseptual_BOS_vs_CH["Perbedaan Konseptual BOS vs CHoCH"]
         direction TB
         BOS_BOX["BREAK OF STRUCTURE (BOS)<br/>• Sifat: Kelanjutan Tren (Continuation)<br/>• Syarat: Menembus High/Low searah tren yang sedang berlangsung<br/>• Contoh: Uptrend menembus Higher High sebelumnya"]
         CHOCH_BOX["CHANGE OF CHARACTER (CHoCH)<br/>• Sifat: Pembalikan Arah Awal (Early Reversal)<br/>• Syarat: Menembus titik struktur krusial yang BERLAWANAN arah tren<br/>• Contoh: Uptrend tiba-tiba menembus Higher Low terakhir ke bawah"]
@@ -77,13 +77,13 @@ Banyak trader pemula tertipu oleh apa yang disebut *Internal Noise*. Mari kita b
 
 ```mermaid
 flowchart LR
-    subgraph Skenario Jebakan Palsu (Fake Shift)
+    subgraph Skenario_Jebakan_Palsu__Fake_S["Skenario Jebakan Palsu (Fake Shift)"]
         F1["Harga Naik Mencetak HH"] --> F2["Turun Menembus Low Kecil Minor"]
         F2 --> F3["Strong Low H4 Masih Utuh"]
         F3 --> F4["Harga Melenting Naik Mencetak New HH! (Ritel Shorter Terjebak)"]
     end
 
-    subgraph Skenario CHoCH Asli
+    subgraph Skenario_CHoCH_Asli["Skenario CHoCH Asli"]
         T1["Harga Sapu Pucuk Likuiditas (Sweep)"] --> T2["Displacement Lilin Raksasa Turun"]
         T2 --> T3["Penutupan Badan Lilin Menembus Strong Low H4"]
         T3 --> T4["Konfirmasi CHoCH Valid (Siap Retest untuk Posisi Sell)"]

@@ -137,7 +137,7 @@ Daripada mengejar harga di pucuk hari penembusan (*breakout chasing*), metode tr
 
 ```mermaid
 flowchart LR
-    subgraph "Metode Entri Aman: Menunggu Throwback"
+    subgraph Metode_Entri_Aman__Menunggu_Th["Metode Entri Aman: Menunggu Throwback"]
         B1["Breakout Terjadi (Volume Besar)"] --> B2["Biarkan Harga Reli 1-3 Hari"]
         B2 --> B3["Tunggu Terjadinya Throwback (Koreksi dengan Volume Kering Menurun)"]
         B3 --> B4["Harga Menguji Bekas Resistance yang Kini Jadi Support Baru"]

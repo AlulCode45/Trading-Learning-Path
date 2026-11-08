@@ -12,7 +12,7 @@ Pasar kripto tidak pernah bergerak dalam satu garis lurus ke atas maupun ke bawa
 
 ```mermaid
 flowchart LR
-    subgraph Bullish Market Structure (Uptrend)
+    subgraph Bullish_Market_Structure__Uptr["Bullish Market Structure (Uptrend)"]
         direction LR
         L1["Low"] --> H1["Higher High (HH)"]
         H1 --> HL1["Higher Low (HL)"]
@@ -20,7 +20,7 @@ flowchart LR
         H2 --> HL2["Higher Low (HL)"]
     end
 
-    subgraph Bearish Market Structure (Downtrend)
+    subgraph Bearish_Market_Structure__Down["Bearish Market Structure (Downtrend)"]
         direction LR
         H3["High"] --> L2["Lower Low (LL)"]
         L2 --> LH1["Lower High (LH)"]
@@ -78,7 +78,7 @@ Kapan sebuah penembusan struktur dianggap **sah dan terkonfirmasi**, dan kapan p
 
 ```mermaid
 flowchart TD
-    subgraph Validasi Break of Structure (BOS)
+    subgraph Validasi_Break_of_Structure__B["Validasi Break of Structure (BOS)"]
         C1["Harga Mendekati Swing High Terakhir"]
         C1 --> C2{"Apakah Lilin Menembus Garis High?"}
         C2 -- "Hanya Jarum Menembus (Wick Only)" --> C3["INVALID BOS!<br/>Ini adalah Liquidity Sweep / Rejection"]
@@ -114,7 +114,7 @@ Pasar kripto bersifat **fraktal** (*fractal*), artinya pola struktur yang sama b
 
 ```mermaid
 flowchart TD
-    subgraph Multi-Timeframe Alignment
+    subgraph Multi_Timeframe_Alignment["Multi-Timeframe Alignment"]
         HTF["Swing Structure H4 (Tiang Utama): BULLISH UPTREND"]
         HTF --> Pullback["Fase Pullback H4 Menuju Area Diskon"]
         Pullback --> LTF["Internal Structure M15 (Sekat Sementara): Terlihat DOWNTREND"]

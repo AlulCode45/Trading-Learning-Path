@@ -61,7 +61,7 @@ Mengapa level harga tertentu di masa lalu bisa menjadi batas penahan di masa dep
 
 ```mermaid
 flowchart TD
-    subgraph "Dinamika 3 Kelompok Pelaku Pasar di Garis Support"
+    subgraph Dinamika_3_Kelompok_Pelaku_Pas["Dinamika 3 Kelompok Pelaku Pasar di Garis Support"]
         K1["Kelompok Pembeli (Longs)<br/>'Untung kemarin saya beli di Rp 1.000!'"] --> A1["Saat harga kembali ke Rp 1.000, mereka menambah muatan (Averaging Up)."]
         K2["Kelompok Penjual (Shorts)<br/>'Sial, saya jual di Rp 1.000 dan harga melesat.'"] --> A2["Berdoa harga turun ke Rp 1.000 untuk tutup posisi impas (Buy to Cover)."]
         K3["Kelompok Ragu-Ragu (Sidelined)<br/>'Kemarin saya ragu saat di Rp 1.000, sekarang saya tidak boleh ketinggalan!'"] --> A3["Masuk antre beli agresif begitu harga menyentuh Rp 1.000."]

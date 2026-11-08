@@ -56,7 +56,7 @@ Ada 3 faktor mekanis pasar yang menyebabkan Support dan Resistance selalu berupa
 
 ```mermaid
 flowchart TD
-    subgraph "Penyebab Garis Tunggal Gagal"
+    subgraph Penyebab_Garis_Tunggal_Gagal["Penyebab Garis Tunggal Gagal"]
         F1["1. Penyebaran Order Institusi<br/>(Order Dispersion)"] --> R1["Dana ratusan miliar tidak bisa masuk di 1 harga; disebar dalam rentang Rp 1.950 - Rp 2.000."]
         F2["2. Volatilitas & Noise Harian<br/>(Intraday Spikes)"] --> R2["Emosi panik sesaat atau spread broker menciptakan ekor jarum (wick) 0.5% - 2%."]
         F3["3. Selisih Data Antar Platform<br/>(Data Feed Discrepancy)"] --> R3["Harga High/Low antar sekuritas sering berbeda beberapa tick akibat perbedaan server feed."]

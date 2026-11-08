@@ -146,7 +146,7 @@ Ikuti aturan praktis yang dirumuskan oleh Edianto Ong berikut ini:
 
 ```mermaid
 flowchart LR
-    subgraph "Kerangka Analisis Praktis"
+    subgraph Kerangka_Analisis_Praktis["Kerangka Analisis Praktis"]
         T1["Analisis Tren Utama Jangka Panjang<br/>(Weekly / Monthly > 1 Tahun)"] --> S1["Gunakan Skala LOGARITHMIC (Log)"]
         T2["Saham Komoditas / Tech Meledak > 100%<br/>(Contoh: BREN, CUAN, NVDA)"] --> S1
         T3["Trading Harian / Scalping Intraday<br/>(Timeframe M5, M15, H1, H4)"] --> S2["Gunakan Skala ARITHMETIC (Linear)"]

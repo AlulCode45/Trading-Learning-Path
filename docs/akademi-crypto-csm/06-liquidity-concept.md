@@ -67,7 +67,7 @@ Peristiwa tersebut dinamakan **Liquidity Sweep** (Sapuan Likuiditas) atau dalam 
 
 ```mermaid
 flowchart TD
-    subgraph Anatomi Judas Swing / Liquidity Sweep
+    subgraph Anatomi_Judas_Swing___Liquidit["Anatomi Judas Swing / Liquidity Sweep"]
         L1["1. Konsolidasi Ritel membentuk Support Rapi (EQL)"]
         L2["2. Tumpukan Stop Loss Menumpuk Tebal di Bawah Support"]
         L3["3. Penetrasi Agresif (Ekor Jarum Menusuk Menembus Level)"]
@@ -114,14 +114,14 @@ Jika Anda melihat harga tiba-tiba berbalik arah menabrak titik terendah beberapa
 
 ```mermaid
 flowchart LR
-    subgraph Bullish Liquidity Sweep (Sapu ke Bawah lalu Terbang)
+    subgraph Bullish_Liquidity_Sweep__Sapu_["Bullish Liquidity Sweep (Sapu ke Bawah lalu Terbang)"]
         B1["Harga Sideways"] --> B2["Menghantam EQL / SSL"]
         B2 --> B3["Sapu Stop Loss Buyer"]
         B3 --> B4["Tutup di Atas Level Support"]
         B4 --> B5["Ekspansi Bullish Kencang"]
     end
 
-    subgraph Bearish Liquidity Sweep (Sapu ke Atas lalu Longsor)
+    subgraph Bearish_Liquidity_Sweep__Sapu_["Bearish Liquidity Sweep (Sapu ke Atas lalu Longsor)"]
         S1["Harga Rally"] --> S2["Menghantam EQH / BSL"]
         S2 --> S3["Sapu Stop Loss Shorter"]
         S3 --> S4["Tutup di Bawah Level Resistance"]

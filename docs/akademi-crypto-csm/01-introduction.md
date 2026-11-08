@@ -48,16 +48,16 @@ Bahkan, jika memperhitungkan biaya transaksi bursa (*trading fee*), biaya pendan
 
 ```mermaid
 flowchart TD
-    subgraph Trader Ritel (95%)
+    subgraph Trader_Ritel__95__["Trader Ritel (95%)"]
         A1["Modal Tabungan Pribadi"] --> A2["FOMO Beli di Pucuk Hijau"]
         A2 --> A3["Panik Jual di Lembah Merah"]
     end
 
-    subgraph Biaya Pasar
+    subgraph Biaya_Pasar["Biaya Pasar"]
         F1["Fee Bursa & Slippage"]
     end
 
-    subgraph Smart Money / Market Maker (5%)
+    subgraph Smart_Money___Market_Maker__5_["Smart Money / Market Maker (5%)"]
         B1["Akumulasi Diam-diam di Bawah"] --> B2["Memicu Hype & Pompa Harga"]
         B2 --> B3["Distribusi / Take Profit ke Ritel"]
     end
@@ -138,7 +138,7 @@ flowchart LR
     P2 --> P3["Fase 3: Media Hype & FOMO Massal ($65k - $69k)"]
     P3 --> P4["Fase 4: Flash Crash & Trap ($69k -> $40k)"]
 
-    subgraph Aksi Pelaku Pasar
+    subgraph Aksi_Pelaku_Pasar["Aksi Pelaku Pasar"]
         P1 -.->|Whale Membeli Murah| W1["Smart Money Beli"]
         P3 -.->|Ritel Masuk Besar-besaran| R1["Ritel Jadi Exit Liquidity"]
         P4 -.->|Ritel Nyangkut & Cutloss| R2["Ritel Kapitulasi"]
