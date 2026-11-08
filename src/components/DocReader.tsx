@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { MermaidDiagram } from './MermaidDiagram';
 import { EducationalArticle, RoadmapNode } from '../types';
 import { 
@@ -591,10 +593,11 @@ export const DocReader: React.FC<DocReaderProps> = ({
                   {section.title}
                 </h2>
 
-                {/* Render Rich Markdown with GFM Table Support */}
+                {/* Render Rich Markdown with GFM Table Support & KaTeX Math */}
                 <div className="leading-relaxed">
                   <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
+                    remarkPlugins={[remarkGfm, remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
                     components={{
                       p: ({ children }) => (
                         <p className="text-sm leading-relaxed text-slate-700 dark:text-[#CBD5E1] mb-3.5 last:mb-0">

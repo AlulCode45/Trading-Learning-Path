@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { MermaidDiagram } from './MermaidDiagram';
 import { RoadmapNode } from '../types';
 import { VisualDiagram } from './VisualDiagram';
@@ -142,7 +144,8 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
           </div>
           <div className="bg-slate-50 dark:bg-[#090D16] p-4.5 rounded-xl border border-slate-200 dark:border-[#1E293B] shadow-2xs">
             <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
+              remarkPlugins={[remarkGfm, remarkMath]}
+              rehypePlugins={[rehypeKatex]}
               components={{
                 h1: ({ children }) => (
                   <h1 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mt-3.5 mb-1.5 first:mt-0 tracking-tight">
