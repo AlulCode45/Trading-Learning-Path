@@ -105,9 +105,10 @@ export const EO_DOW_PEAK_TROUGH_CHART: CustomChartConfig = {
     {
       id: 'bdg-uptrend-healthy',
       candleIndex: 3,
-      price: 104,
+      price: 135,
       text: 'Uptrend Sehat: Higher High (HH2)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
@@ -117,15 +118,17 @@ export const EO_DOW_PEAK_TROUGH_CHART: CustomChartConfig = {
       price: 140,
       text: 'Lower High (Gagal Bikin Puncak Baru)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#F59E0B',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-reversal-bos',
       candleIndex: 8,
-      price: 108,
+      price: 107,
       text: 'Pembalikan Bearish Terkonfirmasi (Break HL2)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     }
@@ -133,8 +136,10 @@ export const EO_DOW_PEAK_TROUGH_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-dow-rules',
-      candleIndex: 12,
-      price: 142,
+      candleIndex: 10,
+      price: 140,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'DOW',
       title: 'HUKUM INERSIA TEORI DOW',
@@ -268,54 +273,60 @@ export const EO_TRENDLINE_RULES_CHART: CustomChartConfig = {
     {
       id: 'bdg-touch1-up',
       candleIndex: 0,
-      price: 93,
+      price: 92,
       text: 'Sentuhan 1: Lembah Awal',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-touch2-up',
       candleIndex: 2,
-      price: 105,
+      price: 104,
       text: 'Sentuhan 2: Tentative (Dugaan)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-touch3-up',
       candleIndex: 4,
-      price: 117,
+      price: 116,
       text: 'Sentuhan 3: KONFIRMASI SAH (Valid Rebound)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-touch1-down',
       candleIndex: 7,
-      price: 151,
+      price: 152,
       text: 'Sentuhan 1: Puncak Awal',
       style: 'pill',
+      size: 'sm',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-touch2-down',
       candleIndex: 9,
-      price: 139,
+      price: 140,
       text: 'Sentuhan 2: Lower High',
       style: 'pill',
+      size: 'sm',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-touch3-down',
       candleIndex: 11,
-      price: 129,
+      price: 130,
       text: 'Sentuhan 3: KONFIRMASI DOWNTREND',
       style: 'pill',
+      size: 'sm',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     }
@@ -323,8 +334,10 @@ export const EO_TRENDLINE_RULES_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-trendline-golden-rules',
-      candleIndex: 14,
-      price: 144,
+      candleIndex: 13,
+      price: 145,
+      alignX: 'left',
+      alignY: 'top',
       width: 180,
       stepBadge: 'KAIDAH',
       title: 'ATURAN BAKU MENARIK GARIS TREN',
@@ -418,29 +431,32 @@ export const EO_BMRI_STUDY_CHART: CustomChartConfig = {
   ],
   badges: [
     {
-      id: 'bdg-bmri-entry',
-      candleIndex: 5,
-      price: 6250,
-      text: 'Titik Beli: Rebound Hammer di Rp6.350',
+      id: 'bdg-bmri-sl',
+      candleIndex: 4,
+      price: 6050,
+      text: 'Level Stop Loss: Rp6.150 (-3,15%)',
       style: 'pill',
-      bgColor: '#10B981',
+      size: 'sm',
+      bgColor: '#EF4444',
       textColor: '#FFFFFF'
     },
     {
-      id: 'bdg-bmri-sl',
+      id: 'bdg-bmri-entry',
       candleIndex: 5,
-      price: 6050,
-      text: 'Stop Loss: Rp6.150 (Jebol Lantai)',
+      price: 6880,
+      text: 'Titik Beli: Rebound Hammer di Rp6.350',
       style: 'pill',
-      bgColor: '#EF4444',
+      size: 'sm',
+      bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-bmri-tp',
       candleIndex: 7,
-      price: 7350,
+      price: 7600,
       text: 'TP Hit: Rp7.200 (Risk to Reward 1:4)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     }
@@ -448,8 +464,10 @@ export const EO_BMRI_STUDY_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-bmri-trade-summary',
-      candleIndex: 9,
-      price: 7100,
+      candleIndex: 8,
+      price: 7250,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'R:R 1:4',
       title: 'KALKULASI TRANSAKSI BMRI',
@@ -558,27 +576,30 @@ export const EO_ARITHMETIC_VS_LOGARITHMIC_CHART: CustomChartConfig = {
     {
       id: 'bdg-log-rebound',
       candleIndex: 7,
-      price: 3600,
+      price: 3550,
       text: 'Skala Log: Pantulan Presisi di Atas Trendline Support',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-linear-panic',
-      candleIndex: 7,
-      price: 4450,
+      candleIndex: 8,
+      price: 4850,
       text: 'Skala Linier: Terdistorsi Tembus -> Panic Sell Palsu',
       style: 'pill',
+      size: 'sm',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-ath-target',
       candleIndex: 9,
-      price: 5350,
+      price: 5400,
       text: 'ATH Target Rp5.000 (10x Bagger Tercapai)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     }
@@ -586,8 +607,10 @@ export const EO_ARITHMETIC_VS_LOGARITHMIC_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-log-vs-lin',
-      candleIndex: 1,
-      price: 4900,
+      candleIndex: 0,
+      price: 5200,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'LOG',
       title: 'ARITHMETIC VS LOGARITHMIC',
@@ -732,18 +755,20 @@ export const EO_CHANNEL_AND_FAN_PRINCIPLE_CHART: CustomChartConfig = {
     {
       id: 'bdg-fan-break1',
       candleIndex: 4,
-      price: 113,
+      price: 114,
       text: 'Tembus Garis 1: Sinyal Waspada Dini',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-failure-note',
       candleIndex: 5,
-      price: 140,
+      price: 139,
       text: 'Failure Swing: Pembeli Kehabisan Bensin',
       style: 'pill',
+      size: 'sm',
       bgColor: '#F59E0B',
       textColor: '#FFFFFF'
     },
@@ -753,6 +778,7 @@ export const EO_CHANNEL_AND_FAN_PRINCIPLE_CHART: CustomChartConfig = {
       price: 100,
       text: 'TEMBUS GARIS 3: REVERSAL BEARISH MUTLAK!',
       style: 'pill',
+      size: 'sm',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     }
@@ -760,8 +786,10 @@ export const EO_CHANNEL_AND_FAN_PRINCIPLE_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-fan-rules',
-      candleIndex: 11,
+      candleIndex: 9,
       price: 138,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'FAN',
       title: 'THE THREE TRENDLINE RULE',
@@ -858,27 +886,30 @@ export const EO_SUPPORT_RESISTANCE_ROLE_REVERSAL_CHART: CustomChartConfig = {
     {
       id: 'bdg-sr-breakout',
       candleIndex: 3,
-      price: 126,
+      price: 128,
       text: 'Breakout Valid: Volume 2x Rata-Rata',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-throwback-test',
       candleIndex: 5,
-      price: 119,
+      price: 131,
       text: 'Throwback: Volume Menyusut Kering (1600)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#F59E0B',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-hammer-entry',
       candleIndex: 6,
-      price: 104,
+      price: 103,
       text: 'Pinbar Rebound: Tiket Entri Aman',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     }
@@ -886,8 +917,10 @@ export const EO_SUPPORT_RESISTANCE_ROLE_REVERSAL_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-throwback-mechanics',
-      candleIndex: 10,
-      price: 134,
+      candleIndex: 8,
+      price: 132,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'RETEST',
       title: 'MEKANIKA THROWBACK RETEST',
@@ -986,9 +1019,10 @@ export const EO_FIBONACCI_RETRACEMENT_EXPANSION_CHART: CustomChartConfig = {
     {
       id: 'bdg-fib-swing-b',
       candleIndex: 2,
-      price: 146,
+      price: 147,
       text: 'Swing High B (Puncak Reli: $140)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     },
@@ -998,15 +1032,17 @@ export const EO_FIBONACCI_RETRACEMENT_EXPANSION_CHART: CustomChartConfig = {
       price: 107,
       text: 'Golden Pocket 61.8% ($114): Rebound Masif',
       style: 'pill',
+      size: 'sm',
       bgColor: '#8B5CF6',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-fib-target-achieved',
       candleIndex: 8,
-      price: 171,
+      price: 173,
       text: 'Take Profit 161.8% Tercapai Sempurna',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     }
@@ -1014,8 +1050,10 @@ export const EO_FIBONACCI_RETRACEMENT_EXPANSION_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-fib-confluence',
-      candleIndex: 11,
-      price: 156,
+      candleIndex: 9,
+      price: 160,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'FIBO',
       title: 'GOLDEN RATIO RETRACEMENT',
@@ -1136,27 +1174,30 @@ export const EO_XAUUSD_HAMMER_STUDY_CHART: CustomChartConfig = {
     {
       id: 'bdg-xau-wick',
       candleIndex: 4,
-      price: 2252,
+      price: 2248,
       text: 'Jarum Penolakan Terendah: $2.260 (Institutional Buying)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-xau-entry',
       candleIndex: 5,
-      price: 2302,
+      price: 2328,
       text: 'Entry Konfirmasi: $2.290',
       style: 'pill',
+      size: 'sm',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-xau-tp',
       candleIndex: 7,
-      price: 2365,
+      price: 2370,
       text: 'TP Hit: $2.354 (+64 Pts)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     }
@@ -1164,8 +1205,10 @@ export const EO_XAUUSD_HAMMER_STUDY_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-xau-plan',
-      candleIndex: 9.5,
-      price: 2335,
+      candleIndex: 8,
+      price: 2350,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'R:R 1:2',
       title: 'KALKULASI TRADING XAUUSD',
@@ -1284,27 +1327,30 @@ export const EO_BBCA_STUDY_CHART: CustomChartConfig = {
     {
       id: 'bdg-bbca-hammer',
       candleIndex: 4,
-      price: 9380,
+      price: 9200,
       text: 'Rejection Hammer di Rp9.500 + Volume Surge',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-bbca-entry',
       candleIndex: 5,
-      price: 9950,
+      price: 10300,
       text: 'Beli Rp9.800 (Risiko Rp350)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-bbca-tp',
       candleIndex: 7,
-      price: 10650,
+      price: 10900,
       text: 'TP Hit: Rp10.500 (+Rp700)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     }
@@ -1312,8 +1358,10 @@ export const EO_BBCA_STUDY_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-bbca-calc',
-      candleIndex: 9.5,
-      price: 10300,
+      candleIndex: 8,
+      price: 10500,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'R:R 1:2',
       title: 'KALKULASI TRANSAKSI BBCA',
@@ -1384,7 +1432,7 @@ export const EO_DOW_PHASES_BBRI_CHART: CustomChartConfig = {
       topPrice: 6050,
       bottomPrice: 5500,
       label: 'FASE 3: DISTRIBUSI (Smart Money Jual ke Ritel Euforia)',
-      labelPosition: 'top-right',
+      labelPosition: 'bottom-left',
       color: '#EF4444',
       opacity: 0.2,
       boxType: 'supply_demand'
@@ -1421,27 +1469,30 @@ export const EO_DOW_PHASES_BBRI_CHART: CustomChartConfig = {
     {
       id: 'bdg-dow-b1',
       candleIndex: 2,
-      price: 4350,
+      price: 4450,
       text: 'Breakout Akumulasi: Vol Masif 165k',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-dow-b2',
       candleIndex: 5,
-      price: 6150,
+      price: 6350,
       text: 'Puncak Euforia Rp6.000: Berita Heboh di Medsos',
       style: 'pill',
+      size: 'sm',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-dow-b3',
       candleIndex: 6,
-      price: 5420,
+      price: 5250,
       text: 'Distribusi Nyata: Volume 245k Guyuran Smart Money',
       style: 'pill',
+      size: 'sm',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     }
@@ -1449,8 +1500,10 @@ export const EO_DOW_PHASES_BBRI_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-dow-phases',
-      candleIndex: 9.5,
-      price: 5300,
+      candleIndex: 8,
+      price: 5500,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'SIKLUS DOW',
       title: 'ANATOMI SIKLUS BBRI',
@@ -1544,27 +1597,30 @@ export const EO_TRAPS_BULL_BEAR_CHART: CustomChartConfig = {
     {
       id: 'bdg-bull-wick',
       candleIndex: 1,
-      price: 118,
+      price: 122,
       text: 'Jarum Menembus $116 Lalu Rontok (Bull Trap)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-bear-wick',
       candleIndex: 4,
-      price: 85,
+      price: 83,
       text: 'Jarum Anjlok ke $88 Lalu Diserap Institusi (Bear Trap)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-trap-fly',
       candleIndex: 6,
-      price: 121,
+      price: 124,
       text: 'Short Squeeze Reli: Ritel Cut Loss Terbakar',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     }
@@ -1572,8 +1628,10 @@ export const EO_TRAPS_BULL_BEAR_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-traps-mechanics',
-      candleIndex: 8.5,
-      price: 112,
+      candleIndex: 7,
+      price: 118,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'TRAPS',
       title: 'MEKANIKA FALSE BREAKOUT',
@@ -1657,18 +1715,20 @@ export const EO_CHANNEL_BREAKOUT_CHART: CustomChartConfig = {
     {
       id: 'bdg-ch-break',
       candleIndex: 5,
-      price: 158,
+      price: 116,
       text: 'Channel Breakout: Ledakan Euforia Vol 9.8k',
       style: 'pill',
+      size: 'sm',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-ch-climax',
       candleIndex: 6,
-      price: 168,
+      price: 173,
       text: 'Blow-Off Top: Klimaks Beli Ritel Sebelum Runtuh',
       style: 'pill',
+      size: 'sm',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     }
@@ -1676,8 +1736,10 @@ export const EO_CHANNEL_BREAKOUT_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-ch-mechanics',
-      candleIndex: 9.5,
-      price: 145,
+      candleIndex: 8,
+      price: 155,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'CHANNEL',
       title: 'AKSELERASI CHANNEL',
@@ -1748,27 +1810,30 @@ export const EO_MA200_REBOUND_SCHELLING_CHART: CustomChartConfig = {
     {
       id: 'bdg-ma-t1',
       candleIndex: 3,
-      price: 3430,
+      price: 3360,
       text: 'Touch 1: Vol Surge 115k (Order Beli Kolektif)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-ma-t2',
       candleIndex: 6,
-      price: 3460,
+      price: 3380,
       text: 'Touch 2: Konfirmasi Konsensus Vol 128k',
       style: 'pill',
+      size: 'sm',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-ma-rally',
       candleIndex: 7,
-      price: 4020,
+      price: 4120,
       text: 'Self-Fulfilling Prophecy Terwujud Sempurna!',
       style: 'pill',
+      size: 'sm',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     }
@@ -1776,8 +1841,10 @@ export const EO_MA200_REBOUND_SCHELLING_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-ma-schelling',
-      candleIndex: 9.5,
-      price: 3880,
+      candleIndex: 8,
+      price: 3920,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'SCHELLING',
       title: 'TITIK KONSENSUS MA 200',
@@ -1847,27 +1914,30 @@ export const EO_AVERAGING_DOWN_TRAP_CHART: CustomChartConfig = {
     {
       id: 'bdg-buy1',
       candleIndex: 0,
-      price: 1070,
+      price: 1090,
       text: 'Beli 1: Rp1.000 (100 Lot - Modal Rp10 Jt)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-buy2',
       candleIndex: 2,
-      price: 840,
+      price: 945,
       text: 'Averaging Down 1: Rp800 (200 Lot - Tambah Rp16 Jt, Avg Rp866)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#F59E0B',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-buy3',
       candleIndex: 4,
-      price: 640,
+      price: 740,
       text: 'Averaging Down 2: Rp600 (400 Lot - Tambah Rp24 Jt, Avg Rp714)',
       style: 'pill',
+      size: 'sm',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     },
@@ -1877,6 +1947,7 @@ export const EO_AVERAGING_DOWN_TRAP_CHART: CustomChartConfig = {
       price: 150,
       text: 'Harga Rp200: Nilai Portofolio Ludes Rp36 Jt (-72%)!',
       style: 'pill',
+      size: 'sm',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     }
@@ -1884,8 +1955,10 @@ export const EO_AVERAGING_DOWN_TRAP_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-avg-trap',
-      candleIndex: 9.5,
-      price: 650,
+      candleIndex: 8,
+      price: 700,
+      alignX: 'left',
+      alignY: 'top',
       width: 175,
       stepBadge: 'ANOMALY',
       title: 'ILUSI AVERAGING DOWN',

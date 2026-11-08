@@ -615,6 +615,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               bottomPrice: 128,
               boxType: 'liquidity_pool',
               label: 'Sell-side Liquidity (SSL) Clean-out Zone',
+              labelPosition: 'bottom-left',
               color: '#F43F5E',
               opacity: 0.2,
               borderStyle: 'dashed'
@@ -627,6 +628,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               bottomPrice: 145,
               boxType: 'liquidity_pool',
               label: 'Buy-side Liquidity (BSL) Target Zone',
+              labelPosition: 'top-left',
               color: '#10B981',
               opacity: 0.16,
               borderStyle: 'dashed'
@@ -684,27 +686,36 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-ssl-hit',
               candleIndex: 4,
-              price: 124,
-              text: 'SSL Swept (Wick-Only Rejection)',
+              price: 120,
+              text: 'SSL Swept (Wick Rejection)',
               style: 'badge',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#EF4444',
               textColor: '#FFFFFF'
             },
             {
               id: 'b-body-close',
-              candleIndex: 4,
-              price: 139.5,
-              text: 'Body Close di Atas Support EQL',
+              candleIndex: 5,
+              price: 130,
+              text: 'Displacement: Body Close > EQL',
               style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#10B981',
               textColor: '#FFFFFF'
             },
             {
               id: 'b-bsl-hit',
-              candleIndex: 6,
-              price: 154.5,
+              candleIndex: 7,
+              price: 164,
               text: 'BSL Liquidity Run Terpenuhi',
               style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#38BDF8',
               textColor: '#FFFFFF'
             }
@@ -712,9 +723,11 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-judas',
-              candleIndex: 0.5,
-              price: 159,
-              width: 175,
+              candleIndex: 8.2,
+              price: 145,
+              alignX: 'left',
+              alignY: 'middle',
+              width: 185,
               stepBadge: '⚡',
               title: 'JUDAS SWING TRIGGER',
               lines: [
@@ -843,6 +856,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               bottomPrice: 3220,
               boxType: 'order_block',
               label: 'Strong Low Protected Base ($3.220)',
+              labelPosition: 'bottom-left',
               color: '#10B981',
               opacity: 0.18,
               showMidLine: true,
@@ -866,29 +880,38 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           ],
           badges: [
             {
+              id: 'b-strong-low',
+              candleIndex: 3,
+              price: 3080,
+              text: 'Strong Low (Pelindung Akumulasi)',
+              style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
+              bgColor: '#10B981',
+              textColor: '#FFFFFF'
+            },
+            {
               id: 'b-fake-sweep',
               candleIndex: 4,
-              price: 3470,
-              text: 'Wick Only = Bukan BOS Sah!',
+              price: 3500,
+              text: 'Wick Sweep (Bukan BOS)',
               style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#EF4444',
               textColor: '#FFFFFF'
             },
             {
               id: 'b-valid-bos',
               candleIndex: 5,
-              price: 3600,
-              text: 'Body Close Valid di Atas $3.400 (BOS)',
+              price: 3730,
+              text: 'Body Close Valid > $3.400 (BOS)',
               style: 'badge',
-              bgColor: '#10B981',
-              textColor: '#FFFFFF'
-            },
-            {
-              id: 'b-strong-low',
-              candleIndex: 3,
-              price: 3160,
-              text: 'Strong Low (Pelindung Akumulasi)',
-              style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#10B981',
               textColor: '#FFFFFF'
             }
@@ -896,9 +919,11 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-bos-rule',
-              candleIndex: 0.5,
-              price: 3680,
-              width: 175,
+              candleIndex: 8.2,
+              price: 3450,
+              alignX: 'left',
+              alignY: 'middle',
+              width: 185,
               stepBadge: '✓',
               title: 'ATURAN BODY CLOSE BOS',
               lines: [
@@ -1045,6 +1070,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               bottomPrice: 66900,
               boxType: 'fvg',
               label: 'Bearish Fair Value Gap (Retest Entry)',
+              labelPosition: 'top-left',
               color: '#38BDF8',
               opacity: 0.22,
               showMidLine: true,
@@ -1055,27 +1081,36 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-top-sweep',
               candleIndex: 2,
-              price: 68850,
+              price: 69200,
               text: 'Liquidity Sweep Pucuk ($68.400)',
               style: 'badge',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#F59E0B',
               textColor: '#FFFFFF'
             },
             {
               id: 'b-choch-break',
               candleIndex: 4,
-              price: 65900,
+              price: 65700,
               text: 'Body Close Menembus Strong HL (CHoCH)',
               style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#EF4444',
               textColor: '#FFFFFF'
             },
             {
               id: 'b-sell-retest',
               candleIndex: 5,
-              price: 67650,
-              text: 'Retest FVG Mitigasi (High-Probability Sell)',
+              price: 67800,
+              text: 'Retest FVG Mitigasi (High-Prob Sell)',
               style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#10B981',
               textColor: '#FFFFFF'
             }
@@ -1083,9 +1118,11 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-choch-step',
-              candleIndex: 7.5,
-              price: 68600,
-              width: 175,
+              candleIndex: 8.2,
+              price: 66800,
+              alignX: 'left',
+              alignY: 'middle',
+              width: 185,
               stepBadge: '⚡',
               title: '3 SYARAT MUTLAK CHOCH',
               lines: [
@@ -1213,6 +1250,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               bottomPrice: 61600,
               boxType: 'order_block',
               label: 'Bullish Order Block (OB Kunci Institusi)',
+              labelPosition: 'bottom-left',
               color: '#10B981',
               opacity: 0.22,
               showMidLine: true,
@@ -1227,6 +1265,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               bottomPrice: 62100,
               boxType: 'fvg',
               label: 'Fair Value Gap (FVG Konfirmasi)',
+              labelPosition: 'top-left',
               color: '#38BDF8',
               opacity: 0.16
             }
@@ -1277,7 +1316,22 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               price: 61150,
               text: 'Liquidity Swept di $61.600',
               style: 'badge',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#F43F5E',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-unmitigated',
+              candleIndex: 3,
+              price: 65400,
+              text: 'BOS: OB Terkonfirmasi Valid',
+              style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
+              bgColor: '#38BDF8',
               textColor: '#FFFFFF'
             },
             {
@@ -1286,25 +1340,21 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               price: 61350,
               text: 'Mitigasi Tepat di 50% MT ($61.850)',
               style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#10B981',
-              textColor: '#FFFFFF'
-            },
-            {
-              id: 'b-unmitigated',
-              candleIndex: 1,
-              price: 62750,
-              text: 'Fresh Unmitigated OB',
-              style: 'pill',
-              bgColor: '#38BDF8',
               textColor: '#FFFFFF'
             }
           ],
           infoCards: [
             {
               id: 'card-ob-criteria',
-              candleIndex: 4,
-              price: 67300,
-              width: 175,
+              candleIndex: 9.2,
+              price: 64200,
+              alignX: 'left',
+              alignY: 'middle',
+              width: 185,
               stepBadge: '⭐',
               title: 'ANATOMI VALID OB',
               lines: [
@@ -1400,6 +1450,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               bottomPrice: 2520,
               boxType: 'fvg',
               label: 'Bullish Fair Value Gap (Inefficiency Zone)',
+              labelPosition: 'top-left',
               color: '#38BDF8',
               opacity: 0.25,
               showMidLine: true,
@@ -1451,9 +1502,12 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-fvg-gap',
               candleIndex: 2,
-              price: 2575,
-              text: 'Celah Kosong FVG ($2.520 - $2.630)',
+              price: 2420,
+              text: 'Displacement C2: Celah FVG Terbuka',
               style: 'badge',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#38BDF8',
               textColor: '#FFFFFF'
             },
@@ -1463,6 +1517,9 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               price: 2510,
               text: 'Wick Mengisi 50% CE ($2.575)',
               style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#10B981',
               textColor: '#FFFFFF'
             }
@@ -1470,9 +1527,11 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-fvg-formula',
-              candleIndex: 0,
-              price: 2900,
-              width: 175,
+              candleIndex: 7.2,
+              price: 2680,
+              alignX: 'left',
+              alignY: 'middle',
+              width: 185,
               stepBadge: '📐',
               title: 'RUMUS ANATOMI FVG',
               lines: [
@@ -1624,6 +1683,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               bottomPrice: 64000,
               boxType: 'order_block',
               label: 'Unmitigated Bullish OB di Zona Diskon',
+              labelPosition: 'bottom-left',
               color: '#10B981',
               opacity: 0.22,
               showMidLine: true,
@@ -1668,24 +1728,33 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               price: 63350,
               text: 'Langkah 1: Sweep EQL ($63.750)',
               style: 'badge',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#F43F5E',
               textColor: '#FFFFFF'
             },
             {
               id: 'b-choch-badge',
               candleIndex: 2,
-              price: 64900,
+              price: 65500,
               text: 'Langkah 2: CHoCH Valid Body Close',
               style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#38BDF8',
               textColor: '#FFFFFF'
             },
             {
               id: 'b-limit-entry',
               candleIndex: 5,
-              price: 63700,
-              text: 'Langkah 3: Limit Order Terisi di $64.150',
+              price: 63600,
+              text: 'Langkah 3: Limit Order Terisi ($64.150)',
               style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#10B981',
               textColor: '#FFFFFF'
             },
@@ -1695,6 +1764,9 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
               price: 67100,
               text: 'Langkah 4: TP2 Panen di $66.550 (R:R 1:6)',
               style: 'pill',
+              size: 'sm',
+              alignX: 'center',
+              alignY: 'middle',
               bgColor: '#10B981',
               textColor: '#FFFFFF'
             }
@@ -1702,9 +1774,11 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-sop-execution',
-              candleIndex: 0,
-              price: 66800,
-              width: 180,
+              candleIndex: 8.2,
+              price: 65200,
+              alignX: 'left',
+              alignY: 'middle',
+              width: 185,
               stepBadge: '🎯',
               title: 'MATRIKS RESIKO 1%',
               lines: [
