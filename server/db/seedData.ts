@@ -89,5 +89,16 @@ export const ALL_ROADMAPS_METADATA = [
     is_official: 1,
     estimated_hours: 75,
     nodes_count: 29
+  },
+  {
+    id: 'rm-crypto-smart-money',
+    slug: 'crypto-smart-money-concept',
+    title: 'Crypto Smart Money Concept (Akademi Crypto)',
+    description: 'Kurikulum 12 Bab Akademi Crypto: Mengungkap jejak likuiditas Whales & Market Maker, Order Flow CEX/DEX, Liquidity Sweeps, Market Structure, CHoCH, Order Block, dan Manajemen Portofolio 70/30.',
+    category: 'Crypto Institutional',
+    difficulty: 'Semua Level (Pemula s/d Mahir)',
+    is_official: 1,
+    estimated_hours: 40,
+    nodes_count: 12
   }
 ];

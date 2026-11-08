@@ -11,6 +11,7 @@ import {
   ShieldCheck, 
   Cpu, 
   Award,
+  Coins,
   Compass, 
   CheckCircle2, 
   Sparkles,
@@ -56,6 +57,7 @@ export const DocsHubPage: React.FC = () => {
 
   const getModuleIcon = (iconName: string) => {
     switch (iconName) {
+      case 'Coins': return <Coins className="w-4 h-4 text-sky-400" />;
       case 'Award': return <Award className="w-4 h-4 text-orange-500" />;
       case 'TrendingUp': return <TrendingUp className="w-4 h-4 text-amber-500" />;
       case 'Layers': return <Layers className="w-4 h-4 text-sky-500" />;

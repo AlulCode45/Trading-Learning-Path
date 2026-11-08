@@ -5,6 +5,7 @@ import { WYCKOFF_ARTICLES } from './wyckoffArticles.ts';
 import { RISK_ARTICLES } from './riskArticles.ts';
 import { QUANT_ARTICLES } from './quantArticles.ts';
 import { EDIANTO_ONG_ARTICLES } from './ediantoOngArticles.ts';
+import { CRYPTO_SMART_MONEY_ARTICLES } from './cryptoSmartMoneyArticles.ts';
 
 export const EDUCATIONAL_ARTICLES: Record<string, EducationalArticle> = {
   ...PRICE_ACTION_ARTICLES,
@@ -12,7 +13,8 @@ export const EDUCATIONAL_ARTICLES: Record<string, EducationalArticle> = {
   ...WYCKOFF_ARTICLES,
   ...RISK_ARTICLES,
   ...QUANT_ARTICLES,
-  ...EDIANTO_ONG_ARTICLES
+  ...EDIANTO_ONG_ARTICLES,
+  ...CRYPTO_SMART_MONEY_ARTICLES
 };
 
 // Aliases mapping for common alternative slugs
@@ -49,6 +51,9 @@ export function getRoadmapSlugForArticle(articleOrSlug?: EducationalArticle | st
   if (category === 'Edianto Ong Mega Profit' || slug.startsWith('edianto-ong-')) {
     return 'technical-analysis-mega-profit';
   }
+  if (category === 'Crypto Smart Money' || slug.startsWith('csm-')) {
+    return 'crypto-smart-money-concept';
+  }
   return 'price-action-market-structure';
 }
 
@@ -77,11 +82,26 @@ export interface DocModuleInfo {
   badgeBg: string;
   badgeText: string;
   cardBg: string;
-  iconName: 'TrendingUp' | 'Layers' | 'BarChart3' | 'ShieldCheck' | 'Cpu' | 'Award';
+  iconName: 'TrendingUp' | 'Layers' | 'BarChart3' | 'ShieldCheck' | 'Cpu' | 'Award' | 'Coins';
   roadmapSlug: string;
 }
 
 export const DOC_MODULES: DocModuleInfo[] = [
+  {
+    id: 'crypto-smart-money',
+    slug: 'crypto-smart-money',
+    title: 'Crypto Smart Money Concept (Akademi Crypto)',
+    shortTitle: 'Akademi Crypto CSM',
+    badge: 'Whale & Liquidity',
+    description: 'Buku & kurikulum 12 Bab Akademi Crypto: Mengungkap jejak likuiditas Whales, CEX/DEX Order Flow, Liquidity Sweeps, Market Structure, CHoCH, Order Block, dan Manajemen Portofolio 70/30.',
+    accentColor: '#38BDF8',
+    borderClass: 'border-sky-400 dark:border-sky-500/50',
+    badgeBg: 'bg-sky-100 dark:bg-sky-950/60',
+    badgeText: 'text-sky-800 dark:text-sky-300',
+    cardBg: 'hover:border-sky-400/80',
+    iconName: 'Coins',
+    roadmapSlug: 'crypto-smart-money-concept'
+  },
   {
     id: 'edianto-ong',
     slug: 'edianto-ong',
@@ -179,6 +199,9 @@ export function getModuleIdForArticle(articleOrSlug?: EducationalArticle | strin
   const slug = typeof articleOrSlug === 'string' ? articleOrSlug : articleOrSlug.slug;
   const category = typeof articleOrSlug === 'string' ? (EDUCATIONAL_ARTICLES[slug]?.category || '') : articleOrSlug.category;
 
+  if (category === 'Crypto Smart Money' || slug.startsWith('csm-') || slug.startsWith('art-csm-')) {
+    return 'crypto-smart-money';
+  }
   if (category === 'Edianto Ong Mega Profit' || slug.startsWith('edianto-ong-') || slug.startsWith('art-eo-')) {
     return 'edianto-ong';
   }
@@ -199,6 +222,8 @@ export function getModuleIdForArticle(articleOrSlug?: EducationalArticle | strin
 
 export function getArticlesByModule(moduleId: string): EducationalArticle[] {
   switch (moduleId) {
+    case 'crypto-smart-money':
+      return Object.values(CRYPTO_SMART_MONEY_ARTICLES);
     case 'edianto-ong':
       return Object.values(EDIANTO_ONG_ARTICLES);
     case 'smc':

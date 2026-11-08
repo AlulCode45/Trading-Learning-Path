@@ -5,6 +5,7 @@ import { wyckoffNodes } from './wyckoffNodes.ts';
 import { riskNodes } from './riskNodes.ts';
 import { quantNodes } from './quantNodes.ts';
 import { ediantoOngNodes } from './ediantoOngNodes.ts';
+import { cryptoSmartMoneyNodes } from './cryptoSmartMoneyNodes.ts';
 import { allQuizzesData } from './allQuizzes.ts';
 
 export const ALL_SEEDED_NODES: NodeSeedData[] = [
@@ -13,7 +14,8 @@ export const ALL_SEEDED_NODES: NodeSeedData[] = [
   ...wyckoffNodes,
   ...riskNodes,
   ...quantNodes,
-  ...ediantoOngNodes
+  ...ediantoOngNodes,
+  ...cryptoSmartMoneyNodes
 ];
 
 export {
@@ -24,5 +26,6 @@ export {
   riskNodes,
   quantNodes,
   ediantoOngNodes,
+  cryptoSmartMoneyNodes,
   allQuizzesData
 };

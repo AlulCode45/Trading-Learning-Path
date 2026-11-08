@@ -185,6 +185,12 @@ const ROADMAP_STAGE_BOXES: Record<string, StageGroupBox[]> = {
     { level: 4, title: '4. DOW THEORY, VOLUME, GAP & PATTERNS', subtitle: 'Konfrontasi Dow, Volume Precedes Price, Multi-Timeframe, Analisis Gap, dan Chart Patterns (Bab 17-21)', tag: 'Formasi Harga', x: 40, y: 1365, width: 920, height: 430, badgeBg: 'bg-black text-[#4ADE80] dark:bg-white dark:text-black', badgeText: 'BAGIAN 4' },
     { level: 5, title: '5. ELLIOTT WAVE, FIBO & INDIKATOR LENGKAP', subtitle: 'Elliott Wave 1-5 & ABC, Fibonacci Retracement, Candlestick Lengkap, dan 4 Pilar Indikator (Bab 22-25)', tag: 'Indikator & Gelombang', x: 40, y: 1825, width: 920, height: 430, badgeBg: 'bg-black text-[#FB7185] dark:bg-white dark:text-black', badgeText: 'BAGIAN 5' },
     { level: 6, title: '6. PARADOKS, SUICIDE ANOMALY & SISTEM TRADING', subtitle: 'Random Walk, Self-Fulfilling Prophecy, The Suicide Anomaly, dan Sintesis "So What?" (Bab 26-29)', tag: 'Mega Profit Capstone', x: 40, y: 2285, width: 920, height: 430, badgeBg: 'bg-black text-[#F43F5E] dark:bg-white dark:text-black', badgeText: 'BAGIAN 6' }
+  ],
+  'crypto-smart-money-concept': [
+    { level: 1, title: '1. FONDASI PASAR KRIPTO & SIKLUS MAKRO', subtitle: 'Karakteristik 24/7, Halving Cycle, Rotasi Likuiditas Waterfall, dan Order Flow CEX/DEX (Bab 1-4)', tag: 'Makro Kripto', x: 40, y: 35, width: 920, height: 380, badgeBg: 'bg-black text-[#38BDF8] dark:bg-white dark:text-black', badgeText: 'FASE 1' },
+    { level: 2, title: '2. SMART MONEY & KOLAM LIKUIDITAS', subtitle: 'Siapa Whales & MM, Akumulasi Tersembunyi, EQH, EQL, Trendline Liquidity & Sweeps (Bab 5-6)', tag: 'Whale Footprint', x: 40, y: 445, width: 920, height: 300, badgeBg: 'bg-black text-[#FACC15] dark:bg-white dark:text-black', badgeText: 'FASE 2' },
+    { level: 3, title: '3. STRUKTUR PASAR & KONFIRMASI CHoCH', subtitle: 'Pemetaan Swing High/Low, Break of Structure (BOS), dan Sinyal Reversal Dini CHoCH (Bab 7-8)', tag: 'Arsitektur Tren', x: 40, y: 775, width: 920, height: 300, badgeBg: 'bg-black text-[#C084FC] dark:bg-white dark:text-black', badgeText: 'FASE 3' },
+    { level: 4, title: '4. ORDER BLOCK, FVG & SOP EKSEKUSI', subtitle: 'Validasi Unmitigated OB, Fair Value Gap (FVG), Algoritma Eksekusi 4-Langkah & Portofolio 70/30 (Bab 9-12)', tag: 'Eksekusi & Survival', x: 40, y: 1105, width: 920, height: 380, badgeBg: 'bg-black text-[#10B981] dark:bg-white dark:text-black', badgeText: 'FASE 4' }
   ]
 };
 

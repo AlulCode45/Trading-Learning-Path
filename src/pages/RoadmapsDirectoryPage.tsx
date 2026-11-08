@@ -139,6 +139,13 @@ export const RoadmapsDirectoryPage: React.FC<RoadmapsDirectoryPageProps> = ({
           accent: '#EA580C',
           shadow: 'shadow-[4px_4px_0px_#000000]'
         };
+      case 'crypto-smart-money-concept':
+        return {
+          bg: 'bg-[#BAE6FD] hover:bg-[#7DD3FC] text-zinc-950',
+          badge: 'bg-black text-[#0284C7]',
+          accent: '#0284C7',
+          shadow: 'shadow-[4px_4px_0px_#000000]'
+        };
       case 'quantitative-algo-trading':
       default:
         return {
