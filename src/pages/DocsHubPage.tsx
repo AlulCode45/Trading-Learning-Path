@@ -10,6 +10,7 @@ import {
   BarChart3, 
   ShieldCheck, 
   Cpu, 
+  Award,
   Compass, 
   CheckCircle2, 
   Sparkles,
@@ -55,6 +56,7 @@ export const DocsHubPage: React.FC = () => {
 
   const getModuleIcon = (iconName: string) => {
     switch (iconName) {
+      case 'Award': return <Award className="w-4 h-4 text-orange-500" />;
       case 'TrendingUp': return <TrendingUp className="w-4 h-4 text-amber-500" />;
       case 'Layers': return <Layers className="w-4 h-4 text-sky-500" />;
       case 'BarChart3': return <BarChart3 className="w-4 h-4 text-purple-500" />;

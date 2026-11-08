@@ -77,11 +77,26 @@ export interface DocModuleInfo {
   badgeBg: string;
   badgeText: string;
   cardBg: string;
-  iconName: 'TrendingUp' | 'Layers' | 'BarChart3' | 'ShieldCheck' | 'Cpu';
+  iconName: 'TrendingUp' | 'Layers' | 'BarChart3' | 'ShieldCheck' | 'Cpu' | 'Award';
   roadmapSlug: string;
 }
 
 export const DOC_MODULES: DocModuleInfo[] = [
+  {
+    id: 'edianto-ong',
+    slug: 'edianto-ong',
+    title: 'Technical Analysis for Mega Profit (Edianto Ong)',
+    shortTitle: 'Edianto Ong',
+    badge: 'Mega Profit 29 Bab',
+    description: 'Kurikulum lengkap 29 Bab buku legendaris Edianto Ong: 3 Aksioma, Dow Theory, Geometri Tren & Fan Principle, Elliott Wave, Indikator, hingga Suicide Anomaly & Sistem Trading.',
+    accentColor: '#EA580C',
+    borderClass: 'border-orange-400 dark:border-orange-500/50',
+    badgeBg: 'bg-orange-100 dark:bg-orange-950/60',
+    badgeText: 'text-orange-800 dark:text-orange-300',
+    cardBg: 'hover:border-orange-400/80',
+    iconName: 'Award',
+    roadmapSlug: 'technical-analysis-mega-profit'
+  },
   {
     id: 'price-action',
     slug: 'price-action',
@@ -164,6 +179,9 @@ export function getModuleIdForArticle(articleOrSlug?: EducationalArticle | strin
   const slug = typeof articleOrSlug === 'string' ? articleOrSlug : articleOrSlug.slug;
   const category = typeof articleOrSlug === 'string' ? (EDUCATIONAL_ARTICLES[slug]?.category || '') : articleOrSlug.category;
 
+  if (category === 'Edianto Ong Mega Profit' || slug.startsWith('edianto-ong-') || slug.startsWith('art-eo-')) {
+    return 'edianto-ong';
+  }
   if (SMC_ARTICLES[slug] || category === 'Institutional Trading' || slug.startsWith('smc-')) {
     return 'smc';
   }
@@ -181,6 +199,8 @@ export function getModuleIdForArticle(articleOrSlug?: EducationalArticle | strin
 
 export function getArticlesByModule(moduleId: string): EducationalArticle[] {
   switch (moduleId) {
+    case 'edianto-ong':
+      return Object.values(EDIANTO_ONG_ARTICLES);
     case 'smc':
       return Object.values(SMC_ARTICLES);
     case 'wyckoff':
