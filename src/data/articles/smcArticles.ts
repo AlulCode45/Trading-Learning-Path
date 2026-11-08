@@ -1,4 +1,697 @@
 import { EducationalArticle } from '../../types';
+import { CustomChartConfig } from '../../types/chartBuilderTypes';
+
+// ============================================================================
+// KONFIGURASI NATIVE CHART BUILDER SMC & ICT MASTER CLASS
+// ============================================================================
+
+/**
+ * 1. ORDER BLOCK FORMATION & MITIGATION
+ * Pembentukan Bullish Order Block (last down-close candle sebelum displacement)
+ * Garis Mean Threshold (MT 50% Body) & pantulan mitigasi sempurna.
+ */
+const SMC_ORDER_BLOCK_MITIGATION_CHART: CustomChartConfig = {
+  title: 'Order Block (OB) Formation, Displacement & 50% Mean Threshold Mitigation',
+  subtitle: 'Anatomi Bullish OB Institusional: Validasi MSS, Indikator MT 50%, & Entry Presisi pada First Touch',
+  timeframe: '15m',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'normal',
+  candles: [
+    { id: 'c0', index: 0, open: 104, high: 106, low: 101, close: 102, volume: 1900, label: 'Pre-Sweep' },
+    { id: 'c1', index: 1, open: 102, high: 103, low: 96, close: 98, volume: 3800, label: 'Sweep & OB Origin' },
+    { id: 'c2', index: 2, open: 98, high: 114, low: 97.5, close: 113, volume: 5900, label: 'Displacement Bar' },
+    { id: 'c3', index: 3, open: 113, high: 124, low: 112, close: 122, volume: 6200, label: 'BOS / MSS High' },
+    { id: 'c4', index: 4, open: 122, high: 123, low: 114, close: 115, volume: 2200, label: 'Pullback' },
+    { id: 'c5', index: 5, open: 115, high: 116, low: 100, close: 108, volume: 3400, label: '50% MT Retest' },
+    { id: 'c6', index: 6, open: 108, high: 126, low: 107, close: 125, volume: 5100, label: 'Institutional Rally' },
+    { id: 'c7', index: 7, open: 125, high: 134, low: 124, close: 132, volume: 4800, label: 'Expansion' }
+  ],
+  boxes: [
+    {
+      id: 'ob-box-bull',
+      startIndex: 1,
+      endIndex: 5.6,
+      topPrice: 102,
+      bottomPrice: 98,
+      boxType: 'order_block',
+      label: 'Bullish Order Block (OB Body Range)',
+      labelPosition: 'top-left',
+      color: '#10B981',
+      opacity: 0.22,
+      borderColor: '#059669',
+      borderWidth: 1.5,
+      showMidLine: true,
+      midLineLabel: 'Mean Threshold (50% MT): $100.00',
+      midLineColor: '#10B981'
+    },
+    {
+      id: 'ob-fvg-displacement',
+      startIndex: 1.8,
+      endIndex: 4.8,
+      topPrice: 112,
+      bottomPrice: 103,
+      boxType: 'fvg',
+      label: 'Imbalance / FVG Acceleration',
+      labelPosition: 'top-right',
+      color: '#38BDF8',
+      opacity: 0.16,
+      borderColor: '#0284C7'
+    }
+  ],
+  trendlines: [
+    {
+      id: 'tl-mss-break',
+      x1Index: 0,
+      y1Price: 106,
+      x2Index: 3.5,
+      y2Price: 106,
+      color: '#10B981',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Market Structure Shift (MSS Breakout)',
+      labelAlignment: 'center',
+      showArrow: true
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-ob-candle',
+      candleIndex: 1,
+      price: 94.5,
+      text: 'Last Bearish Candle (OB Origin)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-mt-test',
+      candleIndex: 5,
+      price: 99,
+      text: 'Pinpoint 50% MT Mitigation',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-expansion-win',
+      candleIndex: 7,
+      price: 136,
+      text: 'Target High Liquidated (+32 pts)',
+      style: 'badge',
+      bgColor: '#059669',
+      textColor: '#FFFFFF'
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-ob-long',
+      type: 'long',
+      label: 'OB Mean Threshold Long Setup',
+      startIndex: 5,
+      endIndex: 7.5,
+      entryPrice: 100,
+      stopPrice: 95.5,
+      targetPrice: 132,
+      targetColor: '#10B981',
+      stopColor: '#EF4444'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-ob-anatomy',
+      candleIndex: 4,
+      price: 125,
+      stepBadge: 'OB',
+      title: 'RULE MEAN THRESHOLD (MT 50%)',
+      lines: [
+        'Candle 1: Lilin bearish terakhir penyapu liquidity.',
+        'Candle 2-3: Displacement agresif meninggalkan FVG.',
+        'Candle 5: Retest menyentuh 50% MT body tanpa ditutup di bawahnya.',
+        'Target: Eksternal Liquidity High di $132+.'
+      ],
+      footerBadge: '✓ R:R 1:7.1 Presisi Institusi',
+      color: '#10B981'
+    }
+  ],
+  legends: [
+    { id: 'leg-ob', label: 'Bullish Demand OB', color: '#10B981' },
+    { id: 'leg-fvg', label: 'Fair Value Gap (FVG)', color: '#38BDF8' },
+    { id: 'leg-mt', label: '50% Mean Threshold', color: '#059669' }
+  ]
+};
+
+/**
+ * 2. FAIR VALUE GAP (FVG / BISI / SIBI)
+ * Anatomi 3 lilin ketidakefisienan lelang, titik tengah 50% Consequent Encroachment (CE),
+ * dan reaksi pemantulan rebalancing.
+ */
+const SMC_FAIR_VALUE_GAP_CHART: CustomChartConfig = {
+  title: 'Fair Value Gap (FVG) Mechanics & 50% Consequent Encroachment (CE)',
+  subtitle: 'Anatomi 3-Candle Imbalance: Celah Antara High C1 dan Low C3 Serta Penyeimbangan Kembali Algoritma IPDA',
+  timeframe: '15m',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'fvg0', index: 0, open: 100, high: 108, low: 99, close: 107, volume: 1800, label: 'Candle 1 (Origin)' },
+    { id: 'fvg1', index: 1, open: 107, high: 134, low: 106, close: 133, volume: 6800, label: 'Candle 2 (Displacement)' },
+    { id: 'fvg2', index: 2, open: 133, high: 142, low: 122, close: 140, volume: 4400, label: 'Candle 3 (Gap Top)' },
+    { id: 'fvg3', index: 3, open: 140, high: 141, low: 128, close: 130, volume: 2200, label: 'Retracement' },
+    { id: 'fvg4', index: 4, open: 130, high: 131, low: 115, close: 126, volume: 3900, label: 'CE 50% Retest' },
+    { id: 'fvg5', index: 5, open: 126, high: 148, low: 125, close: 146, volume: 5600, label: 'Expansion Run' }
+  ],
+  boxes: [
+    {
+      id: 'box-fvg-bisi',
+      startIndex: 0.8,
+      endIndex: 4.6,
+      topPrice: 122,
+      bottomPrice: 108,
+      boxType: 'fvg',
+      label: 'Bullish FVG (BISI: Imbalance Gap)',
+      labelPosition: 'top-left',
+      color: '#38BDF8',
+      opacity: 0.22,
+      borderColor: '#0284C7',
+      borderWidth: 1.5,
+      showMidLine: true,
+      midLineLabel: '50% Consequent Encroachment ($115.00)',
+      midLineColor: '#38BDF8'
+    }
+  ],
+  trendlines: [
+    {
+      id: 'tl-c1-high',
+      x1Index: 0,
+      y1Price: 108,
+      x2Index: 2.8,
+      y2Price: 108,
+      color: '#0284C7',
+      strokeWidth: 1.5,
+      lineStyle: 'dashed',
+      label: 'Candle 1 High Wick ($108.00)',
+      labelAlignment: 'start',
+      showArrow: false
+    },
+    {
+      id: 'tl-c3-low',
+      x1Index: 1.8,
+      y1Price: 122,
+      x2Index: 3.8,
+      y2Price: 122,
+      color: '#0284C7',
+      strokeWidth: 1.5,
+      lineStyle: 'dashed',
+      label: 'Candle 3 Low Wick ($122.00)',
+      labelAlignment: 'end',
+      showArrow: false
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-gap-vacuum',
+      candleIndex: 1,
+      price: 115,
+      text: 'Area Kosong Lelang ($108 - $122)',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#0F172A'
+    },
+    {
+      id: 'bdg-ce-touch',
+      candleIndex: 4,
+      price: 113,
+      text: '50% CE Rebalanced & Protected',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-fvg-fly',
+      candleIndex: 5,
+      price: 150,
+      text: 'Target Expansion Reached',
+      style: 'badge',
+      bgColor: '#059669',
+      textColor: '#FFFFFF'
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-fvg-entry',
+      type: 'long',
+      label: 'FVG 50% CE Limit Execution',
+      startIndex: 4,
+      endIndex: 5.5,
+      entryPrice: 115,
+      stopPrice: 105,
+      targetPrice: 148,
+      targetColor: '#10B981',
+      stopColor: '#EF4444'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-fvg-rules',
+      candleIndex: 2,
+      price: 136,
+      stepBadge: 'FVG',
+      title: 'SYARAT KESAHAN FVG:',
+      lines: [
+        '1. C1 High ($108) tidak bersentuhan dengan C3 Low ($122).',
+        '2. C2 adalah Displacement bar masif satu arah.',
+        '3. Retest pada Candle 4 menyentuh level 50% CE ($115).',
+        '4. Candle tidak boleh ditutup menembus 50% CE ke bawah.'
+      ],
+      footerBadge: '✓ R:R 1:3.3 Bersih',
+      color: '#38BDF8'
+    }
+  ],
+  legends: [
+    { id: 'leg-fvg', label: 'Imbalance Fair Value Gap', color: '#38BDF8' },
+    { id: 'leg-ce', label: '50% Consequent Encroachment', color: '#0284C7' },
+    { id: 'leg-run', label: 'Rebalanced Bullish Delivery', color: '#10B981' }
+  ]
+};
+
+/**
+ * 3. LIQUIDITY SWEEP & TURTLE SOUP REVERSAL
+ * Wick menyapu Buy-Side Liquidity (BSL) atau Sell-Side Liquidity (SSL),
+ * lalu berbalik arah dengan displacement kuat.
+ */
+const SMC_LIQUIDITY_SWEEP_CHART: CustomChartConfig = {
+  title: 'Liquidity Pool Sweep (Turtle Soup) & Inducement Trapping Protocol',
+  subtitle: 'Pembersihan Kolam Stop Loss Retail di Atas Equal Highs (BSL) Diikuti Rejeksi Tajam & Pergeseran Tren',
+  timeframe: '15m',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'normal',
+  candles: [
+    { id: 'sw0', index: 0, open: 102, high: 115, low: 101, close: 114, volume: 2100, label: 'Swing High 1' },
+    { id: 'sw1', index: 1, open: 114, high: 115, low: 106, close: 107, volume: 1800, label: 'Pullback' },
+    { id: 'sw2', index: 2, open: 107, high: 115.2, low: 106, close: 114.8, volume: 2400, label: 'Equal Highs (EQH)' },
+    { id: 'sw3', index: 3, open: 114.8, high: 115, low: 109, close: 110, volume: 1900, label: 'Inducement (IDM)' },
+    { id: 'sw4', index: 4, open: 110, high: 124, low: 109, close: 113, volume: 6200, label: 'Liquidity Sweep Wick' },
+    { id: 'sw5', index: 5, open: 113, high: 114, low: 99, close: 100, volume: 5400, label: 'Bearish Displacement' },
+    { id: 'sw6', index: 6, open: 100, high: 107, low: 99, close: 105, volume: 2200, label: 'Retest Bearish FVG' },
+    { id: 'sw7', index: 7, open: 105, high: 106, low: 90, close: 91, volume: 4600, label: 'Target Expansion' }
+  ],
+  boxes: [
+    {
+      id: 'box-bsl-pool',
+      startIndex: 0,
+      endIndex: 4.8,
+      topPrice: 124,
+      bottomPrice: 115,
+      boxType: 'liquidity_pool',
+      label: 'Buyside Liquidity Pool (BSL Stop Loss $$$)',
+      labelPosition: 'top-left',
+      color: '#F59E0B',
+      opacity: 0.18,
+      borderColor: '#D97706',
+      borderWidth: 1.5
+    },
+    {
+      id: 'box-bear-fvg-after-sweep',
+      startIndex: 4.8,
+      endIndex: 6.8,
+      topPrice: 109,
+      bottomPrice: 103,
+      boxType: 'fvg',
+      label: 'Post-Sweep Bearish FVG',
+      labelPosition: 'bottom-left',
+      color: '#38BDF8',
+      opacity: 0.2,
+      borderColor: '#0284C7'
+    }
+  ],
+  trendlines: [
+    {
+      id: 'tl-bsl-ceiling',
+      x1Index: 0,
+      y1Price: 115,
+      x2Index: 4.5,
+      y2Price: 115,
+      color: '#F59E0B',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Retail Double Top Resistance Line ($115.00)',
+      labelAlignment: 'center',
+      showArrow: false
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-eqh-trap',
+      candleIndex: 2,
+      price: 116.5,
+      text: 'Inducement Trap: Retail Buy Stop Bertumpuk',
+      style: 'pill',
+      bgColor: '#F59E0B',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-sweep-wick',
+      candleIndex: 4,
+      price: 125,
+      text: 'SWEEP ONLY: Body Closed Inside (< $115)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-short-entry',
+      candleIndex: 6,
+      price: 108.5,
+      text: 'Turtle Soup Short Confirmation',
+      style: 'badge',
+      bgColor: '#DC2626',
+      textColor: '#FFFFFF'
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-turtle-soup',
+      type: 'short',
+      label: 'Turtle Soup Liquidity Reversal',
+      startIndex: 5.8,
+      endIndex: 7.5,
+      entryPrice: 106,
+      stopPrice: 116.5,
+      targetPrice: 90,
+      targetColor: '#10B981',
+      stopColor: '#EF4444'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-sweep-logic',
+      candleIndex: 4,
+      price: 122,
+      stepBadge: 'SWEEP',
+      title: 'HAKIKAT TURTLE SOUP SWEEP:',
+      lines: [
+        '1. Retail mengira breakout terjadi saat harga menembus $115.',
+        '2. Candle 4 menusuk ke $124 namun body candle ditutup di $113.',
+        '3. Stop loss retail terpicu menjadi pesanan beli pasar murah bagi bank.',
+        '4. Bank langsung membanting harga dengan displacement (Candle 5).'
+      ],
+      footerBadge: '✓ R:R 1:1.52 (Risk $10.5, Gain $16)',
+      color: '#EF4444'
+    }
+  ],
+  legends: [
+    { id: 'leg-bsl', label: 'BSL Liquidity Pool (Stop Hunt)', color: '#F59E0B' },
+    { id: 'leg-sweep', label: 'False Breakout Wick Sweep', color: '#EF4444' },
+    { id: 'leg-fvg', label: 'Post-Sweep Inefficiency FVG', color: '#38BDF8' }
+  ]
+};
+
+/**
+ * 4. BREAK OF STRUCTURE (BOS) VS CHANGE OF CHARACTER (CHOCH)
+ * Pergerakan tren swing polyline dengan trendline penembusan pro-trend (BOS)
+ * dan counter-trend reversal alert (CHoCH / MSS).
+ */
+const SMC_BOS_CHOCH_STRUCTURE_CHART: CustomChartConfig = {
+  title: 'Market Structure: Break of Structure (BOS) vs. Change of Character (CHoCH)',
+  subtitle: 'Pemetaan Siklus Tren: Kelanjutan Bullish Trend (BOS) dan Transisi Pembalikan Arah Struktural (CHoCH)',
+  timeframe: '1H',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'normal',
+  candles: [
+    { id: 'b0', index: 0, open: 95, high: 96, low: 90, close: 92, volume: 1400, label: 'Swing Low' },
+    { id: 'b1', index: 1, open: 92, high: 106, low: 91, close: 105, volume: 3200, label: 'Swing High 1' },
+    { id: 'b2', index: 2, open: 105, high: 105.5, low: 98, close: 100, volume: 2100, label: 'Higher Low (HL1)' },
+    { id: 'b3', index: 3, open: 100, high: 118, low: 99.5, close: 117, volume: 4600, label: 'BOS Bullish Body' },
+    { id: 'b4', index: 4, open: 117, high: 122, low: 116, close: 121, volume: 3800, label: 'Higher High (HH1)' },
+    { id: 'b5', index: 5, open: 121, high: 121.5, low: 111, close: 113, volume: 2400, label: 'Higher Low (HL2)' },
+    { id: 'b6', index: 6, open: 113, high: 125, low: 112.5, close: 124, volume: 3900, label: 'Apex Peak (HH2)' },
+    { id: 'b7', index: 7, open: 124, high: 124.5, low: 107, close: 108, volume: 5800, label: 'CHoCH Breakdown' },
+    { id: 'b8', index: 8, open: 108, high: 116, low: 107.5, close: 115, volume: 2800, label: 'Retest Bearish FVG' },
+    { id: 'b9', index: 9, open: 115, high: 115.5, low: 96, close: 97, volume: 5200, label: 'Bearish Continuation' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-bos-1',
+      x1Index: 1,
+      y1Price: 106,
+      x2Index: 3.8,
+      y2Price: 106,
+      color: '#10B981',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Bullish BOS (Continuation)',
+      labelAlignment: 'center',
+      showArrow: true
+    },
+    {
+      id: 'tl-choch-break',
+      x1Index: 5,
+      y1Price: 111,
+      x2Index: 7.8,
+      y2Price: 111,
+      color: '#EF4444',
+      strokeWidth: 2,
+      lineStyle: 'solid',
+      label: 'CHoCH (Transisi Perubahan Struktur Pasar)',
+      labelAlignment: 'center',
+      showArrow: true
+    }
+  ],
+  polylines: [
+    {
+      id: 'poly-swing-structure',
+      points: [
+        { index: 0, price: 90 },
+        { index: 1, price: 106 },
+        { index: 2, price: 98 },
+        { index: 4, price: 122 },
+        { index: 5, price: 111 },
+        { index: 6, price: 125 },
+        { index: 7, price: 107 },
+        { index: 8, price: 116 },
+        { index: 9, price: 96 }
+      ],
+      color: '#F59E0B',
+      strokeWidth: 2.2,
+      curveType: 'zigzag',
+      showDots: true,
+      label: 'Structural Swing Waves (H1)'
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-choch-breaker',
+      startIndex: 5,
+      endIndex: 8.5,
+      topPrice: 116,
+      bottomPrice: 111,
+      boxType: 'order_block',
+      label: 'Bearish Breaker Block / Reversal Zone',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.16,
+      borderColor: '#DC2626'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-valid-bos',
+      candleIndex: 3,
+      price: 119,
+      text: 'BOS: Full Body Close Di Atas $106',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-choch-alert',
+      candleIndex: 7,
+      price: 104,
+      text: 'CHoCH: HL Terakhir $111 Dijebol',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-sell-retest',
+      candleIndex: 8,
+      price: 118,
+      text: 'Sell Entry pada Retest Breaker',
+      style: 'badge',
+      bgColor: '#DC2626',
+      textColor: '#FFFFFF'
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-choch-short',
+      type: 'short',
+      label: 'Post-CHoCH Reversal Short',
+      startIndex: 7.8,
+      endIndex: 9.5,
+      entryPrice: 115,
+      stopPrice: 123,
+      targetPrice: 96,
+      targetColor: '#10B981',
+      stopColor: '#EF4444'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-bos-vs-choch',
+      candleIndex: 4,
+      price: 128,
+      stepBadge: 'BOS',
+      title: 'PERBEDAAN UTAMA:',
+      lines: [
+        'BOS: Menembus swing high searah tren (Bullish continuation).',
+        'CHoCH: Menembus Higher Low terakhir (Peringatan pembalikan bearish).',
+        'Syarat Mutlak: Wajib penutupan body candle penuh (bukan sekadar wick).'
+      ],
+      footerBadge: '✓ Disiplin Konfirmasi Body',
+      color: '#F59E0B'
+    }
+  ],
+  legends: [
+    { id: 'leg-wave', label: 'Swing Zigzag Wave', color: '#F59E0B' },
+    { id: 'leg-bos', label: 'BOS Continuation', color: '#10B981' },
+    { id: 'leg-choch', label: 'CHoCH Reversal', color: '#EF4444' }
+  ]
+};
+
+/**
+ * 5. OPTIMAL TRADE ENTRY (OTE FIBONACCI 62% - 79%)
+ * Fibonacci retracement dari Swing Low ke Swing High dengan highlight Golden OTE Zone
+ * dan kalkulasi Risk-Reward posisi Long/Short minimum 1:3.
+ */
+const SMC_FIBONACCI_OTE_POSITION_CHART: CustomChartConfig = {
+  title: 'Fibonacci Optimal Trade Entry (OTE 62% - 79%) & Risk-to-Reward Execution',
+  subtitle: 'Pemetaan Dealing Range Institusional: Membeli pada Area Diskon Ekstrem dengan R:R Menguntungkan (1:3+)',
+  timeframe: '15m',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'normal',
+  candles: [
+    { id: 'o0', index: 0, open: 101, high: 102, low: 100, close: 101, volume: 1500, label: 'Swing Low (0%)' },
+    { id: 'o1', index: 1, open: 101, high: 118, low: 100.5, close: 117, volume: 4800, label: 'Impulse Leg' },
+    { id: 'o2', index: 2, open: 117, high: 136, low: 116.5, close: 135, volume: 6200, label: 'Expansion' },
+    { id: 'o3', index: 3, open: 135, high: 140, low: 134, close: 139, volume: 5100, label: 'Swing High (100%)' },
+    { id: 'o4', index: 4, open: 139, high: 139.5, low: 128, close: 129, volume: 2200, label: 'Premium Pullback' },
+    { id: 'o5', index: 5, open: 129, high: 130, low: 120, close: 121, volume: 2600, label: '50% Equilibrium' },
+    { id: 'o6', index: 6, open: 121, high: 122, low: 108.5, close: 110, volume: 4100, label: 'OTE Reversal Touch' },
+    { id: 'o7', index: 7, open: 110, high: 128, low: 109.5, close: 127, volume: 5400, label: 'Bullish Takeoff' },
+    { id: 'o8', index: 8, open: 127, high: 146, low: 126.5, close: 145, volume: 6800, label: 'Target Target (TP1)' },
+    { id: 'o9', index: 9, open: 145, high: 158, low: 144, close: 156, volume: 7200, label: 'Extension -0.27 (TP2)' }
+  ],
+  fibonaccis: [
+    {
+      id: 'fib-ote-dealing-range',
+      startPrice: 100,
+      endPrice: 140,
+      startIndex: 0,
+      endIndex: 7,
+      label: 'Dealing Range: $100.00 (Low) ke $140.00 (High)',
+      levels: [0, 0.5, 0.618, 0.705, 0.786, 1.0, 1.272],
+      showFill: true,
+      fillColor: '#10B981',
+      fillOpacity: 0.16,
+      lineColor: '#38BDF8',
+      lineStyle: 'dashed',
+      showPrices: true
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-ote-sweet-spot',
+      startIndex: 3.5,
+      endIndex: 6.8,
+      topPrice: 115.28,
+      bottomPrice: 108.56,
+      boxType: 'supply_demand',
+      label: 'ICT Optimal Trade Entry Zone (62% - 79% Discount)',
+      labelPosition: 'top-left',
+      color: '#10B981',
+      opacity: 0.24,
+      borderColor: '#059669',
+      borderWidth: 1.5,
+      showMidLine: true,
+      midLineLabel: '70.5% Sweet Spot: $111.80'
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-ote-long-exec',
+      type: 'long',
+      label: 'ICT OTE Precision Long (R:R 1:4.4)',
+      startIndex: 6,
+      endIndex: 9.5,
+      entryPrice: 111,
+      stopPrice: 98,
+      targetPrice: 156,
+      targetColor: '#10B981',
+      stopColor: '#EF4444'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-eq-line',
+      candleIndex: 5,
+      price: 123,
+      text: '50% EQ: $120.00 (Batas Diskon)',
+      style: 'pill',
+      bgColor: '#64748B',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-ote-entry',
+      candleIndex: 6,
+      price: 106,
+      text: 'OTE Entry Fill @ 70.5% ($111.00)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-tp-ext',
+      candleIndex: 9,
+      price: 160,
+      text: 'Take Profit Hit (+45 pts / +4.4R)',
+      style: 'badge',
+      bgColor: '#059669',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-ote-math',
+      candleIndex: 3,
+      price: 142,
+      stepBadge: 'OTE',
+      title: 'KALKULASI RISK TO REWARD OTE:',
+      lines: [
+        'Swing Range: $100 (0.0) -> $140 (1.0).',
+        'Entry Level: 70.5% OTE Sweet Spot di $111.00.',
+        'Stop Loss: $98.00 di bawah Swing Low origin (Risk: $13).',
+        'Target Take Profit: $156.00 (-27% Extension TP) (Gain: $45).'
+      ],
+      footerBadge: '✓ Rasio R:R 1:3.46 Teruji',
+      color: '#10B981'
+    }
+  ],
+  legends: [
+    { id: 'leg-ote', label: 'OTE Golden Zone (62% - 79%)', color: '#10B981' },
+    { id: 'leg-fib', label: 'Fibonacci Levels', color: '#38BDF8' },
+    { id: 'leg-tp', label: 'Target Extension (-27%)', color: '#059669' }
+  ]
+};
 
 export const SMC_ARTICLES: Record<string, EducationalArticle> = {
   // Master Guide SMC & ICT
@@ -46,6 +739,8 @@ Pasar dikendalikan oleh **Interbank Price Delivery Algorithm (IPDA)** yang dijal
         id: 'inducement-vs-sweep',
         title: '2. Inducement (IDM) vs. True Liquidity Sweep',
         visualType: 'liquidity_pools',
+        illustrationMode: 'custom_builder',
+        customChartConfig: SMC_LIQUIDITY_SWEEP_CHART,
         callout: {
           type: 'warning',
           title: 'Jebakan Inducement',
@@ -75,6 +770,8 @@ Institusi besar membutuhkan jutaan lot pesanan lawan. Untuk memperolehnya, merek
         id: 'inefficiency-fvg',
         title: '3. Market Inefficiency & Fair Value Gaps (FVG)',
         visualType: 'fvg_bpr_diagram',
+        illustrationMode: 'custom_builder',
+        customChartConfig: SMC_FAIR_VALUE_GAP_CHART,
         callout: {
           type: 'tip',
           title: 'Aturan 50% Consequent Encroachment',
@@ -107,6 +804,8 @@ Fair Value Gap (FVG) adalah celah ketidaktertumpukan lelang 3 candlestick yang m
         id: 'order-blocks-breakers',
         title: '4. Order Blocks & Breaker Blocks Institusional',
         visualType: 'order_block_diagram',
+        illustrationMode: 'custom_builder',
+        customChartConfig: SMC_ORDER_BLOCK_MITIGATION_CHART,
         callout: {
           type: 'note',
           title: 'Mean Threshold 50%',
@@ -252,6 +951,8 @@ Di dalam struktur lelang pasar yang bergerak naik, harga membentuk ayunan gelomb
         id: 'studi-kasus',
         title: '3. Studi Kasus Nyata EUR/USD',
         visualType: 'liquidity_sweep',
+        illustrationMode: 'custom_builder',
+        customChartConfig: SMC_LIQUIDITY_SWEEP_CHART,
         financialExample: {
           scenario: 'EUR/USD membentuk Higher High di 1.0950, lalu terkoreksi ke 1.0910 (IDM) dan memantul ke 1.0935.',
           analysis: 'Retail trader berbondong-bondong membuka posisi Buy di 1.0930 dengan Stop Loss di 1.0905. Algoritma menekan harga ke 1.0895 untuk memicu likuiditas jual, menyentuh Order Block di 1.0890, lalu meroket.',
@@ -301,6 +1002,8 @@ Dalam pengujian data riil EUR/USD M15, 83% dari pullback pertama pasca penembusa
         id: 'anatomi-fvg',
         title: '1. Anatomi Pembentukan FVG',
         visualType: 'fvg_bpr_diagram',
+        illustrationMode: 'custom_builder',
+        customChartConfig: SMC_FAIR_VALUE_GAP_CHART,
         callout: {
           type: 'note',
           title: '3-Candle Imbalance',
@@ -374,6 +1077,8 @@ Balanced Price Range (BPR) terjadi ketika FVG Bullish ditembus kembali oleh FVG 
         id: 'kriteria-ob',
         title: '1. Kriteria Order Block Sah',
         visualType: 'order_block_diagram',
+        illustrationMode: 'custom_builder',
+        customChartConfig: SMC_ORDER_BLOCK_MITIGATION_CHART,
         callout: {
           type: 'warning',
           title: 'Bukan Sekadar Warna Berlawanan',
@@ -447,6 +1152,8 @@ Mean Threshold (MT) adalah titik 50% dari body candle Order Block. Jika harga me
         id: 'mekanika-breaker',
         title: '1. Mekanika Breaker Block',
         visualType: 'bos_choch',
+        illustrationMode: 'custom_builder',
+        customChartConfig: SMC_BOS_CHOCH_STRUCTURE_CHART,
         callout: {
           type: 'note',
           title: 'Mitigasi Posisi Impas Institusi',
@@ -849,6 +1556,8 @@ Breaker Block adalah Order Block yang gagal menahan harga setelah sebelumnya mem
         id: 'dealing-range',
         title: '1. Memetakan Dealing Range',
         visualType: 'premium_discount',
+        illustrationMode: 'custom_builder',
+        customChartConfig: SMC_FIBONACCI_OTE_POSITION_CHART,
         callout: {
           type: 'note',
           title: 'Definisi Dealing Range',
@@ -931,6 +1640,9 @@ Breaker Block adalah Order Block yang gagal menahan harga setelah sebelumnya mem
       {
         id: 'target-profit',
         title: '3. Target Profit Objektif',
+        visualType: 'entry_protocol',
+        illustrationMode: 'custom_builder',
+        customChartConfig: SMC_FIBONACCI_OTE_POSITION_CHART,
         financialExample: {
           scenario: 'Pukul 10:08 AM EST pada S&P 500 futures (ES), harga menyapu likuiditas pembukaan 09:30 AM di 5,145 lalu membentuk Bearish MSS di M1.',
           analysis: 'Terbentuk FVG M1 di 5,141 - 5,143. Limit sell dipasang di 5,141.50 dengan SL di 5,145.50 (4 poin). Target TP di 5,129.50 (12 poin).',

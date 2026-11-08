@@ -219,7 +219,150 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-9",
         "title": "8. Studi Kasus Konkret: Rekayasa Long Squeeze pada Bitcoin",
-        "content": "Mari kita bedah peristiwa klasik bagaimana Smart Money mengeksekusi aksi pembantaian likuiditas (*Liquidation Hunt*):\n\n```mermaid\nflowchart TD\n    E1[\"Kondisi Awal: BTC Berkonsolidasi di $65.000\"] --> E2[\"Funding Rate Meledak Positif (+0.08%) & OI Naik Tajam\"]\n    E2 --> E3[\"Heatmap Menunjukkan Kolam Likuidasi Long Raksasa di $63.200\"]\n    E3 --> E4[\"Smart Money Menjual Cepat Spot di Bursa Utama\"]\n    E4 --> E5[\"Harga Tertekan Jatuh Menyentuh Titik Pemicu $63.200\"]\n    E5 --> E6[\"Likuidasi Berantai Meledak: Bursa Melempar Market Sell Otomatis\"]\n    E6 --> E7[\"Harga 'Flash Crash' ke $61.500 dalam 5 Menit\"]\n    E7 --> E8[\"Whale Membeli Kembali (Buyback) Seluruh Likuidasi Murah\"]\n    E8 --> E9[\"Harga Rebound Tajam Membentuk Ekor Jarum Panjang (V-Shape Recovery)\"]\n```\n\n### Kronologi Skenario:\n1. **Penumpukan Posisi Serakah**: Bitcoin bergerak santai di kisaran $65.000. Ritel merasa sangat percaya diri bahwa harga akan terbang ke $70.000. Ribuan trader ritel membuka posisi *Long* dengan leverage 20x hingga 50x.\n2. **Gejala Abnormal di Data**: Funding rate melonjak sangat tinggi. Peta likuidasi (*Liquidation Heatmap*) menunjukkan ada lebih dari $800 juta likuidasi posisi long yang bertumpuk rapi tepat di bawah level support psikologis $63.200.\n3. **Aksi Serangan Paus**: Whale tidak perlu membuang modal besar untuk menghancurkan pasar secara permanen. Mereka hanya perlu melakukan penjualan spot agresif sesaat senilai $50 juta untuk menekan harga turun menembus $63.200.\n4. **Efek Domino Likuidasi**: Begitu level $63.200 tersentuh, sistem otomatis bursa mulai mengeksekusi likuidasi paksa ratusan juta dolar posisi long ritel. Ingat: **Likuidasi posisi Long dieksekusi oleh bursa sebagai Market Order SELL**.\n5. **Air Terjun Penjualan Otomatis**: Pesanan jual paksa dari bursa ini menabrak sisa order beli di order book, membanting harga lebih dalam lagi hingga $61.500 hanya dalam tempo 5 menit.\n6. **Panen Raya Whale**: Di harga $61.500, sang Whale sudah memasang antrean *Limit Buy* besar untuk menampung seluruh koin yang diobral paksa oleh bursa dari akun ritel yang hangus.\n7. **Hasil Akhir**: Chart 1-jam ditutup meninggalkan bayangan ekor bawah (*wick*) yang sangat panjang. Ritel menangis modalnya lenyap, sementara Whale tersenyum membawa pulang koin diskon dalam jumlah masif.\n\n---"
+        "content": "Mari kita bedah peristiwa klasik bagaimana Smart Money mengeksekusi aksi pembantaian likuiditas (*Liquidation Hunt*):\n\n```mermaid\nflowchart TD\n    E1[\"Kondisi Awal: BTC Berkonsolidasi di $65.000\"] --> E2[\"Funding Rate Meledak Positif (+0.08%) & OI Naik Tajam\"]\n    E2 --> E3[\"Heatmap Menunjukkan Kolam Likuidasi Long Raksasa di $63.200\"]\n    E3 --> E4[\"Smart Money Menjual Cepat Spot di Bursa Utama\"]\n    E4 --> E5[\"Harga Tertekan Jatuh Menyentuh Titik Pemicu $63.200\"]\n    E5 --> E6[\"Likuidasi Berantai Meledak: Bursa Melempar Market Sell Otomatis\"]\n    E6 --> E7[\"Harga 'Flash Crash' ke $61.500 dalam 5 Menit\"]\n    E7 --> E8[\"Whale Membeli Kembali (Buyback) Seluruh Likuidasi Murah\"]\n    E8 --> E9[\"Harga Rebound Tajam Membentuk Ekor Jarum Panjang (V-Shape Recovery)\"]\n```\n\n### Kronologi Skenario:\n1. **Penumpukan Posisi Serakah**: Bitcoin bergerak santai di kisaran $65.000. Ritel merasa sangat percaya diri bahwa harga akan terbang ke $70.000. Ribuan trader ritel membuka posisi *Long* dengan leverage 20x hingga 50x.\n2. **Gejala Abnormal di Data**: Funding rate melonjak sangat tinggi. Peta likuidasi (*Liquidation Heatmap*) menunjukkan ada lebih dari $800 juta likuidasi posisi long yang bertumpuk rapi tepat di bawah level support psikologis $63.200.\n3. **Aksi Serangan Paus**: Whale tidak perlu membuang modal besar untuk menghancurkan pasar secara permanen. Mereka hanya perlu melakukan penjualan spot agresif sesaat senilai $50 juta untuk menekan harga turun menembus $63.200.\n4. **Efek Domino Likuidasi**: Begitu level $63.200 tersentuh, sistem otomatis bursa mulai mengeksekusi likuidasi paksa ratusan juta dolar posisi long ritel. Ingat: **Likuidasi posisi Long dieksekusi oleh bursa sebagai Market Order SELL**.\n5. **Air Terjun Penjualan Otomatis**: Pesanan jual paksa dari bursa ini menabrak sisa order beli di order book, membanting harga lebih dalam lagi hingga $61.500 hanya dalam tempo 5 menit.\n6. **Panen Raya Whale**: Di harga $61.500, sang Whale sudah memasang antrean *Limit Buy* besar untuk menampung seluruh koin yang diobral paksa oleh bursa dari akun ritel yang hangus.\n7. **Hasil Akhir**: Chart 1-jam ditutup meninggalkan bayangan ekor bawah (*wick*) yang sangat panjang. Ritel menangis modalnya lenyap, sementara Whale tersenyum membawa pulang koin diskon dalam jumlah masif.\n\n---",
+        illustrationMode: 'custom_builder',
+        customChartConfig: {
+          title: 'ANATOMI LONG SQUEEZE & REKAYASA STOP HUNT WHALE',
+          subtitle: 'BTC/USDT H1 • V-Shape Liquidation Sweep & Institutional Absorption',
+          timeframe: 'H1',
+          showCandles: true,
+          showVolume: true,
+          candleSpacing: 'normal',
+          candles: [
+            { id: 'c0', index: 0, open: 64800, high: 65200, low: 64700, close: 65100, volume: 1200, label: 'Konsolidasi' },
+            { id: 'c1', index: 1, open: 65100, high: 65350, low: 64900, close: 65000, volume: 1400 },
+            { id: 'c2', index: 2, open: 65000, high: 65150, low: 64600, close: 64750, volume: 1600, label: 'Support EQL' },
+            { id: 'c3', index: 3, open: 64750, high: 64900, low: 63800, close: 64100, volume: 3800, label: 'Whale Dump' },
+            { id: 'c4', index: 4, open: 64100, high: 64200, low: 61500, close: 63500, volume: 8900, label: 'Liquidation Spike' },
+            { id: 'c5', index: 5, open: 63500, high: 65200, low: 63400, close: 65000, volume: 6400, label: 'V-Reversal' },
+            { id: 'c6', index: 6, open: 65000, high: 66100, low: 64950, close: 65900, volume: 4500, label: 'Ekspansi' },
+            { id: 'c7', index: 7, open: 65900, high: 66800, low: 65700, close: 66600, volume: 4200, label: 'New High' }
+          ],
+          boxes: [
+            {
+              id: 'box-liq-cluster',
+              startIndex: 1,
+              endIndex: 4,
+              topPrice: 64600,
+              bottomPrice: 63200,
+              boxType: 'liquidity_pool',
+              label: 'Zona Likuidasi Long Ritel ($800M+ Cluster)',
+              color: '#F43F5E',
+              opacity: 0.18,
+              borderStyle: 'dashed'
+            },
+            {
+              id: 'box-whale-absorption',
+              startIndex: 4,
+              endIndex: 6,
+              topPrice: 63500,
+              bottomPrice: 61500,
+              boxType: 'order_block',
+              label: 'Whale Limit Absorption & Buyback Zone',
+              color: '#10B981',
+              opacity: 0.2,
+              showMidLine: true,
+              midLineLabel: '50% Mean Rebound'
+            }
+          ],
+          trendlines: [
+            {
+              id: 'tl-support-eql',
+              x1Index: 0,
+              y1Price: 64600,
+              x2Index: 3,
+              y2Price: 64600,
+              color: '#F59E0B',
+              strokeWidth: 2,
+              lineStyle: 'dashed',
+              label: 'EQL Ritel Support ($64.600)',
+              labelAlignment: 'start'
+            }
+          ],
+          arrows: [
+            {
+              id: 'arr-dump',
+              startIndex: 2,
+              startPrice: 65000,
+              endIndex: 4,
+              endPrice: 61600,
+              color: '#EF4444',
+              strokeWidth: 2,
+              label: 'Cascade Market Sell Likuidasi'
+            },
+            {
+              id: 'arr-pump',
+              startIndex: 4,
+              startPrice: 62200,
+              endIndex: 7,
+              endPrice: 66500,
+              color: '#10B981',
+              strokeWidth: 2,
+              curved: true,
+              curveOffset: -1200,
+              label: 'Whale Institutional Pump'
+            }
+          ],
+          badges: [
+            {
+              id: 'b-trap',
+              candleIndex: 2,
+              price: 65500,
+              text: 'Funding Rate +0.08% (Greed Ekstrem)',
+              style: 'pill',
+              bgColor: '#EF4444',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-sweep',
+              candleIndex: 4,
+              price: 61100,
+              text: 'Stop Hunt $61.500 (Long Flushout)',
+              style: 'badge',
+              bgColor: '#F43F5E',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-vshape',
+              candleIndex: 5,
+              price: 65600,
+              text: 'Institutional Re-Absorption',
+              style: 'pill',
+              bgColor: '#10B981',
+              textColor: '#FFFFFF'
+            }
+          ],
+          infoCards: [
+            {
+              id: 'card-1',
+              candleIndex: 2,
+              price: 66300,
+              width: 170,
+              stepBadge: '1',
+              title: 'JEBAKAN LIQUIDITY',
+              lines: [
+                'Ritel bertumpuk di support $64.600.',
+                'Funding rate overheat & leverage tinggi.'
+              ],
+              footerBadge: '⚠️ Over-leveraged Long',
+              color: '#F59E0B'
+            },
+            {
+              id: 'card-2',
+              candleIndex: 5,
+              price: 62800,
+              width: 175,
+              stepBadge: '2',
+              title: 'EKSEKUSI PEMBUNUHAN',
+              lines: [
+                'Paus memicu domino sell stop.',
+                'Wick menyapu bersih likuidasi ke $61.500.'
+              ],
+              footerBadge: '✓ Diskon Diserap Institusi',
+              color: '#10B981'
+            }
+          ]
+        },
       },
       {
         "id": "sec-10",
@@ -435,7 +578,146 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-4",
         "title": "3. Anatomi Liquidity Sweep & Judas Swing",
-        "content": "Pernahkah Anda mengalami peristiwa menjengkelkan: Anda pasang Stop Loss di bawah support, tiba-tiba ada satu batang lilin dengan jarum bawah (*wick*) yang sangat panjang menusuk stop loss Anda, lalu sedetik kemudian lilin ditutup hijau dan harga meroket 10% tanpa Anda?\n\nPeristiwa tersebut dinamakan **Liquidity Sweep** (Sapuan Likuiditas) atau dalam tradisi SMC sering disebut **Judas Swing**.\n\n```mermaid\nflowchart TD\n    subgraph Anatomi_Judas_Swing___Liquidit[\"Anatomi Judas Swing / Liquidity Sweep\"]\n        L1[\"1. Konsolidasi Ritel membentuk Support Rapi (EQL)\"]\n        L2[\"2. Tumpukan Stop Loss Menumpuk Tebal di Bawah Support\"]\n        L3[\"3. Penetrasi Agresif (Ekor Jarum Menusuk Menembus Level)\"]\n        L4[\"4. Order Beli Whale Terisi Penuh dari Stop Loss Ritel\"]\n        L5[\"5. Rejection Kuat: Lilin Ditutup (Body Close) Kembali di Atas Support\"]\n        L6[\"6. Harga Melesat Kencang Meninggalkan Ritel yang Kena Cut Loss\"]\n    end\n\n    L1 --> L2 --> L3 --> L4 --> L5 --> L6\n```\n\n### Ciri-Ciri Utama Liquidity Sweep yang Valid:\n1. **Pelepasan Ekor Jarum (*Wick Only*):** Hanya jarum lilin (*shadow/wick*) yang menembus level EQH/EQL, sementara badan lilin (*candle body*) ditutup kembali ke dalam zona struktur sebelumnya.\n2. **Reaksi Cepat (*Instant Rejection*):** Harga tidak bertahan lama di luar zona likuiditas; langsung terjadi perlawanan arah dalam hitungan menit/jam berikutnya.\n3. **Peningkatan Volume Riil:** Jarum sweep selalu disertai lonjakan volume transaksi besar karena jutaan dolar stop loss terpicu bersamaan.\n\n---"
+        "content": "Pernahkah Anda mengalami peristiwa menjengkelkan: Anda pasang Stop Loss di bawah support, tiba-tiba ada satu batang lilin dengan jarum bawah (*wick*) yang sangat panjang menusuk stop loss Anda, lalu sedetik kemudian lilin ditutup hijau dan harga meroket 10% tanpa Anda?\n\nPeristiwa tersebut dinamakan **Liquidity Sweep** (Sapuan Likuiditas) atau dalam tradisi SMC sering disebut **Judas Swing**.\n\n```mermaid\nflowchart TD\n    subgraph Anatomi_Judas_Swing___Liquidit[\"Anatomi Judas Swing / Liquidity Sweep\"]\n        L1[\"1. Konsolidasi Ritel membentuk Support Rapi (EQL)\"]\n        L2[\"2. Tumpukan Stop Loss Menumpuk Tebal di Bawah Support\"]\n        L3[\"3. Penetrasi Agresif (Ekor Jarum Menusuk Menembus Level)\"]\n        L4[\"4. Order Beli Whale Terisi Penuh dari Stop Loss Ritel\"]\n        L5[\"5. Rejection Kuat: Lilin Ditutup (Body Close) Kembali di Atas Support\"]\n        L6[\"6. Harga Melesat Kencang Meninggalkan Ritel yang Kena Cut Loss\"]\n    end\n\n    L1 --> L2 --> L3 --> L4 --> L5 --> L6\n```\n\n### Ciri-Ciri Utama Liquidity Sweep yang Valid:\n1. **Pelepasan Ekor Jarum (*Wick Only*):** Hanya jarum lilin (*shadow/wick*) yang menembus level EQH/EQL, sementara badan lilin (*candle body*) ditutup kembali ke dalam zona struktur sebelumnya.\n2. **Reaksi Cepat (*Instant Rejection*):** Harga tidak bertahan lama di luar zona likuiditas; langsung terjadi perlawanan arah dalam hitungan menit/jam berikutnya.\n3. **Peningkatan Volume Riil:** Jarum sweep selalu disertai lonjakan volume transaksi besar karena jutaan dolar stop loss terpicu bersamaan.\n\n---",
+        illustrationMode: 'custom_builder',
+        customChartConfig: {
+          title: 'ANATOMI LIQUIDITY SWEEP & JUDAS SWING (SSL TO BSL)',
+          subtitle: 'SOL/USDT H1 • Equal Lows Clean-out to Higher Expansion',
+          timeframe: 'H1',
+          showCandles: true,
+          showVolume: true,
+          candleSpacing: 'normal',
+          candles: [
+            { id: 'c0', index: 0, open: 140, high: 145, low: 139, close: 144, volume: 1500, label: 'Swing High 1' },
+            { id: 'c1', index: 1, open: 144, high: 144.5, low: 135, close: 136, volume: 1800, label: 'EQL Low 1' },
+            { id: 'c2', index: 2, open: 136, high: 144, low: 135.5, close: 142, volume: 1600, label: 'Pantulan Ritel' },
+            { id: 'c3', index: 3, open: 142, high: 143, low: 135, close: 136.5, volume: 1900, label: 'EQL Low 2' },
+            { id: 'c4', index: 4, open: 136.5, high: 137.5, low: 128, close: 138, volume: 5400, label: 'Judas Sweep Wick' },
+            { id: 'c5', index: 5, open: 138, high: 146, low: 137.5, close: 145.5, volume: 4600, label: 'Displacement' },
+            { id: 'c6', index: 6, open: 145.5, high: 152, low: 144.8, close: 150.5, volume: 5100, label: 'BSL Cleared' },
+            { id: 'c7', index: 7, open: 150.5, high: 156, low: 149.5, close: 154.8, volume: 4800, label: 'Take Profit Area' }
+          ],
+          boxes: [
+            {
+              id: 'box-ssl',
+              startIndex: 1,
+              endIndex: 4,
+              topPrice: 135,
+              bottomPrice: 128,
+              boxType: 'liquidity_pool',
+              label: 'Sell-side Liquidity (SSL) Clean-out Zone',
+              color: '#F43F5E',
+              opacity: 0.2,
+              borderStyle: 'dashed'
+            },
+            {
+              id: 'box-bsl',
+              startIndex: 0,
+              endIndex: 7,
+              topPrice: 156,
+              bottomPrice: 145,
+              boxType: 'liquidity_pool',
+              label: 'Buy-side Liquidity (BSL) Target Zone',
+              color: '#10B981',
+              opacity: 0.16,
+              borderStyle: 'dashed'
+            }
+          ],
+          trendlines: [
+            {
+              id: 'tl-eql',
+              x1Index: 1,
+              y1Price: 135,
+              x2Index: 4,
+              y2Price: 135,
+              color: '#EF4444',
+              strokeWidth: 2,
+              lineStyle: 'dashed',
+              label: 'Equal Lows (EQL Support Ritel: $135)',
+              labelAlignment: 'center'
+            },
+            {
+              id: 'tl-bsl',
+              x1Index: 0,
+              y1Price: 145,
+              x2Index: 6,
+              y2Price: 145,
+              color: '#10B981',
+              strokeWidth: 1.5,
+              lineStyle: 'dashed',
+              label: 'Pucuk Resistance Ritel BSL ($145)',
+              labelAlignment: 'start'
+            }
+          ],
+          arrows: [
+            {
+              id: 'arr-judas',
+              startIndex: 3,
+              startPrice: 138,
+              endIndex: 4,
+              endPrice: 129,
+              color: '#EF4444',
+              strokeWidth: 2,
+              label: 'Judas Dip (Stop Hunt)'
+            },
+            {
+              id: 'arr-expansion',
+              startIndex: 4,
+              startPrice: 138,
+              endIndex: 6,
+              endPrice: 151,
+              color: '#10B981',
+              strokeWidth: 2.5,
+              label: 'Smart Money Expansion'
+            }
+          ],
+          badges: [
+            {
+              id: 'b-ssl-hit',
+              candleIndex: 4,
+              price: 126.5,
+              text: 'SSL Swept (Wick-Only Rejection)',
+              style: 'badge',
+              bgColor: '#EF4444',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-body-close',
+              candleIndex: 4,
+              price: 139.5,
+              text: 'Body Close di Atas Support EQL',
+              style: 'pill',
+              bgColor: '#10B981',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-bsl-hit',
+              candleIndex: 6,
+              price: 153.5,
+              text: 'BSL Liquidity Run Terpenuhi',
+              style: 'pill',
+              bgColor: '#38BDF8',
+              textColor: '#FFFFFF'
+            }
+          ],
+          infoCards: [
+            {
+              id: 'card-judas',
+              candleIndex: 4,
+              price: 133,
+              width: 175,
+              stepBadge: '⚡',
+              title: 'JUDAS SWING TRIGGER',
+              lines: [
+                'Wick menembus $135 ke $128.',
+                'Stop loss ritel ludes tersapu.',
+                'Body candle ditutup kokoh di $138.'
+              ],
+              footerBadge: '✓ Konfirmasi Reversal',
+              color: '#F43F5E'
+            }
+          ]
+        },
       },
       {
         "id": "sec-5",
@@ -507,7 +789,119 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-4",
         "title": "3. Break of Structure (BOS): Konfirmasi Penembusan Sah",
-        "content": "Kapan sebuah penembusan struktur dianggap **sah dan terkonfirmasi**, dan kapan penembusan tersebut hanyalah jebakan sapuan likuiditas (*sweep*)?\n\n> [!IMPORTANT]\n> **Aturan Emas BOS Akademi Crypto (Body Close Rule):**\n> Sebuah Break of Structure (BOS) HANYA dinyatakan valid jika **Badan Lilin (Candle Body)** ditutup secara tegas (*close above/below*) menembus level puncak atau lembah swing sebelumnya pada time frame yang dianalisa. Ekor jarum (*wick*) saja HANYALAH sapuan likuiditas (*sweep*), bukan BOS!\n\n```mermaid\nflowchart TD\n    subgraph Validasi_Break_of_Structure__B[\"Validasi Break of Structure (BOS)\"]\n        C1[\"Harga Mendekati Swing High Terakhir\"]\n        C1 --> C2{\"Apakah Lilin Menembus Garis High?\"}\n        C2 -- \"Hanya Jarum Menembus (Wick Only)\" --> C3[\"INVALID BOS!<br/>Ini adalah Liquidity Sweep / Rejection\"]\n        C2 -- \"Badan Lilin Ditutup di Luar Garis (Body Close)\" --> C4[\"VALID BOS!<br/>Tren Berlanjut Dikonfirmasi\"]\n    end\n```\n\n### Mengapa Aturan Badan Lilin Begitu Vital?\n- **Badan Lilin (Body):** Mencerminkan volume perdagangan yang menetap dan kesepakatan nilai (*acceptance of value*) antar pelaku pasar institusi pada periode waktu tersebut.\n- **Ekor Jarum (Wick):** Mencerminkan penolakan harga (*rejection*) dan aktivitas eksekusi stop loss darurat yang bersifat sementara.\n\n---"
+        "content": "Kapan sebuah penembusan struktur dianggap **sah dan terkonfirmasi**, dan kapan penembusan tersebut hanyalah jebakan sapuan likuiditas (*sweep*)?\n\n> [!IMPORTANT]\n> **Aturan Emas BOS Akademi Crypto (Body Close Rule):**\n> Sebuah Break of Structure (BOS) HANYA dinyatakan valid jika **Badan Lilin (Candle Body)** ditutup secara tegas (*close above/below*) menembus level puncak atau lembah swing sebelumnya pada time frame yang dianalisa. Ekor jarum (*wick*) saja HANYALAH sapuan likuiditas (*sweep*), bukan BOS!\n\n```mermaid\nflowchart TD\n    subgraph Validasi_Break_of_Structure__B[\"Validasi Break of Structure (BOS)\"]\n        C1[\"Harga Mendekati Swing High Terakhir\"]\n        C1 --> C2{\"Apakah Lilin Menembus Garis High?\"}\n        C2 -- \"Hanya Jarum Menembus (Wick Only)\" --> C3[\"INVALID BOS!<br/>Ini adalah Liquidity Sweep / Rejection\"]\n        C2 -- \"Badan Lilin Ditutup di Luar Garis (Body Close)\" --> C4[\"VALID BOS!<br/>Tren Berlanjut Dikonfirmasi\"]\n    end\n```\n\n### Mengapa Aturan Badan Lilin Begitu Vital?\n- **Badan Lilin (Body):** Mencerminkan volume perdagangan yang menetap dan kesepakatan nilai (*acceptance of value*) antar pelaku pasar institusi pada periode waktu tersebut.\n- **Ekor Jarum (Wick):** Mencerminkan penolakan harga (*rejection*) dan aktivitas eksekusi stop loss darurat yang bersifat sementara.\n\n---",
+        illustrationMode: 'custom_builder',
+        customChartConfig: {
+          title: 'MARKET STRUCTURE: HIGHER HIGHS, HIGHER LOWS & VALID BOS',
+          subtitle: 'ETH/USDT H4 • Body Close Validation vs Sweep Anomali',
+          timeframe: 'H4',
+          showCandles: true,
+          showVolume: true,
+          candleSpacing: 'normal',
+          candles: [
+            { id: 'c0', index: 0, open: 3100, high: 3250, low: 3080, close: 3220, volume: 2200, label: 'Origin' },
+            { id: 'c1', index: 1, open: 3220, high: 3400, low: 3200, close: 3380, volume: 3100, label: 'Swing High 1' },
+            { id: 'c2', index: 2, open: 3380, high: 3390, low: 3260, close: 3280, volume: 1800, label: 'Pullback' },
+            { id: 'c3', index: 3, open: 3280, high: 3320, low: 3220, close: 3300, volume: 2500, label: 'Strong Low (HL)' },
+            { id: 'c4', index: 4, open: 3300, high: 3430, low: 3290, close: 3370, volume: 3900, label: 'Fake Sweep' },
+            { id: 'c5', index: 5, open: 3370, high: 3580, low: 3360, close: 3550, volume: 5600, label: 'Valid BOS' },
+            { id: 'c6', index: 6, open: 3550, high: 3650, low: 3520, close: 3620, volume: 4400, label: 'New High (HH)' },
+            { id: 'c7', index: 7, open: 3620, high: 3630, low: 3480, close: 3510, volume: 2900, label: 'New Pullback' }
+          ],
+          polylines: [
+            {
+              id: 'pl-structure-wave',
+              points: [
+                { index: 0, price: 3080 },
+                { index: 1, price: 3400 },
+                { index: 3, price: 3220 },
+                { index: 6, price: 3650 },
+                { index: 7, price: 3480 }
+              ],
+              color: '#38BDF8',
+              strokeWidth: 2.5,
+              curveType: 'zigzag',
+              showDots: true,
+              label: 'Gelombang Makro Bullish (H4)'
+            }
+          ],
+          boxes: [
+            {
+              id: 'box-strong-low',
+              startIndex: 2,
+              endIndex: 4,
+              topPrice: 3300,
+              bottomPrice: 3220,
+              boxType: 'order_block',
+              label: 'Strong Low Protected Base ($3.220)',
+              color: '#10B981',
+              opacity: 0.18,
+              showMidLine: true,
+              midLineLabel: 'Level Pertahanan H4'
+            }
+          ],
+          trendlines: [
+            {
+              id: 'tl-bos-level',
+              x1Index: 1,
+              y1Price: 3400,
+              x2Index: 6,
+              y2Price: 3400,
+              color: '#10B981',
+              strokeWidth: 2,
+              lineStyle: 'dashed',
+              label: 'BOS Bullish Level ($3.400)',
+              labelAlignment: 'center',
+              showArrow: true
+            }
+          ],
+          badges: [
+            {
+              id: 'b-fake-sweep',
+              candleIndex: 4,
+              price: 3450,
+              text: 'Wick Only = Bukan BOS Sah!',
+              style: 'pill',
+              bgColor: '#EF4444',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-valid-bos',
+              candleIndex: 5,
+              price: 3570,
+              text: 'Body Close Valid di Atas $3.400 (BOS)',
+              style: 'badge',
+              bgColor: '#10B981',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-strong-low',
+              candleIndex: 3,
+              price: 3190,
+              text: 'Strong Low (Pelindung Akumulasi)',
+              style: 'pill',
+              bgColor: '#10B981',
+              textColor: '#FFFFFF'
+            }
+          ],
+          infoCards: [
+            {
+              id: 'card-bos-rule',
+              candleIndex: 5,
+              price: 3470,
+              width: 175,
+              stepBadge: '✓',
+              title: 'ATURAN BODY CLOSE BOS',
+              lines: [
+                'Candle 4: Wick menusuk -> Invalid.',
+                'Candle 5: Body tutup di $3.550.',
+                'BOS terkonfirmasi sah 100%.'
+              ],
+              footerBadge: '✓ Tren Bullish Berlanjut',
+              color: '#10B981'
+            }
+          ]
+        },
       },
       {
         "id": "sec-5",
@@ -569,7 +963,132 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-3",
         "title": "2. Anatomi CHoCH Berkualitas Tinggi (High-Probability CHoCH)",
-        "content": "Tidak semua penembusan Higher Low atau Lower High layak disebut sebagai sinyal pembalikan arah yang sah. Di pasar kripto yang penuh manipulasi, sering kali terjadi pergerakan palsu yang sekadar menyentuh swing low lalu melanjutkan tren naiknya (*Fakeout / Minor Shift*).\n\nSebuah CHoCH berprobabilitas tinggi (grade A+) **wajib memiliki 3 elemen mutlak**:\n\n```mermaid\nflowchart TD\n    Step1[\"1. Penyapuan Likuiditas (Liquidity Sweep)<br/>Harga menyapu level EQH / BSL di area harga mahal (Premium)\"]\n    Step2[\"2. Pergerakan Impulsif Cepat (Displacement)<br/>Lilin merah raksasa dengan volume besar tanpa perlawanan\"]\n    Step3[\"3. Penutupan Badan Lilin (Body Close)<br/>Badan lilin resmi ditutup di bawah Higher Low terakhir penanggung jawab BOS\"]\n\n    Step1 --> Step2\n    Step2 --> Step3\n```\n\n### Elemen 1: Diawali Liquidity Sweep di Zona Penting\nPembalikan arah yang sejati selalu membutuhkan bahan bakar penutup posisi dari Smart Money. Oleh karena itu, sebelum harga membanting ke bawah merusak struktur, Smart Money hampir selalu menyapu pucuk tertinggi sebelumnya (*High Sweep*) terlebih dahulu untuk melahap semua stop loss shorters.\n\n### Elemen 2: Terjadi Displacement (Lompatan Impulsif)\nHarga tidak turun perlahan atau tersendat-sendat; harga menembus level struktur dengan lilin berbadan besar (*Expansion Candle*) yang menyisakan celah ketidakseimbangan harga (*Fair Value Gap / FVG*). Ini adalah tanda tangan nyata dari jejak kaki institusi (*institutional footprint*).\n\n### Elemen 3: Menembus \"The Valid Swing\" (Bukan Struktur Minor)\nLevel yang ditembus haruslah titik **Strong Low** yang bertanggung jawab langsung mencetak Higher High terakhir, bukan sekadar riak gelombang kecil di tengah jalan.\n\n---"
+        "content": "Tidak semua penembusan Higher Low atau Lower High layak disebut sebagai sinyal pembalikan arah yang sah. Di pasar kripto yang penuh manipulasi, sering kali terjadi pergerakan palsu yang sekadar menyentuh swing low lalu melanjutkan tren naiknya (*Fakeout / Minor Shift*).\n\nSebuah CHoCH berprobabilitas tinggi (grade A+) **wajib memiliki 3 elemen mutlak**:\n\n```mermaid\nflowchart TD\n    Step1[\"1. Penyapuan Likuiditas (Liquidity Sweep)<br/>Harga menyapu level EQH / BSL di area harga mahal (Premium)\"]\n    Step2[\"2. Pergerakan Impulsif Cepat (Displacement)<br/>Lilin merah raksasa dengan volume besar tanpa perlawanan\"]\n    Step3[\"3. Penutupan Badan Lilin (Body Close)<br/>Badan lilin resmi ditutup di bawah Higher Low terakhir penanggung jawab BOS\"]\n\n    Step1 --> Step2\n    Step2 --> Step3\n```\n\n### Elemen 1: Diawali Liquidity Sweep di Zona Penting\nPembalikan arah yang sejati selalu membutuhkan bahan bakar penutup posisi dari Smart Money. Oleh karena itu, sebelum harga membanting ke bawah merusak struktur, Smart Money hampir selalu menyapu pucuk tertinggi sebelumnya (*High Sweep*) terlebih dahulu untuk melahap semua stop loss shorters.\n\n### Elemen 2: Terjadi Displacement (Lompatan Impulsif)\nHarga tidak turun perlahan atau tersendat-sendat; harga menembus level struktur dengan lilin berbadan besar (*Expansion Candle*) yang menyisakan celah ketidakseimbangan harga (*Fair Value Gap / FVG*). Ini adalah tanda tangan nyata dari jejak kaki institusi (*institutional footprint*).\n\n### Elemen 3: Menembus \"The Valid Swing\" (Bukan Struktur Minor)\nLevel yang ditembus haruslah titik **Strong Low** yang bertanggung jawab langsung mencetak Higher High terakhir, bukan sekadar riak gelombang kecil di tengah jalan.\n\n---",
+        illustrationMode: 'custom_builder',
+        customChartConfig: {
+          title: 'CHANGE OF CHARACTER (CHOCH): SINYAL DINI PEMBALIKAN TREN',
+          subtitle: 'BTC/USDT M15 • Bullish Uptrend Exhaustion ke Bearish Transition',
+          timeframe: 'M15',
+          showCandles: true,
+          showVolume: true,
+          candleSpacing: 'normal',
+          candles: [
+            { id: 'c0', index: 0, open: 66800, high: 67600, low: 66700, close: 67500, volume: 2200, label: 'Higher High 1' },
+            { id: 'c1', index: 1, open: 67500, high: 67550, low: 66900, close: 67050, volume: 1800, label: 'Higher Low (HL)' },
+            { id: 'c2', index: 2, open: 67050, high: 68400, low: 67000, close: 68200, volume: 3400, label: 'Liquidity Sweep' },
+            { id: 'c3', index: 3, open: 68200, high: 68300, low: 67800, close: 67900, volume: 2400, label: 'Exhaustion' },
+            { id: 'c4', index: 4, open: 67900, high: 68000, low: 66400, close: 66500, volume: 6800, label: 'Displacement' },
+            { id: 'c5', index: 5, open: 66500, high: 67200, low: 66350, close: 67100, volume: 2800, label: 'Retest Bearish FVG' },
+            { id: 'c6', index: 6, open: 67100, high: 67150, low: 65400, close: 65600, volume: 5900, label: 'Bearish Continuation' },
+            { id: 'c7', index: 7, open: 65600, high: 65800, low: 64900, close: 65100, volume: 4900, label: 'New Lower Low' }
+          ],
+          polylines: [
+            {
+              id: 'pl-choch-wave',
+              points: [
+                { index: 0, price: 66700 },
+                { index: 0, price: 67600 },
+                { index: 1, price: 66900 },
+                { index: 2, price: 68400 },
+                { index: 4, price: 66400 },
+                { index: 5, price: 67200 },
+                { index: 7, price: 64900 }
+              ],
+              color: '#F43F5E',
+              strokeWidth: 2,
+              curveType: 'zigzag',
+              showDots: true,
+              label: 'Peralihan Struktur Uptrend ke Downtrend'
+            }
+          ],
+          trendlines: [
+            {
+              id: 'tl-choch-line',
+              x1Index: 1,
+              y1Price: 66900,
+              x2Index: 5,
+              y2Price: 66900,
+              color: '#EF4444',
+              strokeWidth: 2,
+              lineStyle: 'dashed',
+              label: 'CHoCH Trigger Level ($66.900)',
+              labelAlignment: 'center',
+              showArrow: true
+            },
+            {
+              id: 'tl-sweep-bsl',
+              x1Index: 0,
+              y1Price: 67600,
+              x2Index: 3,
+              y2Price: 67600,
+              color: '#F59E0B',
+              strokeWidth: 1.5,
+              lineStyle: 'dotted',
+              label: 'BSL Liquidity Sweep ($67.600)'
+            }
+          ],
+          boxes: [
+            {
+              id: 'box-bearish-fvg',
+              startIndex: 4,
+              endIndex: 6,
+              topPrice: 67800,
+              bottomPrice: 66900,
+              boxType: 'fvg',
+              label: 'Bearish Fair Value Gap (Retest Entry)',
+              color: '#38BDF8',
+              opacity: 0.22,
+              showMidLine: true,
+              midLineLabel: '50% Consequent Encroachment'
+            }
+          ],
+          badges: [
+            {
+              id: 'b-top-sweep',
+              candleIndex: 2,
+              price: 68650,
+              text: 'Liquidity Sweep Pucuk ($68.400)',
+              style: 'badge',
+              bgColor: '#F59E0B',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-choch-break',
+              candleIndex: 4,
+              price: 66200,
+              text: 'Body Close Menembus Strong HL (CHoCH)',
+              style: 'pill',
+              bgColor: '#EF4444',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-sell-retest',
+              candleIndex: 5,
+              price: 67450,
+              text: 'Retest FVG Mitigasi (High-Probability Sell)',
+              style: 'pill',
+              bgColor: '#10B981',
+              textColor: '#FFFFFF'
+            }
+          ],
+          infoCards: [
+            {
+              id: 'card-choch-step',
+              candleIndex: 3,
+              price: 67400,
+              width: 175,
+              stepBadge: '⚡',
+              title: '3 SYARAT MUTLAK CHOCH',
+              lines: [
+                '1. Sweep BSL pucuk terdahulu.',
+                '2. Displacement merah masif.',
+                '3. Body close di bawah HL kunci.'
+              ],
+              footerBadge: '✓ Sinyal Balik Arah Sah',
+              color: '#EF4444'
+            }
+          ]
+        },
       },
       {
         "id": "sec-4",
@@ -656,7 +1175,139 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-6",
         "title": "5. Studi Kasus Konkret: Eksekusi Retest Bullish OB pada BTC/USDT",
-        "content": "Mari kita bedah skenario nyata pembentukan Bullish Order Block pada time frame H1 Bitcoin (BTC/USDT):\n\n### Skenario Lapangan:\n1. **Fase Likuidasi (Sweep)**: BTC berada dalam tren turun santai menuju level psikologis $62.000. Terdapat banyak trader ritel memasang posisi *Buy* dengan Stop Loss tepat di bawah $62.000. Tiba-tiba muncul satu lilin merah H1 yang menembus turun hingga $61.600, menjilat semua *stop loss* ritel.\n2. **Displacement Agresif**: Tepat setelah lilin merah jam 14:00 UTC ditutup di $61.750, muncul lilin hijau raksasa H1 jam 15:00 dan 16:00 yang melonjak drastis hingga $64.500. Lonjakan ini mematahkan *Swing High* sebelumnya di $63.200 (CHoCH Terkonfirmasi) dan meninggalkan rongga *Fair Value Gap* (FVG) yang lebar.\n3. **Identifikasi Zona OB**: Kita menandai badan (*body*) hingga sumbu (*wick*) dari lilin merah H1 jam 14:00 ($61.600 - $62.100) sebagai **Bullish Order Block H1**.\n4. **Fase Retest & Entry**:\n   - Tiga hari kemudian, harga BTC perlahan terkoreksi turun tanpa momentum agresif (*corrective pull-back*).\n   - Trader ritel panik mengira BTC akan *dump* kembali.\n   - Namun, trader Akademi Crypto memasang **Limit Order Buy** di bagian atas zona OB ($62.050) dengan **Stop Loss ketat di $61.500** (sedikit di bawah sumbu terendah OB).\n   - Begitu harga menyentuh $61.900 (masuk ke zona OB), harga langsung bereaksi seperti bola basket membentur lantai beton dan melesat kembali ke $66.000.\n   - **Hasil**: Risk to Reward Ratio (RRR) mencapai **1:7.5** hanya dalam kurun waktu 48 jam!\n\n---"
+        "content": "Mari kita bedah skenario nyata pembentukan Bullish Order Block pada time frame H1 Bitcoin (BTC/USDT):\n\n### Skenario Lapangan:\n1. **Fase Likuidasi (Sweep)**: BTC berada dalam tren turun santai menuju level psikologis $62.000. Terdapat banyak trader ritel memasang posisi *Buy* dengan Stop Loss tepat di bawah $62.000. Tiba-tiba muncul satu lilin merah H1 yang menembus turun hingga $61.600, menjilat semua *stop loss* ritel.\n2. **Displacement Agresif**: Tepat setelah lilin merah jam 14:00 UTC ditutup di $61.750, muncul lilin hijau raksasa H1 jam 15:00 dan 16:00 yang melonjak drastis hingga $64.500. Lonjakan ini mematahkan *Swing High* sebelumnya di $63.200 (CHoCH Terkonfirmasi) dan meninggalkan rongga *Fair Value Gap* (FVG) yang lebar.\n3. **Identifikasi Zona OB**: Kita menandai badan (*body*) hingga sumbu (*wick*) dari lilin merah H1 jam 14:00 ($61.600 - $62.100) sebagai **Bullish Order Block H1**.\n4. **Fase Retest & Entry**:\n   - Tiga hari kemudian, harga BTC perlahan terkoreksi turun tanpa momentum agresif (*corrective pull-back*).\n   - Trader ritel panik mengira BTC akan *dump* kembali.\n   - Namun, trader Akademi Crypto memasang **Limit Order Buy** di bagian atas zona OB ($62.050) dengan **Stop Loss ketat di $61.500** (sedikit di bawah sumbu terendah OB).\n   - Begitu harga menyentuh $61.900 (masuk ke zona OB), harga langsung bereaksi seperti bola basket membentur lantai beton dan melesat kembali ke $66.000.\n   - **Hasil**: Risk to Reward Ratio (RRR) mencapai **1:7.5** hanya dalam kurun waktu 48 jam!\n\n---",
+        illustrationMode: 'custom_builder',
+        customChartConfig: {
+          title: 'ANATOMI BULLISH ORDER BLOCK & 50% MEAN THRESHOLD (MT)',
+          subtitle: 'BTC/USDT H1 • Unmitigated Institutional Footprint & Retest Execution',
+          timeframe: 'H1',
+          showCandles: true,
+          showVolume: true,
+          candleSpacing: 'normal',
+          candles: [
+            { id: 'c0', index: 0, open: 62400, high: 62500, low: 61900, close: 62000, volume: 1800, label: 'Langkah Awal' },
+            { id: 'c1', index: 1, open: 62000, high: 62100, low: 61600, close: 61750, volume: 4200, label: 'Lilin Bullish OB' },
+            { id: 'c2', index: 2, open: 61750, high: 63600, low: 61700, close: 63400, volume: 6900, label: 'Displacement 1' },
+            { id: 'c3', index: 3, open: 63400, high: 64700, low: 63300, close: 64500, volume: 7800, label: 'Displacement 2 (BOS)' },
+            { id: 'c4', index: 4, open: 64500, high: 64600, low: 63700, close: 63850, volume: 2400, label: 'Pullback Lemah' },
+            { id: 'c5', index: 5, open: 63850, high: 63900, low: 62700, close: 62800, volume: 2100, label: 'Koreksi Menuju OB' },
+            { id: 'c6', index: 6, open: 62800, high: 63200, low: 61850, close: 63100, volume: 5500, label: 'Retest & Mitigasi 50%' },
+            { id: 'c7', index: 7, open: 63100, high: 65400, low: 63000, close: 65200, volume: 6700, label: 'Roket Ekspansi' },
+            { id: 'c8', index: 8, open: 65200, high: 66500, low: 65100, close: 66300, volume: 6200, label: 'Target TP Rilis' }
+          ],
+          boxes: [
+            {
+              id: 'box-bullish-ob',
+              startIndex: 1,
+              endIndex: 7,
+              topPrice: 62100,
+              bottomPrice: 61600,
+              boxType: 'order_block',
+              label: 'Bullish Order Block (OB Kunci Institusi)',
+              color: '#10B981',
+              opacity: 0.22,
+              showMidLine: true,
+              midLineLabel: '50% Mean Threshold (MT: $61.850)',
+              midLineColor: '#10B981'
+            },
+            {
+              id: 'box-fvg-gap',
+              startIndex: 2,
+              endIndex: 4,
+              topPrice: 63300,
+              bottomPrice: 62100,
+              boxType: 'fvg',
+              label: 'Fair Value Gap (FVG Konfirmasi)',
+              color: '#38BDF8',
+              opacity: 0.16
+            }
+          ],
+          trendlines: [
+            {
+              id: 'tl-bos-ob',
+              x1Index: 0,
+              y1Price: 62500,
+              x2Index: 4,
+              y2Price: 62500,
+              color: '#10B981',
+              strokeWidth: 1.8,
+              lineStyle: 'dashed',
+              label: 'BOS Konfirmasi Struktur ($62.500)',
+              labelAlignment: 'center',
+              showArrow: true
+            }
+          ],
+          arrows: [
+            {
+              id: 'arr-retest',
+              startIndex: 4,
+              startPrice: 64200,
+              endIndex: 6,
+              endPrice: 62000,
+              color: '#38BDF8',
+              strokeWidth: 2,
+              curved: true,
+              curveOffset: 600,
+              label: 'Healthy Retest Mitigasi'
+            },
+            {
+              id: 'arr-rally',
+              startIndex: 6,
+              startPrice: 62200,
+              endIndex: 8,
+              endPrice: 66200,
+              color: '#10B981',
+              strokeWidth: 2.5,
+              label: 'Institutional Expansion Run'
+            }
+          ],
+          badges: [
+            {
+              id: 'b-sweep-ob',
+              candleIndex: 1,
+              price: 61350,
+              text: 'Liquidity Swept di $61.600',
+              style: 'badge',
+              bgColor: '#F43F5E',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-mitigation',
+              candleIndex: 6,
+              price: 61600,
+              text: 'Mitigasi Tepat di 50% MT ($61.850)',
+              style: 'pill',
+              bgColor: '#10B981',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-unmitigated',
+              candleIndex: 1,
+              price: 62300,
+              text: 'Fresh Unmitigated OB',
+              style: 'pill',
+              bgColor: '#38BDF8',
+              textColor: '#FFFFFF'
+            }
+          ],
+          infoCards: [
+            {
+              id: 'card-ob-criteria',
+              candleIndex: 2,
+              price: 64100,
+              width: 175,
+              stepBadge: '⭐',
+              title: 'ANATOMI VALID OB',
+              lines: [
+                '1. Sweep wick sebelum lonjakan.',
+                '2. Ciptakan BOS di $62.500.',
+                '3. Meninggalkan FVG lebar.'
+              ],
+              footerBadge: '✓ High Probability OB',
+              color: '#10B981'
+            }
+          ]
+        },
       },
       {
         "id": "sec-7",
@@ -713,7 +1364,118 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-3",
         "title": "2. Anatomi 3 Lilin Pembentuk Fair Value Gap (FVG)",
-        "content": "Mengidentifikasi Fair Value Gap bukan berdasarkan intuisi, melainkan rumus geometris 3 lilin berurutan (*3-Candle Pattern*):\n\n```\n       BULLISH FAIR VALUE GAP (FVG)               BEARISH FAIR VALUE GAP (FVG)\n       \n              [ Candle 3 ]                                [ Candle 1 ]\n             ┌────────────┐                              ┌────────────┐\n             │    Wick    │                              │    Wick    │\n             └─────┬──────┘                              └─────┬──────┘\n                   │  ◄── Titik Terendah (Low C3)              │  ◄── Titik Terendah (Low C1)\n       ════════════╪═══════════════════════       ═════════════╪═══════════════════════\n       ▒▒▒▒▒▒▒▒▒▒▒▒│▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒       ▒▒▒▒▒▒▒▒▒▒▒▒▒│▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n       ▒▒ AREA KOSONG (BULLISH FVG) ▒▒▒▒▒▒▒       ▒▒ AREA KOSONG (BEARISH FVG) ▒▒▒▒▒▒▒\n       ▒▒ (Belum Ada Penjual Seimbang) ▒▒▒▒       ▒▒ (Belum Ada Pembeli Seimbang) ▒▒▒▒\n       ▒▒▒▒▒▒▒▒▒▒▒▒│▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒       ▒▒▒▒▒▒▒▒▒▒▒▒▒│▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n       ════════════╪═══════════════════════       ═════════════╪═══════════════════════\n                   │  ◄── Titik Tertinggi (High C1)            │  ◄── Titik Tertinggi (High C3)\n             ┌─────┴──────┐                              ┌─────┴──────┐\n             │    Wick    │                              │    Wick    │\n             └────────────┘                              └────────────┘\n              [ Candle 1 ]                                [ Candle 3 ]\n              \n         (Candle 2 adalah Lilin                    (Candle 2 adalah Lilin\n         Displacement Raksasa)                     Displacement Raksasa)\n```\n\n### Rumus Matematis Pengukuran FVG:\n1. **Bullish FVG**:\n   - Amati 3 lilin berurutan (Lilin 1, Lilin 2, Lilin 3).\n   - Lilin 2 adalah lilin hijau berbadan panjang (*impulsive candle*).\n   - Ukur jarak antara **ujung sumbu tertinggi Lilin 1 (*High Candle 1*)** dengan **ujung sumbu terendah Lilin 3 (*Low Candle 3*)**.\n   - Jika *Low Candle 3* lebih tinggi daripada *High Candle 1*, celah kosong di antara keduanya adalah **Bullish FVG**.\n\n2. **Bearish FVG**:\n   - Lilin 2 adalah lilin merah berbadan panjang (*impulsive candle*).\n   - Ukur jarak antara **ujung sumbu terendah Lilin 1 (*Low Candle 1*)** dengan **ujung sumbu tertinggi Lilin 3 (*High Candle 3*)**.\n   - Jika *High Candle 3* lebih rendah daripada *Low Candle 1*, celah kosong di antara keduanya adalah **Bearish FVG**.\n\n---"
+        "content": "Mengidentifikasi Fair Value Gap bukan berdasarkan intuisi, melainkan rumus geometris 3 lilin berurutan (*3-Candle Pattern*):\n\n```\n       BULLISH FAIR VALUE GAP (FVG)               BEARISH FAIR VALUE GAP (FVG)\n       \n              [ Candle 3 ]                                [ Candle 1 ]\n             ┌────────────┐                              ┌────────────┐\n             │    Wick    │                              │    Wick    │\n             └─────┬──────┘                              └─────┬──────┘\n                   │  ◄── Titik Terendah (Low C3)              │  ◄── Titik Terendah (Low C1)\n       ════════════╪═══════════════════════       ═════════════╪═══════════════════════\n       ▒▒▒▒▒▒▒▒▒▒▒▒│▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒       ▒▒▒▒▒▒▒▒▒▒▒▒▒│▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n       ▒▒ AREA KOSONG (BULLISH FVG) ▒▒▒▒▒▒▒       ▒▒ AREA KOSONG (BEARISH FVG) ▒▒▒▒▒▒▒\n       ▒▒ (Belum Ada Penjual Seimbang) ▒▒▒▒       ▒▒ (Belum Ada Pembeli Seimbang) ▒▒▒▒\n       ▒▒▒▒▒▒▒▒▒▒▒▒│▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒       ▒▒▒▒▒▒▒▒▒▒▒▒▒│▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒\n       ════════════╪═══════════════════════       ═════════════╪═══════════════════════\n                   │  ◄── Titik Tertinggi (High C1)            │  ◄── Titik Tertinggi (High C3)\n             ┌─────┴──────┐                              ┌─────┴──────┐\n             │    Wick    │                              │    Wick    │\n             └────────────┘                              └────────────┘\n              [ Candle 1 ]                                [ Candle 3 ]\n              \n         (Candle 2 adalah Lilin                    (Candle 2 adalah Lilin\n         Displacement Raksasa)                     Displacement Raksasa)\n```\n\n### Rumus Matematis Pengukuran FVG:\n1. **Bullish FVG**:\n   - Amati 3 lilin berurutan (Lilin 1, Lilin 2, Lilin 3).\n   - Lilin 2 adalah lilin hijau berbadan panjang (*impulsive candle*).\n   - Ukur jarak antara **ujung sumbu tertinggi Lilin 1 (*High Candle 1*)** dengan **ujung sumbu terendah Lilin 3 (*Low Candle 3*)**.\n   - Jika *Low Candle 3* lebih tinggi daripada *High Candle 1*, celah kosong di antara keduanya adalah **Bullish FVG**.\n\n2. **Bearish FVG**:\n   - Lilin 2 adalah lilin merah berbadan panjang (*impulsive candle*).\n   - Ukur jarak antara **ujung sumbu terendah Lilin 1 (*Low Candle 1*)** dengan **ujung sumbu tertinggi Lilin 3 (*High Candle 3*)**.\n   - Jika *High Candle 3* lebih rendah daripada *Low Candle 1*, celah kosong di antara keduanya adalah **Bearish FVG**.\n\n---",
+        illustrationMode: 'custom_builder',
+        customChartConfig: {
+          title: 'ANATOMI 3-CANDLE SEQUENCE PEMBENTUKAN FAIR VALUE GAP (FVG)',
+          subtitle: 'ETH/USDT H1 • Imbalance Inefficiency & Rebalance Retest',
+          timeframe: 'H1',
+          showCandles: true,
+          showVolume: true,
+          candleSpacing: 'wide',
+          candles: [
+            { id: 'c0', index: 0, open: 2450, high: 2480, low: 2430, close: 2460, volume: 1800, label: 'Lilin Setup' },
+            { id: 'c1', index: 1, open: 2460, high: 2520, low: 2450, close: 2500, volume: 2600, label: 'Candle 1 (High Acuan)' },
+            { id: 'c2', index: 2, open: 2500, high: 2750, low: 2495, close: 2730, volume: 9200, label: 'Candle 2 (Displacement)' },
+            { id: 'c3', index: 3, open: 2730, high: 2840, low: 2630, close: 2810, volume: 5400, label: 'Candle 3 (Low Acuan)' },
+            { id: 'c4', index: 4, open: 2810, high: 2820, low: 2710, close: 2730, volume: 2200, label: 'Konsolidasi' },
+            { id: 'c5', index: 5, open: 2730, high: 2740, low: 2575, close: 2660, volume: 4100, label: 'Retest & Mitigasi CE' },
+            { id: 'c6', index: 6, open: 2660, high: 2920, low: 2650, close: 2890, volume: 7400, label: 'Ekspansi Pasca Retest' }
+          ],
+          boxes: [
+            {
+              id: 'box-fvg-gap',
+              startIndex: 1,
+              endIndex: 5,
+              topPrice: 2630,
+              bottomPrice: 2520,
+              boxType: 'fvg',
+              label: 'Bullish Fair Value Gap (Inefficiency Zone)',
+              color: '#38BDF8',
+              opacity: 0.25,
+              showMidLine: true,
+              midLineLabel: '50% Consequent Encroachment (CE: $2.575)',
+              midLineColor: '#38BDF8'
+            }
+          ],
+          trendlines: [
+            {
+              id: 'tl-c1-high',
+              x1Index: 1,
+              y1Price: 2520,
+              x2Index: 4,
+              y2Price: 2520,
+              color: '#38BDF8',
+              strokeWidth: 1.5,
+              lineStyle: 'dashed',
+              label: 'High Candle 1 ($2.520)',
+              labelAlignment: 'start'
+            },
+            {
+              id: 'tl-c3-low',
+              x1Index: 3,
+              y1Price: 2630,
+              x2Index: 5,
+              y2Price: 2630,
+              color: '#38BDF8',
+              strokeWidth: 1.5,
+              lineStyle: 'dashed',
+              label: 'Low Candle 3 ($2.630)',
+              labelAlignment: 'end'
+            }
+          ],
+          arrows: [
+            {
+              id: 'arr-mitigate',
+              startIndex: 4,
+              startPrice: 2780,
+              endIndex: 5,
+              endPrice: 2580,
+              color: '#F59E0B',
+              strokeWidth: 2,
+              curved: true,
+              curveOffset: 120,
+              label: 'Penambalan Lubang Aspal (Mitigasi CE)'
+            }
+          ],
+          badges: [
+            {
+              id: 'b-fvg-gap',
+              candleIndex: 2,
+              price: 2575,
+              text: 'Celah Kosong FVG ($2.520 - $2.630)',
+              style: 'badge',
+              bgColor: '#38BDF8',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-rebalance',
+              candleIndex: 5,
+              price: 2540,
+              text: 'Wick Mengisi 50% CE ($2.575)',
+              style: 'pill',
+              bgColor: '#10B981',
+              textColor: '#FFFFFF'
+            }
+          ],
+          infoCards: [
+            {
+              id: 'card-fvg-formula',
+              candleIndex: 1,
+              price: 2690,
+              width: 175,
+              stepBadge: '📐',
+              title: 'RUMUS ANATOMI FVG',
+              lines: [
+                'Batas Atas: Low Candle 3 ($2.630)',
+                'Batas Bawah: High Candle 1 ($2.520)',
+                'Candle 2: Full Body Imbalance'
+              ],
+              footerBadge: '✓ Magnet Gravitasi Harga',
+              color: '#38BDF8'
+            }
+          ]
+        },
       },
       {
         "id": "sec-4",
@@ -810,7 +1572,142 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-7",
         "title": "6. Studi Kasus Konkret: Live Setup BTC/USDT Lengkap",
-        "content": "Berikut adalah simulasi kasus nyata dengan angka matematis riil:\n\n### Data Portofolio:\n- **Total Modal Akun (Equity)**: $10.000 USD\n- **Risiko per Transaksi (1%)**: $100 USD\n\n### Jalannya Analisis & Eksekusi:\n1. **Langkah 1 (H4)**: BTC berada dalam tren naik jangka panjang. Harga turun menuju zona diskon H4 dan terdapat kolam likuiditas ritel *Equal Lows* di $64.000.\n2. **Langkah 2 (M15)**: Harga menusuk turun ke $63.800 (menyapu likuiditas EQL $64.000). Lima belas menit kemudian, muncul lilin hijau raksasa yang menembus *Swing High* terdekat di $64.500 dengan *candle close*. **CHoCH Valid terkonfirmasi!**\n3. **Langkah 3 (M15)**:\n   - Tarik Fibonacci dari Low $63.800 ke High $65.000. Garis 50% Equilibrium ada di $64.400.\n   - Ditemukan lilin merah terakhir sebelum lonjakan di harga **$64.000 - $64.200** yang memiliki celah FVG dan belum pernah disentuh (*Unmitigated Bullish OB di Zona Discount*).\n4. **Langkah 4 (Kalkulasi Matriks Order)**:\n   - **Harga Entry (Limit Buy)**: $64.150\n   - **Harga Stop Loss (SL)**: $63.750 (400 poin di bawah harga entry, di bawah ujung wick sweep $63.800).\n   - **Harga Take Profit 1 (TP1 - 50% posisi)**: $65.350 (RRR 1:3)\n   - **Harga Take Profit 2 (TP2 - 50% posisi)**: $66.550 (RRR 1:6 - Menyapu *Equal Highs* H4)\n\n### Kalkulasi Ukuran Posisi:\n- Jarak Stop Loss = $(64.150 - 63.750) / 64.150 = 0,623\\%$\n- Total Nilai Posisi (Notional) = $\\$100 / 0,00623 = \\$16.051$ USD\n- Ukuran Koin (BTC) = $\\$16.051 / 64.150 \\approx 0,25$ BTC\n- Jika menggunakan leverage 10x, Margin yang dijaminkan = $\\$16.051 / 10 = \\$1.605$ USD.\n- **Hasil Skenario**:\n  - Harga menjemput Limit Order di $64.150, bereaksi cepat, dan melesat ke target TP2 di $66.550.\n  - Keuntungan yang diperoleh: $\\$600$ USD (Kenaikan +6% pada akun modal hanya dalam satu transaksi berisiko 1%!).\n\n---"
+        "content": "Berikut adalah simulasi kasus nyata dengan angka matematis riil:\n\n### Data Portofolio:\n- **Total Modal Akun (Equity)**: $10.000 USD\n- **Risiko per Transaksi (1%)**: $100 USD\n\n### Jalannya Analisis & Eksekusi:\n1. **Langkah 1 (H4)**: BTC berada dalam tren naik jangka panjang. Harga turun menuju zona diskon H4 dan terdapat kolam likuiditas ritel *Equal Lows* di $64.000.\n2. **Langkah 2 (M15)**: Harga menusuk turun ke $63.800 (menyapu likuiditas EQL $64.000). Lima belas menit kemudian, muncul lilin hijau raksasa yang menembus *Swing High* terdekat di $64.500 dengan *candle close*. **CHoCH Valid terkonfirmasi!**\n3. **Langkah 3 (M15)**:\n   - Tarik Fibonacci dari Low $63.800 ke High $65.000. Garis 50% Equilibrium ada di $64.400.\n   - Ditemukan lilin merah terakhir sebelum lonjakan di harga **$64.000 - $64.200** yang memiliki celah FVG dan belum pernah disentuh (*Unmitigated Bullish OB di Zona Discount*).\n4. **Langkah 4 (Kalkulasi Matriks Order)**:\n   - **Harga Entry (Limit Buy)**: $64.150\n   - **Harga Stop Loss (SL)**: $63.750 (400 poin di bawah harga entry, di bawah ujung wick sweep $63.800).\n   - **Harga Take Profit 1 (TP1 - 50% posisi)**: $65.350 (RRR 1:3)\n   - **Harga Take Profit 2 (TP2 - 50% posisi)**: $66.550 (RRR 1:6 - Menyapu *Equal Highs* H4)\n\n### Kalkulasi Ukuran Posisi:\n- Jarak Stop Loss = $(64.150 - 63.750) / 64.150 = 0,623\\%$\n- Total Nilai Posisi (Notional) = $\\$100 / 0,00623 = \\$16.051$ USD\n- Ukuran Koin (BTC) = $\\$16.051 / 64.150 \\approx 0,25$ BTC\n- Jika menggunakan leverage 10x, Margin yang dijaminkan = $\\$16.051 / 10 = \\$1.605$ USD.\n- **Hasil Skenario**:\n  - Harga menjemput Limit Order di $64.150, bereaksi cepat, dan melesat ke target TP2 di $66.550.\n  - Keuntungan yang diperoleh: $\\$600$ USD (Kenaikan +6% pada akun modal hanya dalam satu transaksi berisiko 1%!).\n\n---",
+        illustrationMode: 'custom_builder',
+        customChartConfig: {
+          title: 'SOP EKSEKUSI TRADING SISTEMATIS (OTE LONG R:R 1:3.5)',
+          subtitle: 'BTC/USDT M15 • HTF Liquidity Swept -> LTF CHoCH -> Discount OTE Entry',
+          timeframe: 'M15',
+          showCandles: true,
+          showVolume: true,
+          candleSpacing: 'normal',
+          candles: [
+            { id: 'c0', index: 0, open: 64400, high: 64500, low: 64000, close: 64050, volume: 2100, label: 'EQL Lows ($64k)' },
+            { id: 'c1', index: 1, open: 64050, high: 64150, low: 63750, close: 63900, volume: 5400, label: 'Langkah 1: Sweep' },
+            { id: 'c2', index: 2, open: 63900, high: 64600, low: 63850, close: 64550, volume: 7200, label: 'Langkah 2: CHoCH' },
+            { id: 'c3', index: 3, open: 64550, high: 65100, low: 64450, close: 65000, volume: 6100, label: 'Swing High Terbentuk' },
+            { id: 'c4', index: 4, open: 65000, high: 65050, low: 64500, close: 64600, volume: 2600, label: 'Pullback Diskon' },
+            { id: 'c5', index: 5, open: 64600, high: 64650, low: 64100, close: 64180, volume: 3800, label: 'Langkah 3: OTE Retest' },
+            { id: 'c6', index: 6, open: 64180, high: 65500, low: 64150, close: 65400, volume: 6900, label: 'Target TP1 Hit' },
+            { id: 'c7', index: 7, open: 65400, high: 66600, low: 65300, close: 66550, volume: 7600, label: 'Target TP2 Hit (BSL)' }
+          ],
+          fibonaccis: [
+            {
+              id: 'fib-ote',
+              startIndex: 1,
+              endIndex: 3,
+              startPrice: 63750,
+              endPrice: 65100,
+              label: 'Dealing Range M15 (Diskon vs Premium)',
+              showFill: true,
+              fillColor: '#8B5CF6',
+              fillOpacity: 0.18,
+              levels: [0, 0.5, 0.62, 0.705, 0.79, 1.0],
+              showPrices: true
+            }
+          ],
+          boxes: [
+            {
+              id: 'box-ob-entry',
+              startIndex: 1,
+              endIndex: 5,
+              topPrice: 64200,
+              bottomPrice: 64000,
+              boxType: 'order_block',
+              label: 'Unmitigated Bullish OB di Zona Diskon',
+              color: '#10B981',
+              opacity: 0.22,
+              showMidLine: true,
+              midLineLabel: '50% MT Entry ($64.100)'
+            }
+          ],
+          positions: [
+            {
+              id: 'pos-ote-long',
+              type: 'long',
+              label: 'SOP Long Position (Risk:Reward 1:3.5)',
+              entryPrice: 64150,
+              stopPrice: 63750,
+              targetPrice: 65550,
+              startIndex: 5,
+              endIndex: 7,
+              targetColor: '#10B981',
+              stopColor: '#EF4444',
+              targetOpacity: 0.25,
+              stopOpacity: 0.25
+            }
+          ],
+          trendlines: [
+            {
+              id: 'tl-choch-sop',
+              x1Index: 0,
+              y1Price: 64450,
+              x2Index: 3,
+              y2Price: 64450,
+              color: '#38BDF8',
+              strokeWidth: 2,
+              lineStyle: 'dashed',
+              label: 'CHoCH M15 ($64.450)',
+              labelAlignment: 'center',
+              showArrow: true
+            }
+          ],
+          badges: [
+            {
+              id: 'b-sweep-low',
+              candleIndex: 1,
+              price: 63550,
+              text: 'Langkah 1: Sweep EQL ($63.750)',
+              style: 'badge',
+              bgColor: '#F43F5E',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-choch-badge',
+              candleIndex: 2,
+              price: 64750,
+              text: 'Langkah 2: CHoCH Valid Body Close',
+              style: 'pill',
+              bgColor: '#38BDF8',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-limit-entry',
+              candleIndex: 5,
+              price: 64150,
+              text: 'Langkah 3: Limit Order Terisi di $64.150',
+              style: 'pill',
+              bgColor: '#10B981',
+              textColor: '#FFFFFF'
+            },
+            {
+              id: 'b-tp2-hit',
+              candleIndex: 7,
+              price: 66750,
+              text: 'Langkah 4: TP2 Panen di $66.550 (R:R 1:6)',
+              style: 'pill',
+              bgColor: '#10B981',
+              textColor: '#FFFFFF'
+            }
+          ],
+          infoCards: [
+            {
+              id: 'card-sop-execution',
+              candleIndex: 4,
+              price: 65700,
+              width: 180,
+              stepBadge: '🎯',
+              title: 'MATRIKS RESIKO 1%',
+              lines: [
+                'Risk: $100 (Jarak SL: 400 pts)',
+                'Entry: $64.150 | SL: $63.750',
+                'Reward TP1: $350 | TP2: $600'
+              ],
+              footerBadge: '✓ RRR 1:3.5 s/d 1:6 Valid',
+              color: '#10B981'
+            }
+          ]
+        },
       },
       {
         "id": "sec-8",

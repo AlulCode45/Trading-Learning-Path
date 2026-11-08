@@ -1,4 +1,582 @@
 import { EducationalArticle } from '../../types';
+import { CustomChartConfig } from '../../types/chartBuilderTypes';
+
+// ============================================================================
+// KONFIGURASI CHART EDUKATIF TECHNICAL ANALYSIS FOR MEGA PROFIT (EDIANTO ONG)
+// ============================================================================
+
+export const EO_DOW_PEAK_TROUGH_CHART: CustomChartConfig = {
+  title: 'Struktur Tren Dow: Anatomi Puncak & Lembah (Peak & Trough)',
+  subtitle: 'Struktur Bullish Higher High (HH) & Higher Low (HL) vs Sinyal Pembalikan Lower High (LH) & Lower Low (LL)',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'normal',
+  candles: [
+    { id: 'eo-p0', index: 0, open: 100, high: 106, low: 98, close: 104, volume: 2100, label: 'Lembah Awal' },
+    { id: 'eo-p1', index: 1, open: 104, high: 118, low: 103, close: 116, volume: 3800, label: 'HH1' },
+    { id: 'eo-p2', index: 2, open: 116, high: 117, low: 108, close: 110, volume: 1800, label: 'HL1' },
+    { id: 'eo-p3', index: 3, open: 110, high: 128, low: 109, close: 126, volume: 4600, label: 'HH2' },
+    { id: 'eo-p4', index: 4, open: 126, high: 127, low: 118, close: 120, volume: 2200, label: 'HL2' },
+    { id: 'eo-p5', index: 5, open: 120, high: 138, low: 119, close: 136, volume: 5200, label: 'HH3' },
+    { id: 'eo-p6', index: 6, open: 136, high: 137, low: 124, close: 125, volume: 3400 },
+    { id: 'eo-p7', index: 7, open: 125, high: 131, low: 123, close: 129, volume: 1900, label: 'LH (Pelemahan)' },
+    { id: 'eo-p8', index: 8, open: 129, high: 130, low: 114, close: 115, volume: 6200, label: 'BOS / Break LL' },
+    { id: 'eo-p9', index: 9, open: 115, high: 121, low: 113, close: 114, volume: 2400, label: 'LH2' }
+  ],
+  polylines: [
+    {
+      id: 'poly-dow-trend-waves',
+      points: [
+        { index: 0, price: 98 },
+        { index: 1, price: 118 },
+        { index: 2, price: 108 },
+        { index: 3, price: 128 },
+        { index: 4, price: 118 },
+        { index: 5, price: 138 },
+        { index: 6, price: 124 },
+        { index: 7, price: 131 },
+        { index: 8, price: 114 },
+        { index: 9, price: 121 }
+      ],
+      color: '#10B981',
+      strokeWidth: 2.2,
+      curveType: 'zigzag',
+      showDots: true,
+      label: 'Gelombang Struktur Siklus Dow'
+    }
+  ],
+  trendlines: [
+    {
+      id: 'tl-uptrendline-support',
+      x1Index: 0,
+      y1Price: 98,
+      x2Index: 5,
+      y2Price: 124,
+      color: '#10B981',
+      strokeWidth: 2,
+      lineStyle: 'solid',
+      label: 'Garis Uptrend Sah (Support Dinamis)',
+      labelAlignment: 'start',
+      showArrow: false
+    },
+    {
+      id: 'tl-reversal-key-level',
+      x1Index: 4,
+      y1Price: 118,
+      x2Index: 9,
+      y2Price: 118,
+      color: '#EF4444',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Key Higher Low (HL2: $118.00) -> Breakdown BOS',
+      labelAlignment: 'center',
+      showArrow: true
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-higher-low-demand',
+      startIndex: 3.6,
+      endIndex: 4.4,
+      topPrice: 122,
+      bottomPrice: 118,
+      label: 'Zona HL2 (Lantai Pertahanan Terakhir)',
+      labelPosition: 'top-left',
+      color: '#10B981',
+      opacity: 0.16,
+      boxType: 'order_block'
+    },
+    {
+      id: 'box-reversal-distribution',
+      startIndex: 6.5,
+      endIndex: 9.5,
+      topPrice: 138,
+      bottomPrice: 114,
+      label: 'Zona Pembalikan Dow: Lower High + Breakdown LL',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.12,
+      boxType: 'supply_demand'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-uptrend-healthy',
+      candleIndex: 3,
+      price: 132,
+      text: 'Uptrend Sehat: Higher High (HH2)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-warning-lh',
+      candleIndex: 7,
+      price: 135,
+      text: 'Lower High (Gagal Bikin Puncak Baru)',
+      style: 'pill',
+      bgColor: '#F59E0B',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-reversal-bos',
+      candleIndex: 8,
+      price: 111,
+      text: 'Pembalikan Bearish Terkonfirmasi (Break HL2)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-dow-rules',
+      candleIndex: 4,
+      price: 136,
+      stepBadge: 'DOW',
+      title: 'HUKUM INERSIA TEORI DOW',
+      lines: [
+        '1. Selama HL bertahan, tren naik tetap sah.',
+        '2. Peringatan dini muncul saat harga mencetak Lower High (LH).',
+        '3. Konfirmasi pembalikan tren resmi terjadi saat Higher Low ditembus.'
+      ],
+      footerBadge: '✓ Stop Loss di Bawah HL',
+      color: '#10B981'
+    }
+  ],
+  legends: [
+    { id: 'leg-bull-dow', label: 'Struktur Bullish (HH/HL)', color: '#10B981' },
+    { id: 'leg-bear-dow', label: 'Breakdown Pembalikan (LL)', color: '#EF4444' },
+    { id: 'leg-warn-dow', label: 'Warning Lower High', color: '#F59E0B' }
+  ]
+};
+
+export const EO_CHANNEL_AND_FAN_PRINCIPLE_CHART: CustomChartConfig = {
+  title: 'Channeling & The Fan Principle: Tiga Garis Penentu Pembalikan',
+  subtitle: 'Kaidah Saluran Paralel, Kegagalan Mencapai Channel (Failure Swing), dan Erosi 3 Garis Tren Kipas',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'normal',
+  candles: [
+    { id: 'cf0', index: 0, open: 100, high: 105, low: 98, close: 104, volume: 2200, label: 'Origin' },
+    { id: 'cf1', index: 1, open: 104, high: 122, low: 103, close: 120, volume: 4800, label: 'P1 (Atas)' },
+    { id: 'cf2', index: 2, open: 120, high: 121, low: 110, close: 112, volume: 2100, label: 'L1 (Sentuh 1)' },
+    { id: 'cf3', index: 3, open: 112, high: 135, low: 111, close: 132, volume: 5600, label: 'P2 (Channel)' },
+    { id: 'cf4', index: 4, open: 132, high: 133, low: 121, close: 123, volume: 3100, label: 'L2 (Break G1)' },
+    { id: 'cf5', index: 5, open: 123, high: 131, low: 122, close: 129, volume: 2200, label: 'Failure Swing' },
+    { id: 'cf6', index: 6, open: 129, high: 130, low: 117, close: 118, volume: 4900, label: 'Break G2' },
+    { id: 'cf7', index: 7, open: 118, high: 124, low: 116, close: 122, volume: 1800, label: 'Weak Bounce' },
+    { id: 'cf8', index: 8, open: 122, high: 123, low: 107, close: 108, volume: 7200, label: 'Break G3 Reversal' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-channel-top',
+      x1Index: 1,
+      y1Price: 122,
+      x2Index: 5.5,
+      y2Price: 144,
+      color: '#38BDF8',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Garis Channel Atas (Return Line Parallel)',
+      labelAlignment: 'start',
+      showArrow: false
+    },
+    {
+      id: 'tl-fan-line-1',
+      x1Index: 0,
+      y1Price: 98,
+      x2Index: 4,
+      y2Price: 128,
+      color: '#10B981',
+      strokeWidth: 2,
+      lineStyle: 'solid',
+      label: 'Garis 1: Curam (~55° Akselerasi)',
+      labelAlignment: 'start',
+      showArrow: false
+    },
+    {
+      id: 'tl-fan-line-2',
+      x1Index: 0,
+      y1Price: 98,
+      x2Index: 6,
+      y2Price: 122,
+      color: '#F59E0B',
+      strokeWidth: 2,
+      lineStyle: 'solid',
+      label: 'Garis 2: Moderat (~40° Distribusi)',
+      labelAlignment: 'start',
+      showArrow: false
+    },
+    {
+      id: 'tl-fan-line-3',
+      x1Index: 0,
+      y1Price: 98,
+      x2Index: 8.5,
+      y2Price: 114,
+      color: '#EF4444',
+      strokeWidth: 2.2,
+      lineStyle: 'solid',
+      label: 'Garis 3: Landai (~25° Benteng Terakhir)',
+      labelAlignment: 'start',
+      showArrow: false
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-channel-corridor',
+      startIndex: 0.8,
+      endIndex: 4.5,
+      topPrice: 135,
+      bottomPrice: 110,
+      label: 'Lorong Saluran Tren Naik Sehat',
+      labelPosition: 'top-left',
+      color: '#38BDF8',
+      opacity: 0.12,
+      boxType: 'supply_demand'
+    },
+    {
+      id: 'box-failure-swing',
+      startIndex: 4.6,
+      endIndex: 5.4,
+      topPrice: 142,
+      bottomPrice: 129,
+      label: 'Failure Swing (Gagal Capai Plafon Channel)',
+      labelPosition: 'top-right',
+      color: '#F59E0B',
+      opacity: 0.18,
+      boxType: 'liquidity_pool'
+    }
+  ],
+  polylines: [
+    {
+      id: 'poly-fan-path',
+      points: [
+        { index: 0, price: 98 },
+        { index: 1, price: 122 },
+        { index: 2, price: 110 },
+        { index: 3, price: 135 },
+        { index: 4, price: 121 },
+        { index: 5, price: 131 },
+        { index: 6, price: 117 },
+        { index: 7, price: 124 },
+        { index: 8, price: 107 }
+      ],
+      color: '#8B5CF6',
+      strokeWidth: 2,
+      curveType: 'zigzag',
+      showDots: true,
+      label: 'Trajektori Harga Kipas'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-fan-break1',
+      candleIndex: 4,
+      price: 118,
+      text: 'Tembus Garis 1: Sinyal Waspada Dini',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-failure-note',
+      candleIndex: 5,
+      price: 134,
+      text: 'Failure Swing: Pembeli Kehabisan Bensin',
+      style: 'pill',
+      bgColor: '#F59E0B',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-fan-break3',
+      candleIndex: 8,
+      price: 104,
+      text: 'TEMBUS GARIS 3: REVERSAL BEARISH MUTLAK!',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-fan-rules',
+      candleIndex: 5,
+      price: 109,
+      stepBadge: 'FAN',
+      title: 'THE THREE TRENDLINE RULE',
+      lines: [
+        '1. Garis 1 jebol: Momentum melambat, jangan panik.',
+        '2. Failure Swing muncul: Tidak sanggup raih channel atas.',
+        '3. Garis 3 jebol: Reversal definitif, wajib likuidasi 100%!'
+      ],
+      footerBadge: '✓ Exit Total di Bawah Garis 3',
+      color: '#EF4444'
+    }
+  ],
+  legends: [
+    { id: 'leg-fan-1', label: 'Garis 1 (Akselerasi)', color: '#10B981' },
+    { id: 'leg-fan-2', label: 'Garis 2 (Distribusi)', color: '#F59E0B' },
+    { id: 'leg-fan-3', label: 'Garis 3 (Reversal Definitif)', color: '#EF4444' }
+  ]
+};
+
+export const EO_SUPPORT_RESISTANCE_ROLE_REVERSAL_CHART: CustomChartConfig = {
+  title: 'Support & Resistance: Prinsip Role Reversal, Throwback & Pullback',
+  subtitle: 'Mekanika Breakout: Bekas Resistance Menjadi Support Baru (Throwback Retest) dan Konfirmasi Entri Berprobabilitas Tinggi',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'sr0', index: 0, open: 98, high: 110, low: 97, close: 109, volume: 2400, label: 'Uji R1' },
+    { id: 'sr1', index: 1, open: 109, high: 111, low: 102, close: 103, volume: 1900, label: 'Koreksi' },
+    { id: 'sr2', index: 2, open: 103, high: 111, low: 102, close: 110, volume: 2200, label: 'Uji R2' },
+    { id: 'sr3', index: 3, open: 110, high: 122, low: 109, close: 121, volume: 7800, label: 'Breakout!' },
+    { id: 'sr4', index: 4, open: 121, high: 125, low: 117, close: 124, volume: 4100, label: 'Ekspansi' },
+    { id: 'sr5', index: 5, open: 124, high: 125, low: 112, close: 113, volume: 1600, label: 'Throwback' },
+    { id: 'sr6', index: 6, open: 111, high: 113, low: 109, close: 112, volume: 1200, label: 'Hammer Test' },
+    { id: 'sr7', index: 7, open: 112, high: 130, low: 111, close: 129, volume: 6900, label: 'Markup Rebound' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-resistance-reversal-line',
+      x1Index: 0,
+      y1Price: 110.5,
+      x2Index: 7.5,
+      y2Price: 110.5,
+      color: '#38BDF8',
+      strokeWidth: 2,
+      lineStyle: 'solid',
+      label: 'Level Kunci: Bekas Resistance -> Resmi Jadi Support Baru ($110.50)',
+      labelAlignment: 'start',
+      showArrow: false
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-prior-resistance',
+      startIndex: 0,
+      endIndex: 2.8,
+      topPrice: 111,
+      bottomPrice: 110,
+      label: 'Resistance Plafon ($110.50)',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.18,
+      boxType: 'supply_demand'
+    },
+    {
+      id: 'box-new-support-role',
+      startIndex: 3.2,
+      endIndex: 7.5,
+      topPrice: 111.5,
+      bottomPrice: 109.5,
+      label: 'New Support Lantai (Role Reversal Demand)',
+      labelPosition: 'bottom-left',
+      color: '#10B981',
+      opacity: 0.2,
+      boxType: 'order_block',
+      showMidLine: true,
+      midLineLabel: 'Level Throwback Ideal'
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-throwback-entry',
+      type: 'long',
+      label: 'Buy on Throwback Retest',
+      entryPrice: 112,
+      stopPrice: 107.5,
+      targetPrice: 130,
+      startIndex: 6,
+      endIndex: 7.5
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-sr-breakout',
+      candleIndex: 3,
+      price: 124,
+      text: 'Breakout Valid: Volume 2x Rata-Rata',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-throwback-test',
+      candleIndex: 5,
+      price: 117,
+      text: 'Throwback: Volume Menyusut Kering (1600)',
+      style: 'pill',
+      bgColor: '#F59E0B',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-hammer-entry',
+      candleIndex: 6,
+      price: 107,
+      text: 'Pinbar Rebound: Tiket Entri Aman',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-throwback-mechanics',
+      candleIndex: 4,
+      price: 131,
+      stepBadge: 'RETEST',
+      title: 'MEKANIKA THROWBACK RETEST',
+      lines: [
+        'Breakout dijebol bertenaga di Candle 3 (Vol 7800).',
+        'Alih-alih FOMO di pucuk Candle 4, tunggu koreksi.',
+        'Candle 5 & 6 menguji mantan plafon dengan volume sepi.',
+        'Rejection membuktikan atap telah resmi berganti menjadi lantai.'
+      ],
+      footerBadge: '✓ Low Risk, High Reward',
+      color: '#10B981'
+    }
+  ],
+  legends: [
+    { id: 'leg-sr-res', label: 'Bekas Resistance', color: '#EF4444' },
+    { id: 'leg-sr-sup', label: 'Support Baru (Role Reversal)', color: '#10B981' },
+    { id: 'leg-sr-tb', label: 'Koreksi Throwback', color: '#F59E0B' }
+  ]
+};
+
+export const EO_FIBONACCI_RETRACEMENT_EXPANSION_CHART: CustomChartConfig = {
+  title: 'Fibonacci Retracement & Expansion Targets',
+  subtitle: 'Peta Harmoni Geometris: Penarikan Swing Low ke High, Golden Pocket 61.8% OTE, dan Proyeksi Ambil Untung 161.8%',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'fb0', index: 0, open: 100, high: 104, low: 98, close: 103, volume: 2100, label: 'Swing Low A' },
+    { id: 'fb1', index: 1, open: 103, high: 122, low: 102, close: 120, volume: 4400 },
+    { id: 'fb2', index: 2, open: 120, high: 140, low: 119, close: 138, volume: 5600, label: 'Swing High B' },
+    { id: 'fb3', index: 3, open: 138, high: 139, low: 128, close: 129, volume: 2200, label: 'Retrace 38.2%' },
+    { id: 'fb4', index: 4, open: 129, high: 130, low: 118, close: 119, volume: 1800, label: '50% Midpoint' },
+    { id: 'fb5', index: 5, open: 118, high: 120, low: 113, close: 116, volume: 1400, label: '61.8% Golden' },
+    { id: 'fb6', index: 6, open: 115, high: 124, low: 114, close: 123, volume: 3900, label: 'Hammer Reversal' },
+    { id: 'fb7', index: 7, open: 123, high: 142, low: 122, close: 140, volume: 6200, label: 'Target 100%' },
+    { id: 'fb8', index: 8, open: 140, high: 165, low: 139, close: 163, volume: 8100, label: '161.8% Golden Target' }
+  ],
+  fibonaccis: [
+    {
+      id: 'fib-dealing-range',
+      startIndex: 0,
+      endIndex: 8,
+      startPrice: 98,
+      endPrice: 140,
+      label: 'Fibonacci Retracement A-B (Range: $98 - $140)',
+      levels: [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0, 1.618],
+      showFill: true,
+      fillColor: '#8B5CF6',
+      fillOpacity: 0.18,
+      showPrices: true
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-golden-pocket-zone',
+      startIndex: 3.8,
+      endIndex: 6.2,
+      topPrice: 119,
+      bottomPrice: 113,
+      label: 'Golden Pocket Zone (50% - 61.8% Retracement)',
+      labelPosition: 'top-left',
+      color: '#8B5CF6',
+      opacity: 0.22,
+      boxType: 'order_block',
+      showMidLine: true,
+      midLineLabel: '61.8% Golden Ratio'
+    },
+    {
+      id: 'box-fib-extension-target',
+      startIndex: 7.5,
+      endIndex: 8.5,
+      topPrice: 166,
+      bottomPrice: 162,
+      label: 'Target Profit Ekstensi 161.8% ($163 - $165)',
+      labelPosition: 'top-left',
+      color: '#10B981',
+      opacity: 0.2,
+      boxType: 'liquidity_pool'
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-fib-ote-long',
+      type: 'long',
+      label: 'Fibonacci OTE Long Setup',
+      entryPrice: 116,
+      stopPrice: 97,
+      targetPrice: 164,
+      startIndex: 5.5,
+      endIndex: 8.5
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-fib-swing-b',
+      candleIndex: 2,
+      price: 143,
+      text: 'Swing High B (Puncak Reli: $140)',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-fib-reversal-point',
+      candleIndex: 5,
+      price: 111,
+      text: 'Golden Pocket 61.8% ($114): Rebound Masif',
+      style: 'pill',
+      bgColor: '#8B5CF6',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-fib-target-achieved',
+      candleIndex: 8,
+      price: 167,
+      text: 'Take Profit 161.8% Tercapai Sempurna',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-fib-confluence',
+      candleIndex: 2,
+      price: 156,
+      stepBadge: 'FIBO',
+      title: 'GOLDEN RATIO RETRACEMENT',
+      lines: [
+        'Swing A ($98) ke Swing B ($140) = Kenaikan $42.',
+        'Koreksi sehat tertahan persis di 61.8% ($114.00).',
+        'Volume mengecil selama koreksi (sehat).',
+        'Ekspansi Gelombang 3 melesat ke Golden Target 161.8% ($165.90).'
+      ],
+      footerBadge: '✓ High R:R Golden Setup',
+      color: '#8B5CF6'
+    }
+  ],
+  legends: [
+    { id: 'leg-fib-golden', label: 'Golden Pocket 61.8%', color: '#8B5CF6' },
+    { id: 'leg-fib-target', label: 'Target Ekstensi 161.8%', color: '#10B981' },
+    { id: 'leg-fib-range', label: 'Dealing Range A-B', color: '#38BDF8' }
+  ]
+};
 
 export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
   "edianto-ong-01-pengenalan-technical-analysis": {
@@ -348,6 +926,8 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-4",
         "title": "3. Struktur Anatomi Puncak & Lembah",
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_DOW_PEAK_TROUGH_CHART,
         "content": "Edianto Ong menegaskan: jangan melihat indikator yang rumit sebelum Anda bisa mengidentifikasi secara telanjang apakah harga sedang mencetak **HH-HL** atau **LH-LL**.\n\n```\nSTRUKTUR UPTREND (BULLISH):                  STRUKTUR DOWNTREND (BEARISH):\n                HH2 (Puncak 2)               Puncak 1\n                 /\\                             /\\\n          HH1   /  \\                           /  \\    LH1 (Puncak Lebih Rendah)\n          /\\   /    \\                         /    \\   /\\\n         /  \\ /      \\                       /      \\ /  \\    LH2\n        /    V        \\                     /        V    \\   /\\\n       /    HL1        \\                   /        LL1    \\ /  \\\n      /  (Lembah Baru   \\                 /      (Lembah    V    \\\n     /    Lebih Tinggi)  \\               /        Baru)    LL2    V\n    V                     V             V               (Lebih Dalam)\n  Lembah Awal            HL2          Lembah Awal\n```\n\n```mermaid\ngraph LR\n    subgraph SiklusUptrend[\"Struktur Uptrend: Tangga Menanjak\"]\n        L1[\"Lembah Awal\"] --> P1[\"Puncak 1 (High)\"]\n        P1 --> HL1[\"Lembah Lebih Tinggi (Higher Low)\"]\n        HL1 --> P2[\"Puncak Lebih Tinggi (Higher High)\"]\n        P2 --> HL2[\"Lembah Lebih Tinggi (Higher Low)\"]\n        HL2 --> P3[\"Puncak Lebih Tinggi (Higher High)\"]\n    end\n\n    style L1 fill:#1e293b,stroke:#64748b,color:#ffffff\n    style P1 fill:#065f46,stroke:#10b981,color:#ffffff\n    style HL1 fill:#1e3a8a,stroke:#3b82f6,color:#ffffff\n    style P2 fill:#065f46,stroke:#10b981,color:#ffffff\n    style HL2 fill:#1e3a8a,stroke:#3b82f6,color:#ffffff\n    style P3 fill:#065f46,stroke:#10b981,color:#ffffff\n```\n\n* **Hukum Mutlak Uptrend:**  \n  Selama harga tidak pernah mencetak lembah yang lebih rendah dari lembah sebelumnya ($HL > Low\\ Sebelumnya$), tren naik masih utuh 100%. Jangan pernah terburu-buru menjual seluruh barang hanya karena lilin merah sesaat.\n* **Tanda Awal Pembalikan Arah (*Trend Reversal Warning*):**  \n  Ketika dalam suatu tren naik harga gagal mencetak puncak baru yang lebih tinggi (gagal membuat *Higher High*), dan justru berbalik menjebol titik lembah sebelumnya (*Lower Low*), itu adalah alarm darurat bahwa tren naik telah berakhir dan tren turun baru saja dimulai.\n\n---"
       },
       {
@@ -507,6 +1087,8 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-5",
         "title": "4. Prinsip Role Reversal: Pertukaran Peran Support & Resistance",
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_SUPPORT_RESISTANCE_ROLE_REVERSAL_CHART,
         "content": "Hukum aksi harga yang paling fundamental menurut Edianto Ong adalah:\n> **Level teknikal tidak pernah mati setelah ditembus; perannya hanya tertukar 180 derajat.**\n\n```\n          SKENARIO ROLE REVERSAL: RESISTANCE MENJADI SUPPORT\n  \n  Harga\n    ^                 (Puncak Reli Baru)\n    |                       /\\\n    |                      /  \\     (Throwback / Retest)\n    |                     /    \\     /\\  <=== Titik Entri Berprobabilitas Tinggi!\n    |      (Breakout)    /      \\   /  \\      (Low Risk, High Reward)\n  ==|=======/====\\======/========\\_/====\\================== BEKAS RESISTANCE\n    |      /      \\    /                                    Kini Resmi Menjadi SUPPORT\n    |     /        \\  / \n    |    /          \\/  (Support Lama)\n    +--------------------------------------------------------> Waktu\n```\n\n### Mengapa Role Reversal Terjadi?\nSaat Resistance Rp 1.500 berhasil dijebol dengan volume masif:\n- Para pelaku pasar yang tadinya ragu kini menyadari bahwa pasokan barang di Rp 1.500 telah habis diserap oleh institusi (*smart money*).\n- Ketika harga mengalami koreksi teknikal (*throwback*) kembali ke Rp 1.500, para pembeli baru menganggap level tersebut sebagai harga murah yang aman. \n- Di sisi lain, para penjual yang tadinya menjual di Rp 1.500 berusaha membeli kembali barang mereka sebelum tertinggal lebih jauh.\n- Akibatnya, dinding atap Rp 1.500 berubah seketika menjadi lantai pelindung baru yang kokoh.\n\n---"
       },
       {
@@ -1041,6 +1623,8 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-3",
         "title": "2. Anatomi Geometris Tiga Garis Tren (The Three Trendline Rule)",
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_CHANNEL_AND_FAN_PRINCIPLE_CHART,
         "content": "Prinsip Kipas menuntut penarikan **tiga garis tren berturut-turut** yang semuanya berpangkal dari **satu titik dasar terendah yang sama (*Single Origin Low*)**:\n\n```\nGeometri Grafik Prinsip Kipas (Pembalikan dari Tren Naik ke Tren Turun):\n\n                       Puncak Utama (Peak)\n                            /\\\n                           /  \\        Puncak Lebih Rendah (Lower High 1)\n                          /    \\            /\\\n                         /      \\          /  \\\n                        /        \\        /    \\       Puncak Lebih Rendah 2 (LH 2)\n                       /          \\      /      \\          /\\\n                      /  (1)       \\    /  (2)   \\        /  \\\n                     /              \\  /          \\      /    \\\n                    /                \\/            \\    /      \\\n                   /                 L1             \\  /   (3)  \\ ===> JEBOL GARIS 3!\n                  /                                  \\/          \\      (BEAR MARKET SAH)\n                 /                                   L2           V\n                /\nTitik Pangkal -+-------------------------------------------------------------\n              Garis 1 (Curam)      Garis 2 (Moderat)       Garis 3 (Landai)\n```\n\n1. **Titik Pangkal Asal (*Origin Point*)**: Titik terendah awal dimulainya siklus *uptrend* besar.\n2. **Lembah 1 (L1)**: Titik balik lembah setelah reli pertama menembus garis 1.\n3. **Lembah 2 (L2)**: Titik balik lembah setelah reli kedua gagal mencetak puncak baru dan menembus garis 2.\n4. **Bilah Ketiga**: Garis lurus yang ditarik dari titik pangkal melewati L2. Sudut kemiringan garis ini sangat landai (sering kali <30°).\n\n---"
       },
       {
@@ -1744,6 +2328,8 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-5",
         "title": "4. Level Fibonacci Retracement Kunci & Makna Perilaku Pasar",
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_FIBONACCI_RETRACEMENT_EXPANSION_CHART,
         "content": "Level **Fibonacci Retracement** berfungsi memetakan area *support* potensial saat harga sedang terkoreksi turun dalam tren naik, atau area *resistance* potensial saat harga sedang memantul naik dalam tren turun (*bear market rally*).\n\n```mermaid\nflowchart TD\n    subgraph RetracementHierarchy[\"Hierarki Kedalaman Koreksi Fibonacci\"]\n        L236[\"23.6% Retracement: Koreksi Super Dangkal<br/>(Tren Sangat Agresif / Pasar Euforia)\"]\n        L382[\"38.2% Retracement: Koreksi Standar Tren Kuat<br/>(Koreksi Sehat, Target Ideal Wave 4)\"]\n        L500[\"50.0% Midpoint (Dow Principle)<br/>(Keseimbangan 50-50, Support Psikologis Masif)\"]\n        L618[\"61.8% Golden Retracement (Kantong Emas)<br/>(Level Paling Sakral, Probabilitas Pantulan Tertinggi)\"]\n        L786[\"78.6% Retracement (Batas Pertahanan Terakhir)<br/>(Last Bastion, Jika Jebol Struktur Tren Rusak)\"]\n    end\n    L236 --> L382 --> L500 --> L618 --> L786\n```\n\n### Karakteristik & Rekomendasi Tindakan:\n\n| Level Retracement | Karakter Tren & Kondisi Psikologis Pasar | Rekomendasi Tindakan Trader |\n| :--- | :--- | :--- |\n| **23.6%** | **Tren Hiper-Agresif:** Tekanan jual sangat lemah, pembeli begitu rakus hingga tidak mengizinkan harga turun lebih jauh. | Jangan terlalu agresif menambah muatan di sini karena jarak ke dasar lembah masih jauh (*stop loss* menjadi lebar). |\n| **38.2%** | **Tren Kuat (*Healthy Strong Trend*):** Koreksi wajar dan sangat sehat dalam tren naik teratur. Karakteristik khas koreksi Wave 4 pada Elliott Wave. | Zona ideal untuk melakukan pembelian bertahap (*buy on weakness*) pertama dengan rasio risiko dan potensi keuntungan yang menarik. |\n| **50.0%** | **Dow Theory Midpoint:** Bukan angka deret asli Fibonacci, namun diadopsi secara universal dari Teori Dow (koreksi separuh dari seluruh keuntungan sebelumnya). | Titik ekuilibrium psikologis netral. Sering menjadi area pertahanan kokoh investor institusi untuk menyerap barang ritel. |\n| **61.8%** | **Golden Ratio Retracement:** Level paling dihormati oleh algoritma institusi dan hedge fund global. Menandai batas diskon harga paling berharga (*deep value pullback*). | **Zona Beli Utama (*High Probability Reversal Zone*).** Wajib dipantau ketat untuk menangkap titik balik Wave 2. |\n| **78.6%** | **Benteng Pertahanan Terakhir (*Last Bastion*):** Koreksi sangat dalam. Pembeli harus mempertahankan level ini dengan segala daya. | Spekulasi risiko tinggi dengan batas toleransi rugi (*stop loss*) sangat ketat tepat di bawah level 100% (titik awal ayunan harga). |\n\n---"
       },
       {

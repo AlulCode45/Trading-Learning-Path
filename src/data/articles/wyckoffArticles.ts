@@ -1,4 +1,491 @@
 import { EducationalArticle } from '../../types';
+import { CustomChartConfig } from '../../types/chartBuilderTypes';
+
+// ============================================================================
+// KONFIGURASI CHART EDUKATIF WYCKOFF & VOLUME SPREAD ANALYSIS (VSA)
+// ============================================================================
+
+export const WYCKOFF_ACCUMULATION_SCHEMATIC_CHART: CustomChartConfig = {
+  title: 'Skematik Akumulasi Wyckoff: Fase A hingga Fase E',
+  subtitle: 'Anatomi Lengkap: Selling Climax (SC), Automatic Rally (AR), Secondary Test (ST), Phase C Spring, SOS & LPS',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'normal',
+  candles: [
+    { id: 'c0', index: 0, open: 125, high: 126, low: 110, close: 112, volume: 5400, label: 'Prelim' },
+    { id: 'c1', index: 1, open: 112, high: 113, low: 95, close: 98, volume: 8800, label: 'SC' },
+    { id: 'c2', index: 2, open: 98, high: 115, low: 97, close: 114, volume: 5100, label: 'AR' },
+    { id: 'c3', index: 3, open: 114, high: 115, low: 101, close: 103, volume: 2900, label: 'ST' },
+    { id: 'c4', index: 4, open: 103, high: 112, low: 102, close: 108, volume: 2200 },
+    { id: 'c5', index: 5, open: 108, high: 110, low: 100, close: 102, volume: 1800 },
+    { id: 'c6', index: 6, open: 102, high: 103, low: 92, close: 97, volume: 1500, label: 'Spring' },
+    { id: 'c7', index: 7, open: 97, high: 106, low: 96, close: 105, volume: 2600, label: 'Test' },
+    { id: 'c8', index: 8, open: 105, high: 121, low: 104, close: 120, volume: 7600, label: 'SOS' },
+    { id: 'c9', index: 9, open: 120, high: 121, low: 114, close: 116, volume: 1700, label: 'LPS' },
+    { id: 'c10', index: 10, open: 116, high: 132, low: 115, close: 130, volume: 8200, label: 'Markup' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-creek-res',
+      x1Index: 1.5,
+      y1Price: 115,
+      x2Index: 9.5,
+      y2Price: 115,
+      color: '#38BDF8',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Resistance TR (The Creek / AR Level: $115.00)',
+      labelAlignment: 'start',
+      showArrow: false
+    },
+    {
+      id: 'tl-ice-sup',
+      x1Index: 0.5,
+      y1Price: 98,
+      x2Index: 8,
+      y2Price: 98,
+      color: '#EF4444',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Support TR (Ice Line / SC Level: $98.00)',
+      labelAlignment: 'start',
+      showArrow: false
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-tr-accumulation',
+      startIndex: 1,
+      endIndex: 8.5,
+      topPrice: 115,
+      bottomPrice: 98,
+      label: 'Trading Range Akumulasi Institusional ($98 - $115)',
+      labelPosition: 'top-left',
+      color: '#8B5CF6',
+      opacity: 0.12,
+      boxType: 'supply_demand',
+      showMidLine: true,
+      midLineLabel: '50% Ekuilibrium TR'
+    },
+    {
+      id: 'box-spring-shakeout',
+      startIndex: 5.6,
+      endIndex: 7.4,
+      topPrice: 98,
+      bottomPrice: 92,
+      label: 'Phase C: Spring Shakeout (Liquidity Trap)',
+      labelPosition: 'bottom-left',
+      color: '#10B981',
+      opacity: 0.22,
+      boxType: 'liquidity_pool'
+    }
+  ],
+  polylines: [
+    {
+      id: 'poly-accumulation-path',
+      points: [
+        { index: 0, price: 125 },
+        { index: 1, price: 95 },
+        { index: 2, price: 115 },
+        { index: 3, price: 101 },
+        { index: 4, price: 110 },
+        { index: 5, price: 101 },
+        { index: 6, price: 92 },
+        { index: 8, price: 121 },
+        { index: 9, price: 114 },
+        { index: 10, price: 132 }
+      ],
+      color: '#F59E0B',
+      strokeWidth: 2.2,
+      curveType: 'zigzag',
+      showDots: true,
+      label: 'Siklus Struktur Wyckoff A - E'
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-spring-entry',
+      type: 'long',
+      label: 'Optimal Spring / LPS Entry',
+      entryPrice: 100,
+      stopPrice: 91,
+      targetPrice: 132,
+      startIndex: 7,
+      endIndex: 10.5
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-sc',
+      candleIndex: 1,
+      price: 94,
+      text: 'Selling Climax (SC)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-ar',
+      candleIndex: 2,
+      price: 117,
+      text: 'Automatic Rally (AR)',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-spring',
+      candleIndex: 6,
+      price: 90,
+      text: 'Spring: Vol Mengering (No Supply)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-sos',
+      candleIndex: 8,
+      price: 123,
+      text: 'Sign of Strength (SOS Breakout)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-lps',
+      candleIndex: 9,
+      price: 112,
+      text: 'Last Point of Support (LPS)',
+      style: 'badge',
+      bgColor: '#F59E0B',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-phases',
+      candleIndex: 6,
+      price: 123,
+      stepBadge: 'C',
+      title: 'FASE C: THE SPRING',
+      lines: [
+        'Harga menembus di bawah Ice ($98) untuk memicu stop order.',
+        'Volume sangat rendah (1500), membuktikan pasokan habis.',
+        'Penutupan kembali ke dalam TR mengonfirmasi kesiapan reli.'
+      ],
+      footerBadge: '✓ High R:R Setup',
+      color: '#10B981'
+    }
+  ],
+  legends: [
+    { id: 'leg-sc', label: 'Climax & TR Bounds', color: '#EF4444' },
+    { id: 'leg-creek', label: 'Creek Resistance', color: '#38BDF8' },
+    { id: 'leg-sos', label: 'Markup & SOS', color: '#10B981' }
+  ]
+};
+
+export const WYCKOFF_DISTRIBUTION_SCHEMATIC_CHART: CustomChartConfig = {
+  title: 'Skematik Distribusi Wyckoff & UTAD: Pelepasan Inventaris Puncak',
+  subtitle: 'Anatomi: Buying Climax (BC), Automatic Reaction (AR), Upthrust After Distribution (UTAD), SOW & LPSY',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'normal',
+  candles: [
+    { id: 'd0', index: 0, open: 100, high: 115, low: 99, close: 113, volume: 5100, label: 'Markup' },
+    { id: 'd1', index: 1, open: 113, high: 128, low: 112, close: 126, volume: 9200, label: 'BC' },
+    { id: 'd2', index: 2, open: 126, high: 127, low: 110, close: 111, volume: 6100, label: 'AR' },
+    { id: 'd3', index: 3, open: 111, high: 124, low: 110, close: 123, volume: 3200, label: 'ST' },
+    { id: 'd4', index: 4, open: 123, high: 125, low: 113, close: 115, volume: 2400 },
+    { id: 'd5', index: 5, open: 115, high: 122, low: 114, close: 120, volume: 2100 },
+    { id: 'd6', index: 6, open: 120, high: 135, low: 118, close: 122, volume: 3600, label: 'UTAD' },
+    { id: 'd7', index: 7, open: 122, high: 123, low: 105, close: 107, volume: 8100, label: 'MSOW' },
+    { id: 'd8', index: 8, open: 107, high: 114, low: 106, close: 112, volume: 1600, label: 'LPSY' },
+    { id: 'd9', index: 9, open: 112, high: 113, low: 95, close: 96, volume: 8900, label: 'Markdown' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-dist-res',
+      x1Index: 0.5,
+      y1Price: 126,
+      x2Index: 8,
+      y2Price: 126,
+      color: '#EF4444',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Resistance TR Distribusi ($126.00)',
+      labelAlignment: 'start',
+      showArrow: false
+    },
+    {
+      id: 'tl-dist-ice',
+      x1Index: 1.5,
+      y1Price: 110,
+      x2Index: 8.5,
+      y2Price: 110,
+      color: '#38BDF8',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Support TR (Ice Line: $110.00)',
+      labelAlignment: 'start',
+      showArrow: false
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-tr-distribution',
+      startIndex: 1,
+      endIndex: 7.5,
+      topPrice: 126,
+      bottomPrice: 110,
+      label: 'Trading Range Distribusi Institusi ($110 - $126)',
+      labelPosition: 'bottom-left',
+      color: '#EF4444',
+      opacity: 0.12,
+      boxType: 'supply_demand',
+      showMidLine: true,
+      midLineLabel: '50% Ekuilibrium TR'
+    },
+    {
+      id: 'box-utad-trap',
+      startIndex: 5.6,
+      endIndex: 6.8,
+      topPrice: 135,
+      bottomPrice: 126,
+      label: 'UTAD Bull Trap (Sweep di Atas BC)',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.25,
+      boxType: 'liquidity_pool'
+    }
+  ],
+  polylines: [
+    {
+      id: 'poly-distribution-path',
+      points: [
+        { index: 0, price: 100 },
+        { index: 1, price: 128 },
+        { index: 2, price: 110 },
+        { index: 3, price: 124 },
+        { index: 4, price: 113 },
+        { index: 6, price: 135 },
+        { index: 7, price: 105 },
+        { index: 8, price: 114 },
+        { index: 9, price: 95 }
+      ],
+      color: '#F43F5E',
+      strokeWidth: 2.2,
+      curveType: 'zigzag',
+      showDots: true,
+      label: 'Siklus Struktur Distribusi Wyckoff'
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-lpsy-short',
+      type: 'short',
+      label: 'LPSY / UTAD Short Setup',
+      entryPrice: 113,
+      stopPrice: 127,
+      targetPrice: 95,
+      startIndex: 7.8,
+      endIndex: 9.5
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-bc',
+      candleIndex: 1,
+      price: 130,
+      text: 'Buying Climax (BC)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-ar-dist',
+      candleIndex: 2,
+      price: 108,
+      text: 'Automatic Reaction (AR)',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-utad',
+      candleIndex: 6,
+      price: 137,
+      text: 'UTAD (Bull Trap Pucuk)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-msow',
+      candleIndex: 7,
+      price: 103,
+      text: 'Major SOW (Break Ice)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-lpsy',
+      candleIndex: 8,
+      price: 116,
+      text: 'LPSY (Weak Pullback)',
+      style: 'badge',
+      bgColor: '#F59E0B',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-utad-anatomy',
+      candleIndex: 6,
+      price: 103,
+      stepBadge: 'UTAD',
+      title: 'JEBAKAN UTAD DI PUCUK',
+      lines: [
+        'Harga menembus $126 menciptakan All-Time High palsu.',
+        'Volume penyerapan mengering saat ritel FOMO membeli.',
+        'Rejection cepat dan breakdown SOW mengonfirmasi Fase E Markdown.'
+      ],
+      footerBadge: '✓ Short at LPSY',
+      color: '#EF4444'
+    }
+  ],
+  legends: [
+    { id: 'leg-dist-bc', label: 'Buying Climax & UTAD', color: '#EF4444' },
+    { id: 'leg-dist-ice', label: 'Ice Line Support', color: '#38BDF8' },
+    { id: 'leg-dist-md', label: 'Markdown Expansion', color: '#991B1B' }
+  ]
+};
+
+export const WYCKOFF_VSA_EFFORT_RESULT_CHART: CustomChartConfig = {
+  title: 'Volume Spread Analysis: Hukum Effort vs Result & Stopping Volume',
+  subtitle: 'Perbandingan Efisiensi Lelang: Penyerapan Pasokan (Stopping Volume) vs Uji Ketiadaan Pasokan (No Supply) vs SOS Breakout',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'v0', index: 0, open: 120, high: 121, low: 109, close: 110, volume: 3200, label: 'Trend Turun' },
+    { id: 'v1', index: 1, open: 110, high: 111, low: 96, close: 99, volume: 9500, label: 'Stopping Vol' },
+    { id: 'v2', index: 2, open: 99, high: 107, low: 98, close: 106, volume: 4800, label: 'Reversal' },
+    { id: 'v3', index: 3, open: 106, high: 107, low: 102, close: 103, volume: 1100, label: 'No Supply' },
+    { id: 'v4', index: 4, open: 103, high: 120, low: 102, close: 119, volume: 8800, label: 'SOS Bar' },
+    { id: 'v5', index: 5, open: 119, high: 121, low: 115, close: 117, volume: 1400, label: 'No Demand' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-stopping-level',
+      x1Index: 0.5,
+      y1Price: 99,
+      x2Index: 3.5,
+      y2Price: 99,
+      color: '#10B981',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Absorption Floor ($99.00)',
+      labelAlignment: 'start',
+      showArrow: false
+    },
+    {
+      id: 'tl-sos-breakout',
+      x1Index: 0,
+      y1Price: 115,
+      x2Index: 5,
+      y2Price: 115,
+      color: '#38BDF8',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Resistance Level ($115.00)',
+      labelAlignment: 'center',
+      showArrow: false
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-absorption-stopping',
+      startIndex: 0.7,
+      endIndex: 1.3,
+      topPrice: 111,
+      bottomPrice: 96,
+      label: 'Stopping Volume Absorption',
+      labelPosition: 'top-left',
+      color: '#10B981',
+      opacity: 0.18,
+      boxType: 'liquidity_pool'
+    },
+    {
+      id: 'box-sos-expansion',
+      startIndex: 3.7,
+      endIndex: 4.3,
+      topPrice: 120,
+      bottomPrice: 102,
+      label: 'Wide Spread Bullish (Effort = Result)',
+      labelPosition: 'top-left',
+      color: '#38BDF8',
+      opacity: 0.18,
+      boxType: 'fvg'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-stopping-vol',
+      candleIndex: 1,
+      price: 94,
+      text: 'Effort Raksasa (9500) Menahan Harga',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-no-supply-vol',
+      candleIndex: 3,
+      price: 101,
+      text: 'No Supply: Vol Kering (1100)',
+      style: 'pill',
+      bgColor: '#F59E0B',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-sos-vol',
+      candleIndex: 4,
+      price: 122,
+      text: 'SOS: Volume Tinggi (8800) + Spread Lebar',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-vsa-logic',
+      candleIndex: 1,
+      price: 121,
+      stepBadge: 'VSA',
+      title: 'HUKUM EFFORT VS RESULT',
+      lines: [
+        'Candle 1: Volume 9500 luar biasa tinggi, namun harga tidak jatuh lebih jauh (penyerapan pasokan).',
+        'Candle 3: Volume surut drastis membuktikan penjual tidak lagi tertarik menekan harga.',
+        'Candle 4: Usaha pembeli menghasilkan spread bullish lebar menembus resisten.'
+      ],
+      footerBadge: '✓ Konfirmasi Akumulasi VSA',
+      color: '#10B981'
+    }
+  ],
+  legends: [
+    { id: 'leg-vsa-effort', label: 'Stopping Volume', color: '#10B981' },
+    { id: 'leg-vsa-sos', label: 'SOS Effort = Result', color: '#38BDF8' },
+    { id: 'leg-vsa-dry', label: 'No Supply Test', color: '#F59E0B' }
+  ]
+};
 
 export const WYCKOFF_ARTICLES: Record<string, EducationalArticle> = {
   // Master Guide Wyckoff
@@ -64,6 +551,8 @@ Wyckoff mengajarkan para muridnya untuk memandang seluruh pergerakan pasar seola
         id: 'fase-akumulasi',
         title: '3. Skematik Akumulasi Institusional (Fase A - E)',
         visualType: 'wyckoff_accumulation_schematic',
+        illustrationMode: 'custom_builder',
+        customChartConfig: WYCKOFF_ACCUMULATION_SCHEMATIC_CHART,
         callout: {
           type: 'tip',
           title: 'The Spring di Fase C',
@@ -94,6 +583,8 @@ Wyckoff mengajarkan para muridnya untuk memandang seluruh pergerakan pasar seola
         id: 'fase-distribusi',
         title: '4. Skematik Distribusi & UTAD',
         visualType: 'wyckoff_distribution_schematic',
+        illustrationMode: 'custom_builder',
+        customChartConfig: WYCKOFF_DISTRIBUTION_SCHEMATIC_CHART,
         callout: {
           type: 'warning',
           title: 'Jebakan UTAD di Pucuk',
@@ -115,6 +606,8 @@ Wyckoff mengajarkan para muridnya untuk memandang seluruh pergerakan pasar seola
         id: 'vsa-volume',
         title: '5. Volume Spread Analysis: Effort vs. Result',
         visualType: 'wyckoff_vsa_volume_spread',
+        illustrationMode: 'custom_builder',
+        customChartConfig: WYCKOFF_VSA_EFFORT_RESULT_CHART,
         content: `### Membaca Volume Menggunakan Pendekatan Tom Williams
 - **Stopping Volume**: Volume ultra-tinggi pada candle bearish lebar yang langsung diikuti candle bullish penutupan tinggi. Tanda pasti bahwa Smart Money telah menyerap seluruh pesanan jual retail.
 - **No Demand Bar**: Candle bullish berrentang sempit dengan volume lebih rendah dari 2 bar sebelumnya di dekat resisten. Membuktikan ketiadaan minat beli profesional.`

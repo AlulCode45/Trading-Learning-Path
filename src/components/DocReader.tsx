@@ -718,16 +718,16 @@ export const DocReader: React.FC<DocReaderProps> = ({
                 </div>
 
                 {/* Visual Technical Diagram or Chart Illustration */}
-                {section.visualType ? (
-                  <div className="my-6">
-                    <VisualDiagram type={section.visualType} />
-                  </div>
-                ) : section.illustrationMode === 'custom_builder' && (section as any).customChartConfig ? (
+                {section.illustrationMode === 'custom_builder' && (section as any).customChartConfig ? (
                   <div className="my-6">
                     <CustomChartRenderer
                       config={(section as any).customChartConfig}
                       title={section.title}
                     />
+                  </div>
+                ) : section.visualType ? (
+                  <div className="my-6">
+                    <VisualDiagram type={section.visualType} />
                   </div>
                 ) : section.illustrationMode === 'interactive_chart' ? (
                   <div className="my-6">

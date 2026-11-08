@@ -1,4 +1,579 @@
 import { EducationalArticle } from '../../types';
+import { CustomChartConfig } from '../../types/chartBuilderTypes';
+
+// ============================================================================
+// CONFIGURASI CHART CUSTOM BUILDER UNTUK MATERI PRICE ACTION EDUKATIF
+// ============================================================================
+
+const CANDLESTICK_ANATOMY_CHART: CustomChartConfig = {
+  title: 'Anatomi Candlestick & Wick Rejection Dynamics',
+  subtitle: 'Perbandingan Realitas Lelang: Marubozu Conviction vs Upper Wick Absorption vs Doji Equilibrium',
+  timeframe: '1H',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'c0', index: 0, open: 100, high: 106, low: 99, close: 105, volume: 1800, label: 'Base' },
+    { id: 'c1', index: 1, open: 105, high: 122, low: 104, close: 121, volume: 4200, label: 'Marubozu' },
+    { id: 'c2', index: 2, open: 121, high: 135, low: 119, close: 122, volume: 5100, label: 'Wick Rejection' },
+    { id: 'c3', index: 3, open: 122, high: 124, low: 120, close: 122, volume: 1200, label: 'Doji' },
+    { id: 'c4', index: 4, open: 122, high: 123, low: 109, close: 110, volume: 3800, label: 'Displacement' },
+    { id: 'c5', index: 5, open: 110, high: 112, low: 101, close: 102, volume: 3400, label: 'Follow-Through' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-rejection-level',
+      x1Index: 1,
+      y1Price: 135,
+      x2Index: 4,
+      y2Price: 135,
+      color: '#EF4444',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Resistance Ceiling / Supply Liquidity ($135.00)',
+      labelAlignment: 'center',
+      showArrow: false
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-wick-absorption',
+      startIndex: 1.8,
+      endIndex: 2.2,
+      topPrice: 135,
+      bottomPrice: 123,
+      label: 'Absorption Zone (Long Upper Wick)',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.18,
+      boxType: 'liquidity_pool'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-marubozu',
+      candleIndex: 1,
+      price: 103,
+      text: 'Conviction Body > 85%',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-wick-trap',
+      candleIndex: 2,
+      price: 136,
+      text: 'Iceberg Orders Absorbed (65% Wick)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-doji-eq',
+      candleIndex: 3,
+      price: 126,
+      text: 'Equilibrium (Doji)',
+      style: 'badge',
+      bgColor: '#64748B',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-close-valid',
+      candleIndex: 4,
+      price: 108,
+      text: 'Bearish Expansion Confirmed',
+      style: 'pill',
+      bgColor: '#F43F5E',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-candle-mechanics',
+      candleIndex: 2,
+      price: 130,
+      stepBadge: '1',
+      title: 'ANATOMI REJEKSI LELANG',
+      lines: [
+        'Candle 2 menusuk $135 namun gagal bertahan.',
+        'Volume masif terserap oleh pesanan jual pasif.',
+        'Close di $122 membuktikan buyer kehilangan kendali.'
+      ],
+      footerBadge: '✓ Wick = Failed Auction',
+      color: '#F59E0B'
+    }
+  ],
+  legends: [
+    { id: 'leg-bull', label: 'Bullish Momentum', color: '#10B981' },
+    { id: 'leg-bear', label: 'Bearish Absorption', color: '#EF4444' },
+    { id: 'leg-doji', label: 'Price Balance (Doji)', color: '#64748B' }
+  ]
+};
+
+const VALID_SWING_CHART: CustomChartConfig = {
+  title: 'Aturan Fraktal 3-Candle: Valid Swing High & Swing Low',
+  subtitle: 'Identifikasi Mekanis Titik Puncak & Lembah Sah Melalui Syarat Penembusan Pullback',
+  timeframe: '4H',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 's0', index: 0, open: 100, high: 108, low: 98, close: 107, volume: 1500, label: 'L1' },
+    { id: 's1', index: 1, open: 107, high: 118, low: 105, close: 116, volume: 2400, label: 'L2' },
+    { id: 's2', index: 2, open: 116, high: 130, low: 114, close: 127, volume: 3800, label: 'Apex (High)' },
+    { id: 's3', index: 3, open: 127, high: 125, low: 110, close: 112, volume: 2900, label: 'R1 (Pullback)' },
+    { id: 's4', index: 4, open: 112, high: 115, low: 102, close: 104, volume: 2200, label: 'R2 (Swing Low)' },
+    { id: 's5', index: 5, open: 104, high: 122, low: 103, close: 120, volume: 3200, label: 'Extension' },
+    { id: 's6', index: 6, open: 120, high: 138, low: 119, close: 136, volume: 4600, label: 'BOS High' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-swing-high-line',
+      x1Index: 1,
+      y1Price: 130,
+      x2Index: 6,
+      y2Price: 130,
+      color: '#10B981',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Valid Swing High ($130.00)',
+      labelAlignment: 'center',
+      showArrow: false
+    },
+    {
+      id: 'tl-pullback-trigger',
+      x1Index: 2,
+      y1Price: 114,
+      x2Index: 4,
+      y2Price: 114,
+      color: '#F59E0B',
+      strokeWidth: 1.5,
+      lineStyle: 'dotted',
+      label: 'Konfirmasi Pullback: Low Candle 2 Ditembus',
+      labelAlignment: 'start',
+      showArrow: true
+    },
+    {
+      id: 'tl-swing-low-line',
+      x1Index: 3,
+      y1Price: 102,
+      x2Index: 6,
+      y2Price: 102,
+      color: '#06B6D4',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Confirmed Swing Low ($102.00)',
+      labelAlignment: 'end',
+      showArrow: false
+    }
+  ],
+  polylines: [
+    {
+      id: 'poly-swing-wave',
+      points: [
+        { index: 0, price: 98 },
+        { index: 2, price: 130 },
+        { index: 4, price: 102 },
+        { index: 6, price: 138 }
+      ],
+      color: '#3B82F6',
+      strokeWidth: 2.2,
+      curveType: 'zigzag',
+      showDots: true,
+      label: 'Mekanik Swing Wave'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-high-confirmed',
+      candleIndex: 2,
+      price: 133,
+      text: 'VALID SWING HIGH',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-low-confirmed',
+      candleIndex: 4,
+      price: 99,
+      text: 'VALID SWING LOW (HL)',
+      style: 'pill',
+      bgColor: '#06B6D4',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-bos-confirmed',
+      candleIndex: 6,
+      price: 140,
+      text: 'BOS (Body Close Confirmed)',
+      style: 'pill',
+      bgColor: '#3B82F6',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-swing-rule',
+      candleIndex: 3,
+      price: 122,
+      stepBadge: '2',
+      title: 'ATURAN 3-CANDLE OBJEKTIF',
+      lines: [
+        'Candle 2 memiliki High lebih tinggi dari C1 dan C3.',
+        'Swing High SAH setelah Candle 3 menembus Low C2 ($114).',
+        'Candle 4 membentuk Swing Low baru sebelum ekspansi.'
+      ],
+      footerBadge: '✓ 100% Mekanis Tanpa Tebak-tebakan',
+      color: '#10B981'
+    }
+  ]
+};
+
+const SUPPORT_RESISTANCE_REVERSAL_CHART: CustomChartConfig = {
+  title: 'Role Reversal Support & Resistance: Breakout, Retest & Rejection',
+  subtitle: 'Konsep Pertukaran Peran: Bekas Resistance Menjadi New Floor Support yang Teruji Kuat',
+  timeframe: '1H',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'normal',
+  candles: [
+    { id: 'sr0', index: 0, open: 98, high: 104, low: 97, close: 103, volume: 1500, label: 'Approach' },
+    { id: 'sr1', index: 1, open: 103, high: 110, low: 102, close: 109, volume: 1900, label: 'Touch 1' },
+    { id: 'sr2', index: 2, open: 109, high: 110, low: 101, close: 102, volume: 2200, label: 'Reject' },
+    { id: 'sr3', index: 3, open: 102, high: 108, low: 100, close: 107, volume: 1800, label: 'Accumulate' },
+    { id: 'sr4', index: 4, open: 107, high: 121, low: 106, close: 120, volume: 4600, label: 'Breakout' },
+    { id: 'sr5', index: 5, open: 120, high: 124, low: 118, close: 122, volume: 2800, label: 'Peak' },
+    { id: 'sr6', index: 6, open: 122, high: 123, low: 112, close: 113, volume: 2100, label: 'Retest Dive' },
+    { id: 'sr7', index: 7, open: 113, high: 116, low: 109, close: 115, volume: 3400, label: 'Pinbar Retest' },
+    { id: 'sr8', index: 8, open: 115, high: 128, low: 114, close: 127, volume: 4200, label: 'Rally Launch' },
+    { id: 'sr9', index: 9, open: 127, high: 135, low: 126, close: 134, volume: 4900, label: 'Target Hit' }
+  ],
+  boxes: [
+    {
+      id: 'box-sr-zone',
+      startIndex: 0.5,
+      endIndex: 8.5,
+      topPrice: 111,
+      bottomPrice: 108.5,
+      label: 'Key S/R Flip Zone (Old Resistance → New Support)',
+      labelPosition: 'top-left',
+      color: '#3B82F6',
+      opacity: 0.2,
+      borderColor: '#2563EB',
+      showMidLine: true,
+      midLineLabel: 'Flip Equilibrium: $110.00'
+    }
+  ],
+  trendlines: [
+    {
+      id: 'tl-breakout-level',
+      x1Index: 1,
+      y1Price: 110,
+      x2Index: 8,
+      y2Price: 110,
+      color: '#F59E0B',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Role Reversal Horizontal Level ($110.00)',
+      labelAlignment: 'center',
+      showArrow: false
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-sr-retest',
+      type: 'long',
+      label: 'Retest Confirmation Entry',
+      startIndex: 7,
+      endIndex: 9.5,
+      entryPrice: 115,
+      stopPrice: 106.5,
+      targetPrice: 135,
+      targetColor: '#10B981',
+      stopColor: '#EF4444'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-old-res',
+      candleIndex: 1,
+      price: 112,
+      text: 'Resistance Ceiling',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-breakout-body',
+      candleIndex: 4,
+      price: 122,
+      text: 'Impulsive Breakout (High Vol)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-pinbar-retest',
+      candleIndex: 7,
+      price: 107,
+      text: 'Wick Rejection at New Support',
+      style: 'pill',
+      bgColor: '#3B82F6',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-reversal-step',
+      candleIndex: 6,
+      price: 128,
+      stepBadge: '3',
+      title: 'PROTOKOL ROLE REVERSAL',
+      lines: [
+        'Breakout bervolume tinggi menjebol level $110.',
+        'Harga kembali (pullback) menguji bekas atap.',
+        'Sumbu bawah pada Candle 7 mengonfirmasi Support baru.'
+      ],
+      footerBadge: '✓ High-Probability Entry',
+      color: '#3B82F6'
+    }
+  ]
+};
+
+const SUPPLY_DEMAND_FRESH_MITIGATED_CHART: CustomChartConfig = {
+  title: 'Supply & Demand Order Blocks: Fresh vs Mitigated Zone Evaluation',
+  subtitle: 'Kapasitas Resting Orders Institusi: Mengapa Sentuhan Pertama Paling Kuat & Sentuhan Lanjutan Rapuh',
+  timeframe: '1H',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'normal',
+  candles: [
+    { id: 'ob0', index: 0, open: 108, high: 110, low: 101, close: 102, volume: 2100, label: 'Last Bearish' },
+    { id: 'ob1', index: 1, open: 102, high: 120, low: 101, close: 119, volume: 4500, label: 'Displacement' },
+    { id: 'ob2', index: 2, open: 119, high: 132, low: 118, close: 130, volume: 5200, label: 'BOS High' },
+    { id: 'ob3', index: 3, open: 130, high: 131, low: 121, close: 122, volume: 2200, label: 'Pullback 1' },
+    { id: 'ob4', index: 4, open: 122, high: 124, low: 106, close: 116, volume: 3800, label: 'First Touch' },
+    { id: 'ob5', index: 5, open: 116, high: 129, low: 115, close: 128, volume: 3600, label: 'Rally 1' },
+    { id: 'ob6', index: 6, open: 128, high: 129, low: 118, close: 119, volume: 2100, label: 'Pullback 2' },
+    { id: 'ob7', index: 7, open: 119, high: 120, low: 104, close: 112, volume: 2900, label: 'Mitigated Touch' },
+    { id: 'ob8', index: 8, open: 112, high: 118, low: 110, close: 117, volume: 1800, label: 'Weak Bounce' },
+    { id: 'ob9', index: 9, open: 117, high: 118, low: 96, close: 98, volume: 4800, label: 'Zone Failed' }
+  ],
+  boxes: [
+    {
+      id: 'box-fresh-ob',
+      startIndex: 0,
+      endIndex: 4.5,
+      topPrice: 110,
+      bottomPrice: 101,
+      label: 'Fresh Bullish Order Block (100% Unmitigated)',
+      labelPosition: 'top-left',
+      color: '#10B981',
+      opacity: 0.22,
+      borderColor: '#059669',
+      borderWidth: 1.5,
+      showMidLine: true,
+      midLineLabel: 'Mean Threshold (50%): $105.50'
+    },
+    {
+      id: 'box-mitigated-ob',
+      startIndex: 4.5,
+      endIndex: 9.5,
+      topPrice: 110,
+      bottomPrice: 101,
+      label: 'Mitigated Zone (Exhausted Liquidity - High Risk)',
+      labelPosition: 'bottom-left',
+      color: '#EF4444',
+      opacity: 0.12,
+      borderColor: '#DC2626',
+      borderStyle: 'dashed'
+    }
+  ],
+  trendlines: [
+    {
+      id: 'tl-bos-level',
+      x1Index: 1,
+      y1Price: 120,
+      x2Index: 3,
+      y2Price: 120,
+      color: '#10B981',
+      strokeWidth: 1.5,
+      lineStyle: 'dashed',
+      label: 'BOS Confirmed Origin',
+      labelAlignment: 'center',
+      showArrow: true
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-fresh-bounce',
+      candleIndex: 4,
+      price: 104,
+      text: 'First Touch (Prime Reaction)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-mitigated-fragile',
+      candleIndex: 7,
+      price: 102,
+      text: 'Sentuhan ke-2 (Orders Menipis)',
+      style: 'pill',
+      bgColor: '#F59E0B',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-zone-broken',
+      candleIndex: 9,
+      price: 94,
+      text: 'Zone Broken (Liquidity Exhausted)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-ob-freshness',
+      candleIndex: 4,
+      price: 125,
+      stepBadge: '4',
+      title: 'EVALUASI KUALITAS ORDER BLOCK',
+      lines: [
+        'Candle 0 adalah OB origin pemicu ledakan BOS.',
+        'Sentuhan ke-1 menyerap pesanan institusi (High Win-Rate).',
+        'Sentuhan ke-2 dan ke-3 membuat zona rapuh dan ditembus.'
+      ],
+      footerBadge: '✓ Trade Only Fresh Order Blocks',
+      color: '#10B981'
+    }
+  ]
+};
+
+const INDUCEMENT_FALSE_BREAKOUT_CHART: CustomChartConfig = {
+  title: 'Inducement, False Breakout & Liquidity Sweep (Turtle Soup Protocol)',
+  subtitle: 'Anatomi Perangkap Retail: Rekayasa Equal Highs, Pemicu Stop Hunt, dan Displacement Pembalikan',
+  timeframe: '15m',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'normal',
+  candles: [
+    { id: 'f0', index: 0, open: 100, high: 114, low: 99, close: 113, volume: 1800, label: 'Peak 1' },
+    { id: 'f1', index: 1, open: 113, high: 114, low: 105, close: 106, volume: 1600, label: 'Pullback' },
+    { id: 'f2', index: 2, open: 106, high: 114.2, low: 105, close: 113.8, volume: 2200, label: 'Peak 2 (EQH)' },
+    { id: 'f3', index: 3, open: 113.8, high: 114.1, low: 108, close: 109, volume: 1500, label: 'Inducement' },
+    { id: 'f4', index: 4, open: 109, high: 123, low: 108, close: 112, volume: 5400, label: 'Fakeout Sweep' },
+    { id: 'f5', index: 5, open: 112, high: 113, low: 98, close: 99, volume: 4600, label: 'Displacement' },
+    { id: 'f6', index: 6, open: 99, high: 105, low: 98, close: 103, volume: 2100, label: 'Retest FVG' },
+    { id: 'f7', index: 7, open: 103, high: 104, low: 88, close: 89, volume: 3900, label: 'Bearish Wave' }
+  ],
+  boxes: [
+    {
+      id: 'box-bsl-pool',
+      startIndex: 0,
+      endIndex: 4.8,
+      topPrice: 123,
+      bottomPrice: 114,
+      label: 'BSL Liquidity Pool & Trap Zone ($$$)',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.16,
+      borderColor: '#DC2626'
+    },
+    {
+      id: 'box-fvg-bear',
+      startIndex: 4.5,
+      endIndex: 6.5,
+      topPrice: 108,
+      bottomPrice: 103,
+      label: 'Bearish Fair Value Gap (FVG)',
+      labelPosition: 'top-right',
+      color: '#38BDF8',
+      opacity: 0.2
+    }
+  ],
+  trendlines: [
+    {
+      id: 'tl-eqh-level',
+      x1Index: 0,
+      y1Price: 114,
+      x2Index: 4.2,
+      y2Price: 114,
+      color: '#F59E0B',
+      strokeWidth: 2,
+      lineStyle: 'dashed',
+      label: 'Equal Highs (EQH) Retail Double Top Ceiling ($114.00)',
+      labelAlignment: 'center',
+      showArrow: false
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-turtle-soup-sell',
+      type: 'short',
+      label: 'Turtle Soup Short Setup',
+      startIndex: 5.5,
+      endIndex: 7.5,
+      entryPrice: 104,
+      stopPrice: 115,
+      targetPrice: 88,
+      targetColor: '#10B981',
+      stopColor: '#EF4444'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-eqh-induce',
+      candleIndex: 2,
+      price: 115.5,
+      text: 'Inducement: Rapi Mengundang BSL',
+      style: 'pill',
+      bgColor: '#F59E0B',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-stop-hunt-wick',
+      candleIndex: 4,
+      price: 124,
+      text: 'LIQUIDITY SWEEP (Turtle Soup)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-displace-close',
+      candleIndex: 5,
+      price: 96,
+      text: 'Displacement Down (Close Inside)',
+      style: 'pill',
+      bgColor: '#8B5CF6',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-sweep-phases',
+      candleIndex: 4,
+      price: 119,
+      stepBadge: '5',
+      title: 'MEKANIKA FALSE BREAKOUT',
+      lines: [
+        'Equal Highs (EQH) menarik retail Buy-Stop.',
+        'Candle 4 menyapu likuiditas puncak ($123).',
+        'Penutupan kembali di bawah $114 memicu Short Setup.'
+      ],
+      footerBadge: '✓ Sell on Liquidity Sweep',
+      color: '#EF4444'
+    }
+  ]
+};
 
 export const EDUCATIONAL_ARTICLES: Record<string, EducationalArticle> = {
   // ==========================================
@@ -260,7 +835,9 @@ Banyak trader pemula melakukan kesalahan fatal dengan mengambil keputusan saat c
 | **Long Upper Wick Rejection** | Sumbu atas > 60%, Body kecil di bawah | Penyerapan agresif oleh Sell Limit; kegagalan buyer | Cari konfirmasi entri Sell pasca sweep |
 | **Long Lower Wick Rejection** | Sumbu bawah > 60%, Body kecil di atas | Penyerapan agresif oleh Buy Limit; kegagalan seller | Cari konfirmasi entri Buy pasca sweep |
 | **Doji / Spinning Top** | Body tipis di tengah, sumbu simetris | Ekuilibrium harga; pembeli dan penjual seimbang | Menunggu konfirmasi breakout atau rilis data |`,
-        visualType: 'candlestick_anatomy'
+        visualType: 'candlestick_anatomy',
+        illustrationMode: 'custom_builder',
+        customChartConfig: CANDLESTICK_ANATOMY_CHART
       },
       {
         id: 'absorption-physics',
@@ -411,7 +988,9 @@ Untuk membangun sistem trading yang konsisten (*reproducible*), kita membutuhkan
 | :--- | :--- | :--- | :--- |
 | **Valid Swing High** | Memiliki titik tertinggi (High) paling tinggi di antara tetangganya | Candle sebelum dan sesudahnya memiliki High lebih rendah | Terjadi penembusan ke bawah titik Low candle formasi tersebut |
 | **Valid Swing Low** | Memiliki titik terendah (Low) paling rendah di antara tetangganya | Candle sebelum dan sesudahnya memiliki Low lebih tinggi | Terjadi penembusan ke atas titik High candle formasi tersebut |`,
-        visualType: 'swing_structure'
+        visualType: 'swing_structure',
+        illustrationMode: 'custom_builder',
+        customChartConfig: VALID_SWING_CHART
       },
       {
         id: 'pullback-validation',
@@ -666,7 +1245,9 @@ Titik awal terjadinya ketidakseimbangan agresif (*Displacement*) ini meninggalka
 | **Probabilitas Reaksi** | **Sangat Tinggi (High Probability Reaction)** | Menurun drastis; rentan dijebol (*Low Probability*) |
 | **Jumlah Kunjungan** | Belum pernah dikunjungi kembali (0 sentuhan) | 1, 2, atau lebih sentuhan harga sebelumnya |
 | **Keamanan Stop Loss** | Terukur dan rasional di balik sumbu ekstrem zona | Sangat berisiko karena bantalan pesanan penahan sudah tipis |`,
-        visualType: 'supply_demand_zones'
+        visualType: 'supply_demand_zones',
+        illustrationMode: 'custom_builder',
+        customChartConfig: SUPPLY_DEMAND_FRESH_MITIGATED_CHART
       },
       {
         id: 'the-fourth-touch-trap',
@@ -826,7 +1407,9 @@ Kolam ini terdiri dari Stop Loss posisi buy (berupa pesanan *Sell Stop*) yang me
 | **Equal Highs (EQH)** | Double Top / Resistance kuat tak tertembus | Magnet likuiditas BSL tebal yang pasti disapu (*Sweep*) |
 | **Equal Lows (EQL)** | Double Bottom / Lantai support kokoh | Magnet likuiditas SSL tebal yang siap dibersihkan |
 | **Trendline Support** | Garis pantulan aman untuk Buy berulang kali | Likuiditas likuidasi miring (*Engineered Liquidity*) |`,
-        visualType: 'liquidity_pools'
+        visualType: 'liquidity_pools',
+        illustrationMode: 'custom_builder',
+        customChartConfig: SUPPORT_RESISTANCE_REVERSAL_CHART
       }
     ],
     commonMistakes: [
@@ -897,7 +1480,9 @@ Kolam ini terdiri dari Stop Loss posisi buy (berupa pesanan *Sell Stop*) yang me
 | **Karakter Lilin Lanjutan** | Terjadi ekspansi berturut-turut searah | Terjadi pembalikan agresif instan (*Displacement*) |
 | **Kondisi FVG** | Meninggalkan FVG searah dengan arah tembusan | Meninggalkan FVG besar berlawanan dengan arah tembusan |
 | **Tindakan Trader** | Tunggu pullback untuk entri searah tren | Masuk posisi berlawanan pasca konfirmasi sweep |`,
-        visualType: 'liquidity_sweep'
+        visualType: 'liquidity_sweep',
+        illustrationMode: 'custom_builder',
+        customChartConfig: INDUCEMENT_FALSE_BREAKOUT_CHART
       },
       {
         id: 'displacement-confirmation',
