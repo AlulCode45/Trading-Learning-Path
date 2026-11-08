@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { MermaidDiagram } from './MermaidDiagram';
 import { EducationalArticle, RoadmapNode } from '../types';
 import { 
   EDUCATIONAL_ARTICLES, 
@@ -644,6 +645,14 @@ export const DocReader: React.FC<DocReaderProps> = ({
                             </code>
                           );
                         }
+
+                        // Check if language is mermaid
+                        const match = /language-(\w+)/.exec(className || '');
+                        const lang = match ? match[1] : '';
+                        if (lang === 'mermaid' || (typeof children === 'string' && (children.trim().startsWith('flowchart') || children.trim().startsWith('sequenceDiagram') || children.trim().startsWith('graph')))) {
+                          return <MermaidDiagram chart={String(children)} />;
+                        }
+
                         return (
                           <pre className="bg-zinc-950 text-zinc-100 p-4 rounded-xl font-mono text-xs overflow-x-auto my-3 border border-zinc-800">
                             <code {...props}>{children}</code>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { MermaidDiagram } from './MermaidDiagram';
 import { RoadmapNode } from '../types';
 import { VisualDiagram } from './VisualDiagram';
 import { InteractiveTradingChart } from './illustration/InteractiveTradingChart';
@@ -198,6 +199,13 @@ export const NodeDrawer: React.FC<NodeDrawerProps> = ({
                       </code>
                     );
                   }
+
+                  const match = /language-(\w+)/.exec(className || '');
+                  const lang = match ? match[1] : '';
+                  if (lang === 'mermaid' || (typeof children === 'string' && (children.trim().startsWith('flowchart') || children.trim().startsWith('sequenceDiagram') || children.trim().startsWith('graph')))) {
+                    return <MermaidDiagram chart={String(children)} />;
+                  }
+
                   return (
                     <pre className="bg-zinc-950 text-zinc-100 p-3 rounded-lg font-mono text-[11px] overflow-x-auto my-2 border border-zinc-800">
                       <code {...props}>{children}</code>
