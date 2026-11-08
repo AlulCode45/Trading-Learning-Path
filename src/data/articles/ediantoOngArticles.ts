@@ -470,6 +470,144 @@ export const EO_BMRI_STUDY_CHART: CustomChartConfig = {
   ]
 };
 
+export const EO_ARITHMETIC_VS_LOGARITHMIC_CHART: CustomChartConfig = {
+  title: 'Skala Arithmetic vs Logarithmic: Reli Saham Multi-Bagger (Rp500 -> Rp5.000)',
+  subtitle: 'Mengeliminasi Distorsi Garis Tren: False Breakdown pada Skala Linier vs Pantulan Sempurna di Skala Logaritmik',
+  timeframe: 'Weekly',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'log-c0', index: 0, open: 500, high: 620, low: 480, close: 600, volume: 1500, label: 'L0 (Rp500)' },
+    { id: 'log-c1', index: 1, open: 600, high: 1100, low: 580, close: 1050, volume: 3800, label: 'P1 (+100%)' },
+    { id: 'log-c2', index: 2, open: 1050, high: 1080, low: 880, close: 920, volume: 2100, label: 'HL1 (Rp900)' },
+    { id: 'log-c3', index: 3, open: 920, high: 1950, low: 910, close: 1850, volume: 5200, label: 'P2 (+100%)' },
+    { id: 'log-c4', index: 4, open: 1850, high: 1900, low: 1520, close: 1600, volume: 2900, label: 'HL2 (Rp1.550)' },
+    { id: 'log-c5', index: 5, open: 1600, high: 3250, low: 1580, close: 3100, volume: 6800, label: 'P3 (+100%)' },
+    { id: 'log-c6', index: 6, open: 3100, high: 4300, low: 3050, close: 4200, volume: 8400, label: 'P4 (ATH Rp4.300)' },
+    { id: 'log-c7', index: 7, open: 4200, high: 4250, low: 3750, close: 3820, volume: 3400, label: 'Pullback Rp3.800' },
+    { id: 'log-c8', index: 8, open: 3820, high: 4600, low: 3800, close: 4500, volume: 7600, label: 'Rebound Hammer' },
+    { id: 'log-c9', index: 9, open: 4500, high: 5150, low: 4450, close: 5050, volume: 9200, label: 'Multi-Bagger Rp5.000' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-log-support',
+      x1Index: 0,
+      y1Price: 480,
+      x2Index: 9.5,
+      y2Price: 4200,
+      color: '#10B981',
+      strokeWidth: 2.2,
+      lineStyle: 'solid',
+      label: 'Trendline Logaritmik (Support Dinamis Sehat)',
+      labelAlignment: 'start',
+      showArrow: false
+    },
+    {
+      id: 'tl-linear-false-distortion',
+      x1Index: 4,
+      y1Price: 1520,
+      x2Index: 8.5,
+      y2Price: 4400,
+      color: '#EF4444',
+      strokeWidth: 1.8,
+      lineStyle: 'dashed',
+      label: 'Distorsi Skala Linier (Terlalu Curam -> False Sell Signal)',
+      labelAlignment: 'center',
+      showArrow: true
+    }
+  ],
+  polylines: [
+    {
+      id: 'poly-log-trajectory',
+      points: [
+        { index: 0, price: 480 },
+        { index: 1, price: 1100 },
+        { index: 2, price: 880 },
+        { index: 3, price: 1950 },
+        { index: 4, price: 1520 },
+        { index: 5, price: 3250 },
+        { index: 6, price: 4300 },
+        { index: 7, price: 3750 },
+        { index: 8, price: 4600 },
+        { index: 9, price: 5150 }
+      ],
+      color: '#38BDF8',
+      strokeWidth: 1.8,
+      curveType: 'zigzag',
+      showDots: true,
+      label: 'Struktur Pertumbuhan Multi-Tahun'
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-log-consolidation',
+      startIndex: 6.6,
+      endIndex: 8.4,
+      topPrice: 4300,
+      bottomPrice: 3750,
+      label: 'Zona Konsolidasi Sehat Rp3.800 (-12% Koreksi Wajar)',
+      labelPosition: 'top-left',
+      color: '#10B981',
+      opacity: 0.14,
+      boxType: 'order_block'
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-log-rebound',
+      candleIndex: 7,
+      price: 3600,
+      text: 'Skala Log: Pantulan Presisi di Atas Trendline Support',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-linear-panic',
+      candleIndex: 7,
+      price: 4450,
+      text: 'Skala Linier: Terdistorsi Tembus -> Panic Sell Palsu',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-ath-target',
+      candleIndex: 9,
+      price: 5350,
+      text: 'ATH Target Rp5.000 (10x Bagger Tercapai)',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-log-vs-lin',
+      candleIndex: 1,
+      price: 4900,
+      width: 175,
+      stepBadge: 'LOG',
+      title: 'ARITHMETIC VS LOGARITHMIC',
+      lines: [
+        '• Kenaikan 10x lipat (Rp500 -> Rp5.000)',
+        '• Skala Linier: Garis tren atas melengkung tebing curam.',
+        '• Skala Log: Jarak % sama rata, garis tren lurus & akurat.',
+        '• Koreksi di Rp3.800 memantul sempurna, bukan patah tren!'
+      ],
+      footerBadge: '✓ Gunakan Mode Log untuk Multi-Year',
+      color: '#10B981'
+    }
+  ],
+  legends: [
+    { id: 'leg-log-trend', label: 'Trendline Logaritmik (Presisi & Kokoh)', color: '#10B981' },
+    { id: 'leg-lin-distortion', label: 'Distorsi Garis Linier (False Breakdown)', color: '#EF4444' },
+    { id: 'leg-log-growth', label: 'Trajektori Multi-Bagger (1.000% ROI)', color: '#38BDF8' }
+  ]
+};
+
 export const EO_CHANNEL_AND_FAN_PRINCIPLE_CHART: CustomChartConfig = {
   title: 'Channeling & The Fan Principle: Tiga Garis Penentu Pembalikan',
   subtitle: 'Kaidah Saluran Paralel, Kegagalan Mencapai Channel (Failure Swing), dan Erosi 3 Garis Tren Kipas',
@@ -2208,7 +2346,9 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-5",
         "title": "4. Bahaya Distorsi Garis Tren (Trendline Distortion)",
-        "content": "Salah satu kesalahan paling mahal yang sering dilakukan pemula adalah menarik garis tren naik (*uptrend line*) pada grafik jangka panjang menggunakan skala arithmetic. \n\nMengapa ini berbahaya?\nKetika suatu saham mengalami reli multi-tahun (misal: naik dari Rp 500 ke Rp 5.000), pada skala arithmetic, kenaikan di harga atas (dari Rp 4.000 ke Rp 5.000) akan digambar setinggi langit, sedangkan pergerakan di harga bawah (dari Rp 500 ke Rp 1.000) terlihat gepeng rata di dasar grafik.\n\nAkibatnya:\n1. Garis tren pada skala linier akan melengkung tajam ke atas menyerupai tebing terjal.\n2. Sedikit saja saham mengalami koreksi wajar (misalnya turun 10% untuk konsolidasi), harga akan langsung menembus ke bawah garis tren linier tersebut.\n3. Trader pemula mengira ini adalah sinyal jual darurat (*breakdown trendline*) dan buru-buru membuang saham mereka dalam kepanikan.\n4. Namun, ketika grafik diubah ke **skala logaritmik**, garis tren ternyata masih utuh sempurna, dan saham tersebut justru memantul tepat di atas garis tren untuk melanjutkan reli mencetak rekor baru (*all-time high*)!\n\n```\n         SKALA ARITHMETIC (LINIER)                   SKALA LOGARITHMIC (SEMI-LOG)\n    \n    Harga                                       Harga\n     |           /\\ (Sinyal Sell Palsu!)         |              /\\\n     |          /  \\                             |             /  \\\n     |         /    \\  <-- \"Tembus Garis Tren\"   |            /    \\\n     |        /      \\     (Distorsi Visual)     |           /      \\\n     |       /        \\                          |          /        \\  (Memantul Akurat\n     |     /^\\         \\                         |        /^\\         \\  di Atas Trendline!)\n     |    /   \\         v                        |       /   \\         \\/\n     |   /     \\                                 |      /     \\        /\n     |  /       \\                                |     /       \\      /\n     | /_________\\________________________       |    /_________\\____/____________\n     0                               Waktu       0                               Waktu\n       Pergerakan bawah gepeng mendatar;           Proporsi pertumbuhan konstan;\n       Koreksi kecil memicu false breakdown.       Struktur gelombang terbaca utuh.\n```\n\n---"
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_ARITHMETIC_VS_LOGARITHMIC_CHART,
+        "content": "Salah satu kesalahan paling mahal yang sering dilakukan pemula adalah menarik garis tren naik (*uptrend line*) pada grafik jangka panjang menggunakan skala arithmetic. \n\nMengapa ini berbahaya?\nKetika suatu saham mengalami reli multi-tahun (misal: naik dari Rp 500 ke Rp 5.000), pada skala arithmetic, kenaikan di harga atas (dari Rp 4.000 ke Rp 5.000) akan digambar setinggi langit, sedangkan pergerakan di harga bawah (dari Rp 500 ke Rp 1.000) terlihat gepeng rata di dasar grafik.\n\nAkibatnya:\n1. Garis tren pada skala linier akan melengkung tajam ke atas menyerupai tebing terjal.\n2. Sedikit saja saham mengalami koreksi wajar (misalnya turun 10% untuk konsolidasi), harga akan langsung menembus ke bawah garis tren linier tersebut.\n3. Trader pemula mengira ini adalah sinyal jual darurat (*breakdown trendline*) dan buru-buru membuang saham mereka dalam kepanikan.\n4. Namun, ketika grafik diubah ke **skala logaritmik**, garis tren ternyata masih utuh sempurna, dan saham tersebut justru memantul tepat di atas garis tren untuk melanjutkan reli mencetak rekor baru (*all-time high*)!\n\nPerhatikan ilustrasi interaktif di atas: Pada saham multi-bagger yang melesat dari Rp500 hingga menyentuh Rp5.000, garis tren logaritmik hijau menghubungkan lembah-lembah Higher Low dengan sudut konsisten dan bertindak sebagai Support Dinamis yang kokoh. Ketika harga mengalami koreksi sehat di area Rp3.800 (-12%), skala linier memunculkan sinyal jual palsu (*False Breakdown*), sedangkan skala logaritmik membuktikan bahwa garis tren tidak pernah tertembus dan memantul sempurna melanjutkan tren naik.\n\n---"
       },
       {
         "id": "sec-6",
@@ -2446,7 +2586,7 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-6",
         "title": "5. Matriks Keputusan Berdasarkan Batas Toleransi",
-        "content": "Gunakan diagram alur keputusan berikut untuk mengevaluasi apakah sebuah level teknikal benar-benar telah tertembus atau hanya sekadar goyangan sesaat:\n\n```mermaid\nflowchart TD\n    A[Harga Menguji Level Kunci Support / Resistance] --> B{Apakah Harga Menembus Garis Utama?}\n    B -- Tidak Tembus --> C[Level Bertahan Sempurna!<br/>Siapkan Skenario Rebound / Pantulan]\n    B -- Ya, Ditembus Sesaat --> D{Apakah Penembusan Melewati Batas Toleransi Persentase / ATR?}\n    D -- Tidak (Masih Dalam Ruang Toleransi) --> E[Penetrasi Minor / Noise Saja]\n    E --> F[Zona Masih Utuh!<br/>Waspada Jebakan False Breakout / Reversal Balik Arah]\n    D -- Ya (Menembus Jauh Melampaui Toleransi) --> G{Apakah Harga Ditutup (Daily Close) di Luar Toleransi?}\n    G -- Tidak (Hanya Jarum Ekor / Wick) --> E\n    G -- Ya (Candle Utuh Ditutup di Luar) --> H[BREAKOUT / BREAKDOWN Terkonfirmasi Sah!<br/>Ubah Bias Tren & Eksekusi Aksi Baru]\n```\n\n---"
+        "content": "Gunakan diagram alur keputusan berikut untuk mengevaluasi apakah sebuah level teknikal benar-benar telah tertembus atau hanya sekadar goyangan sesaat:\n\n```mermaid\nflowchart TD\n    A[Harga Menguji Level Kunci Support / Resistance] --> B{Apakah Harga Menembus Garis Utama?}\n    B -- Tidak Tembus --> C[Level Bertahan Sempurna!<br/>Siapkan Skenario Rebound / Pantulan]\n    B -- Ya, Ditembus Sesaat --> D{Apakah Penembusan Melewati Batas Toleransi Persentase / ATR?}\n    D -- Tidak (Masih Dalam Ruang Toleransi) --> E[Penetrasi Minor / Noise Saja]\n    E --> F[Zona Masih Utuh!<br/>Waspada Jebakan False Breakout / Reversal Balik Arah]\n    D -- Ya (Menembus Jauh Melampaui Toleransi) --> G[\"Apakah Harga Ditutup (Daily Close) di Luar Toleransi?\"]\n    G -- Tidak (Hanya Jarum Ekor / Wick) --> E\n    G -- Ya (Candle Utuh Ditutup di Luar) --> H[BREAKOUT / BREAKDOWN Terkonfirmasi Sah!<br/>Ubah Bias Tren & Eksekusi Aksi Baru]\n```\n\n---"
       },
       {
         "id": "sec-7",
@@ -2520,7 +2660,7 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-5",
         "title": "4. Tiga Kriteria Emas Penguji Keaslian Breakout",
-        "content": "Untuk menyaring apakah penembusan yang Anda lihat adalah **Breakout Asli (*Genuine*)** atau sekadar **Jebakan Palsu (*Trap*)**, Edianto Ong merumuskan **3 Kriteria Validasi Mutlak**:\n\n```\n+-------------------------------------------------------------------------+\n|                  TIGA KRITERIA EMAS VALIDASI BREAKOUT                   |\n+-------------------------------------------------------------------------+\n| No | Parameter Uji        | Breakout Asli (Genuine)   | Breakout Palsu (Fakeout)  |\n|----+----------------------+---------------------------+---------------------------|\n| 1  | Harga Penutupan      | Candle harian DITUTUP di  | Hanya ekor jarum (wick)   |\n|    | (Closing Price)      | luar batas zona toleransi | yang tembus; ditutup balik|\n| 2  | Volume Transaksi     | Meledak > 1.5x - 2.0x     | Volume kering, sepi, atau |\n|    | (Volume Expansion)   | di atas rata-rata MA20    | terjadi divergensi turun  |\n| 3  | Filter Waktu         | Bertahan kokoh selama     | Hari kedua langsung anjlok|\n|    | (Two-Day Rule)       | 2 hari bursa berturut-turut| amblas ke dalam area lama |\n+-------------------------------------------------------------------------+\n```\n\n```mermaid\nflowchart TD\n    Start[Harga Menembus Level Kunci S/R] --> Q1{Uji 1: Apakah Harga Penutupan Harian (Daily Close) Berada di Luar Batas Toleransi?}\n    Q1 -- Tidak (Hanya Jarum/Wick Sesaat) --> Reject[TOLAK SINYAL! Terkonfirmasi Rejection / False Breakout Sederhana]\n    Q1 -- Ya, Ditutup di Luar Toleransi --> Q2{Uji 2: Apakah Volume Transaksi Meledak Minimal 1.5x - 2x Rata-rata MA20?}\n    Q2 -- Tidak (Volume Kering / Divergensi) --> Caution[WASPADA! Kurang Partisipasi Modal Institusi -> Rawan Bull/Bear Trap]\n    Q2 -- Ya (Volume Sangat Masif) --> Q3{Uji 3: Apakah Harga Mampu Bertahan Selama 2 Hari Bursa? (Two-Day Rule)}\n    Q3 -- Tidak (Hari ke-2 Langsung Amblas) --> Emergency[TRAP TERJADI! Segera Eksekusi Cutloss Tanpa Ragu]\n    Q3 -- Ya (Hari ke-2 Sukses Bertahan) --> Confirmed[GENUINE BREAKOUT TERKONFIRMASI!<br/>Sangat Aman Membuka Posisi Baru / Menambah Muatan]\n```\n\n---"
+        "content": "Untuk menyaring apakah penembusan yang Anda lihat adalah **Breakout Asli (*Genuine*)** atau sekadar **Jebakan Palsu (*Trap*)**, Edianto Ong merumuskan **3 Kriteria Validasi Mutlak**:\n\n```\n+-------------------------------------------------------------------------+\n|                  TIGA KRITERIA EMAS VALIDASI BREAKOUT                   |\n+-------------------------------------------------------------------------+\n| No | Parameter Uji        | Breakout Asli (Genuine)   | Breakout Palsu (Fakeout)  |\n|----+----------------------+---------------------------+---------------------------|\n| 1  | Harga Penutupan      | Candle harian DITUTUP di  | Hanya ekor jarum (wick)   |\n|    | (Closing Price)      | luar batas zona toleransi | yang tembus; ditutup balik|\n| 2  | Volume Transaksi     | Meledak > 1.5x - 2.0x     | Volume kering, sepi, atau |\n|    | (Volume Expansion)   | di atas rata-rata MA20    | terjadi divergensi turun  |\n| 3  | Filter Waktu         | Bertahan kokoh selama     | Hari kedua langsung anjlok|\n|    | (Two-Day Rule)       | 2 hari bursa berturut-turut| amblas ke dalam area lama |\n+-------------------------------------------------------------------------+\n```\n\n```mermaid\nflowchart TD\n    Start[Harga Menembus Level Kunci S/R] --> Q1[\"Uji 1: Apakah Harga Penutupan Harian (Daily Close) Berada di Luar Batas Toleransi?\"]\n    Q1 -- Tidak (Hanya Jarum/Wick Sesaat) --> Reject[TOLAK SINYAL! Terkonfirmasi Rejection / False Breakout Sederhana]\n    Q1 -- Ya, Ditutup di Luar Toleransi --> Q2{Uji 2: Apakah Volume Transaksi Meledak Minimal 1.5x - 2x Rata-rata MA20?}\n    Q2 -- Tidak (Volume Kering / Divergensi) --> Caution[WASPADA! Kurang Partisipasi Modal Institusi -> Rawan Bull/Bear Trap]\n    Q2 -- Ya (Volume Sangat Masif) --> Q3[\"Uji 3: Apakah Harga Mampu Bertahan Selama 2 Hari Bursa? (Two-Day Rule)\"]\n    Q3 -- Tidak (Hari ke-2 Langsung Amblas) --> Emergency[TRAP TERJADI! Segera Eksekusi Cutloss Tanpa Ragu]\n    Q3 -- Ya (Hari ke-2 Sukses Bertahan) --> Confirmed[GENUINE BREAKOUT TERKONFIRMASI!<br/>Sangat Aman Membuka Posisi Baru / Menambah Muatan]\n```\n\n---"
       },
       {
         "id": "sec-6",
