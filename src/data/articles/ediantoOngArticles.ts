@@ -12,7 +12,7 @@ export const EO_DOW_PEAK_TROUGH_CHART: CustomChartConfig = {
   showCandles: true,
   showVolume: true,
   showEma: false,
-  candleSpacing: 'normal',
+  candleSpacing: 'wide',
   candles: [
     { id: 'eo-p0', index: 0, open: 100, high: 106, low: 98, close: 104, volume: 2100, label: 'Lembah Awal' },
     { id: 'eo-p1', index: 1, open: 104, high: 118, low: 103, close: 116, volume: 3800, label: 'HH1' },
@@ -105,7 +105,7 @@ export const EO_DOW_PEAK_TROUGH_CHART: CustomChartConfig = {
     {
       id: 'bdg-uptrend-healthy',
       candleIndex: 3,
-      price: 132,
+      price: 104,
       text: 'Uptrend Sehat: Higher High (HH2)',
       style: 'pill',
       bgColor: '#10B981',
@@ -114,7 +114,7 @@ export const EO_DOW_PEAK_TROUGH_CHART: CustomChartConfig = {
     {
       id: 'bdg-warning-lh',
       candleIndex: 7,
-      price: 135,
+      price: 140,
       text: 'Lower High (Gagal Bikin Puncak Baru)',
       style: 'pill',
       bgColor: '#F59E0B',
@@ -123,7 +123,7 @@ export const EO_DOW_PEAK_TROUGH_CHART: CustomChartConfig = {
     {
       id: 'bdg-reversal-bos',
       candleIndex: 8,
-      price: 111,
+      price: 108,
       text: 'Pembalikan Bearish Terkonfirmasi (Break HL2)',
       style: 'pill',
       bgColor: '#EF4444',
@@ -133,8 +133,9 @@ export const EO_DOW_PEAK_TROUGH_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-dow-rules',
-      candleIndex: 4,
-      price: 136,
+      candleIndex: 12,
+      price: 142,
+      width: 175,
       stepBadge: 'DOW',
       title: 'HUKUM INERSIA TEORI DOW',
       lines: [
@@ -153,6 +154,322 @@ export const EO_DOW_PEAK_TROUGH_CHART: CustomChartConfig = {
   ]
 };
 
+export const EO_TRENDLINE_RULES_CHART: CustomChartConfig = {
+  title: 'Kaidah Baku Menggambar Garis Tren (Trendline Drawing Rules)',
+  subtitle: 'Uptrendline (Support Dinamis di Bawah Lembah) vs Downtrendline (Resistance Dinamis di Atas Puncak) & Uji Validasi 3 Titik Sentuh',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    // Sisi Kiri: Uptrend Line (0 - 5)
+    { id: 'tr-0', index: 0, open: 100, high: 108, low: 98, close: 106, volume: 1800, label: 'Lembah 1 (Touch 1)' },
+    { id: 'tr-1', index: 1, open: 106, high: 122, low: 105, close: 120, volume: 3200, label: 'Puncak 1' },
+    { id: 'tr-2', index: 2, open: 120, high: 121, low: 110, close: 114, volume: 1600, label: 'Lembah 2 (Touch 2)' },
+    { id: 'tr-3', index: 3, open: 114, high: 134, low: 113, close: 132, volume: 4100, label: 'Puncak 2' },
+    { id: 'tr-4', index: 4, open: 132, high: 133, low: 122, close: 126, volume: 2200, label: 'Lembah 3 (Touch 3)' },
+    { id: 'tr-5', index: 5, open: 126, high: 144, low: 125, close: 142, volume: 5400, label: 'Puncak 3 (Ekspansi)' },
+    // Sisi Kanan: Transisi Downtrend Line (6 - 11)
+    { id: 'tr-6', index: 7, open: 142, high: 145, low: 136, close: 138, volume: 2900, label: 'Puncak 1 (Touch 1)' },
+    { id: 'tr-7', index: 8, open: 138, high: 139, low: 124, close: 126, volume: 4600, label: 'Lembah 1' },
+    { id: 'tr-8', index: 9, open: 126, high: 134, low: 125, close: 130, volume: 2100, label: 'Puncak 2 (Touch 2)' },
+    { id: 'tr-9', index: 10, open: 130, high: 131, low: 116, close: 118, volume: 3900, label: 'Lembah 2' },
+    { id: 'tr-10', index: 11, open: 118, high: 124, low: 117, close: 120, volume: 1900, label: 'Puncak 3 (Touch 3)' },
+    { id: 'tr-11', index: 12, open: 120, high: 121, low: 104, close: 106, volume: 5800, label: 'Selloff Lanjutan' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-uptrend-dynamic',
+      x1Index: 0,
+      y1Price: 98,
+      x2Index: 5,
+      y2Price: 134,
+      color: '#10B981',
+      strokeWidth: 2.4,
+      lineStyle: 'solid',
+      label: 'Uptrend Line: Support Dinamis (Lantai Bawah)',
+      labelAlignment: 'start',
+      showArrow: true
+    },
+    {
+      id: 'tl-downtrend-dynamic',
+      x1Index: 7,
+      y1Price: 145,
+      x2Index: 12,
+      y2Price: 113,
+      color: '#EF4444',
+      strokeWidth: 2.4,
+      lineStyle: 'solid',
+      label: 'Downtrend Line: Resistance Dinamis (Plafon Atas)',
+      labelAlignment: 'start',
+      showArrow: true
+    }
+  ],
+  polylines: [
+    {
+      id: 'poly-uptrend-swings',
+      points: [
+        { index: 0, price: 98 },
+        { index: 1, price: 122 },
+        { index: 2, price: 110 },
+        { index: 3, price: 134 },
+        { index: 4, price: 122 },
+        { index: 5, price: 144 }
+      ],
+      color: '#10B981',
+      strokeWidth: 1.8,
+      curveType: 'zigzag',
+      showDots: true,
+      label: 'Ayunan Uptrend'
+    },
+    {
+      id: 'poly-downtrend-swings',
+      points: [
+        { index: 7, price: 145 },
+        { index: 8, price: 124 },
+        { index: 9, price: 134 },
+        { index: 10, price: 116 },
+        { index: 11, price: 124 },
+        { index: 12, price: 104 }
+      ],
+      color: '#EF4444',
+      strokeWidth: 1.8,
+      curveType: 'zigzag',
+      showDots: true,
+      label: 'Ayunan Downtrend'
+    }
+  ],
+  boxes: [
+    {
+      id: 'box-uptrend-zone',
+      startIndex: 0,
+      endIndex: 5,
+      topPrice: 145,
+      bottomPrice: 97,
+      label: 'ZONA UPTREND (FOKUS BELI DI LANTAI TREN)',
+      labelPosition: 'top-left',
+      color: '#10B981',
+      opacity: 0.08
+    },
+    {
+      id: 'box-downtrend-zone',
+      startIndex: 7,
+      endIndex: 12,
+      topPrice: 146,
+      bottomPrice: 103,
+      label: 'ZONA DOWNTREND (FOKUS SIMPAN CASH / HINDARI BELI)',
+      labelPosition: 'top-left',
+      color: '#EF4444',
+      opacity: 0.08
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-touch1-up',
+      candleIndex: 0,
+      price: 93,
+      text: 'Sentuhan 1: Lembah Awal',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-touch2-up',
+      candleIndex: 2,
+      price: 105,
+      text: 'Sentuhan 2: Tentative (Dugaan)',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-touch3-up',
+      candleIndex: 4,
+      price: 117,
+      text: 'Sentuhan 3: KONFIRMASI SAH (Valid Rebound)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-touch1-down',
+      candleIndex: 7,
+      price: 151,
+      text: 'Sentuhan 1: Puncak Awal',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-touch2-down',
+      candleIndex: 9,
+      price: 139,
+      text: 'Sentuhan 2: Lower High',
+      style: 'pill',
+      bgColor: '#38BDF8',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-touch3-down',
+      candleIndex: 11,
+      price: 129,
+      text: 'Sentuhan 3: KONFIRMASI DOWNTREND',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-trendline-golden-rules',
+      candleIndex: 14,
+      price: 144,
+      width: 180,
+      stepBadge: 'KAIDAH',
+      title: 'ATURAN BAKU MENARIK GARIS TREN',
+      lines: [
+        '1. Uptrend: Tarik di BAWAH lembah (Support Dinamis).',
+        '2. Downtrend: Tarik di ATAS puncak (Resistance Dinamis).',
+        '3. Butuh minimal 3 titik sentuh agar garis resmi terkonfirmasi sah.',
+        '4. Sudut ideal ~45 derajat (sehat & tahan lama).'
+      ],
+      footerBadge: '✓ Jangan Memotong Badan Lilin',
+      color: '#38BDF8'
+    }
+  ],
+  legends: [
+    { id: 'leg-tr-up', label: 'Uptrend Line (Support Dinamis)', color: '#10B981' },
+    { id: 'leg-tr-down', label: 'Downtrend Line (Resistance Dinamis)', color: '#EF4444' },
+    { id: 'leg-tr-conf', label: 'Sentuhan Konfirmasi Sah', color: '#38BDF8' }
+  ]
+};
+
+export const EO_BMRI_STUDY_CHART: CustomChartConfig = {
+  title: 'Studi Kasus Transaksi Trend Following BMRI: Rebound Sentuhan ke-3',
+  subtitle: 'Kaidah Entry Lilin Hammer di Uptrendline Rp6.350 dengan R:R 1:4 (SL Rp6.150, Target TP Rp7.150)',
+  timeframe: 'Daily',
+  showCandles: true,
+  showVolume: true,
+  showEma: false,
+  candleSpacing: 'wide',
+  candles: [
+    { id: 'bmri-0', index: 0, open: 5500, high: 5900, low: 5400, close: 5800, volume: 42000, label: 'Lembah Awal (Touch 1)' },
+    { id: 'bmri-1', index: 1, open: 5800, high: 6450, low: 5750, close: 6400, volume: 68000, label: 'Puncak 1' },
+    { id: 'bmri-2', index: 2, open: 6400, high: 6450, low: 6000, close: 6050, volume: 31000, label: 'Lembah 2 (Touch 2)' },
+    { id: 'bmri-3', index: 3, open: 6050, high: 6900, low: 6000, close: 6800, volume: 74000, label: 'Puncak 2 (High Rp6.800)' },
+    { id: 'bmri-4', index: 4, open: 6800, high: 6850, low: 6450, close: 6500, volume: 29000, label: 'Koreksi Menuju Trendline' },
+    { id: 'bmri-5', index: 5, open: 6500, high: 6550, low: 6300, close: 6350, volume: 55000, label: 'Hammer Touch 3 (ENTRY)' },
+    { id: 'bmri-6', index: 6, open: 6350, high: 6750, low: 6320, close: 6700, volume: 62000, label: 'Rebound Lanjutan' },
+    { id: 'bmri-7', index: 7, open: 6700, high: 7250, low: 6680, close: 7200, volume: 88000, label: 'Ekspansi TP Hit!' }
+  ],
+  trendlines: [
+    {
+      id: 'tl-bmri-trendline',
+      x1Index: 0,
+      y1Price: 5400,
+      x2Index: 7,
+      y2Price: 6600,
+      color: '#10B981',
+      strokeWidth: 2.2,
+      lineStyle: 'solid',
+      label: 'Uptrendline Dinamis Sah (~40 Derajat)',
+      labelAlignment: 'start',
+      showArrow: true
+    },
+    {
+      id: 'tl-bmri-stoploss',
+      x1Index: 4,
+      y1Price: 6150,
+      x2Index: 7,
+      y2Price: 6150,
+      color: '#EF4444',
+      strokeWidth: 1.6,
+      lineStyle: 'dashed',
+      label: 'Level Stop Loss Disiplin: Rp6.150 (-3,15%)',
+      labelAlignment: 'center',
+      showArrow: false
+    },
+    {
+      id: 'tl-bmri-tp',
+      x1Index: 3,
+      y1Price: 7150,
+      x2Index: 7,
+      y2Price: 7150,
+      color: '#10B981',
+      strokeWidth: 1.6,
+      lineStyle: 'dashed',
+      label: 'Target Profit Objektif: Rp7.150 (+12,6%)',
+      labelAlignment: 'end',
+      showArrow: false
+    }
+  ],
+  positions: [
+    {
+      id: 'pos-bmri-trend',
+      type: 'long',
+      label: 'Trend Following Setup (R:R 1:4)',
+      entryPrice: 6350,
+      stopPrice: 6150,
+      targetPrice: 7150,
+      startIndex: 5,
+      endIndex: 7
+    }
+  ],
+  badges: [
+    {
+      id: 'bdg-bmri-entry',
+      candleIndex: 5,
+      price: 6250,
+      text: 'Titik Beli: Rebound Hammer di Rp6.350',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-bmri-sl',
+      candleIndex: 5,
+      price: 6050,
+      text: 'Stop Loss: Rp6.150 (Jebol Lantai)',
+      style: 'pill',
+      bgColor: '#EF4444',
+      textColor: '#FFFFFF'
+    },
+    {
+      id: 'bdg-bmri-tp',
+      candleIndex: 7,
+      price: 7350,
+      text: 'TP Hit: Rp7.200 (Risk to Reward 1:4)',
+      style: 'pill',
+      bgColor: '#10B981',
+      textColor: '#FFFFFF'
+    }
+  ],
+  infoCards: [
+    {
+      id: 'card-bmri-trade-summary',
+      candleIndex: 9,
+      price: 7100,
+      width: 175,
+      stepBadge: 'R:R 1:4',
+      title: 'KALKULASI TRANSAKSI BMRI',
+      lines: [
+        '• Entry: Rp6.350 (Touch ke-3)',
+        '• Stop Loss: Rp6.150 (Risiko Rp200)',
+        '• Target Profit: Rp7.150 (Cuan Rp800)',
+        '• Keuntungan: +12,6% dalam < 1 bulan'
+      ],
+      footerBadge: '✓ Disiplin Eksekusi Trend Following',
+      color: '#10B981'
+    }
+  ],
+  legends: [
+    { id: 'leg-bmri-up', label: 'Uptrendline Support BMRI', color: '#10B981' },
+    { id: 'leg-bmri-sl', label: 'Batas Risiko (Stop Loss)', color: '#EF4444' },
+    { id: 'leg-bmri-pos', label: 'Setup Risk-to-Reward 1:4', color: '#38BDF8' }
+  ]
+};
+
 export const EO_CHANNEL_AND_FAN_PRINCIPLE_CHART: CustomChartConfig = {
   title: 'Channeling & The Fan Principle: Tiga Garis Penentu Pembalikan',
   subtitle: 'Kaidah Saluran Paralel, Kegagalan Mencapai Channel (Failure Swing), dan Erosi 3 Garis Tren Kipas',
@@ -160,7 +477,7 @@ export const EO_CHANNEL_AND_FAN_PRINCIPLE_CHART: CustomChartConfig = {
   showCandles: true,
   showVolume: true,
   showEma: false,
-  candleSpacing: 'normal',
+  candleSpacing: 'wide',
   candles: [
     { id: 'cf0', index: 0, open: 100, high: 105, low: 98, close: 104, volume: 2200, label: 'Origin' },
     { id: 'cf1', index: 1, open: 104, high: 122, low: 103, close: 120, volume: 4800, label: 'P1 (Atas)' },
@@ -277,7 +594,7 @@ export const EO_CHANNEL_AND_FAN_PRINCIPLE_CHART: CustomChartConfig = {
     {
       id: 'bdg-fan-break1',
       candleIndex: 4,
-      price: 118,
+      price: 113,
       text: 'Tembus Garis 1: Sinyal Waspada Dini',
       style: 'pill',
       bgColor: '#10B981',
@@ -286,7 +603,7 @@ export const EO_CHANNEL_AND_FAN_PRINCIPLE_CHART: CustomChartConfig = {
     {
       id: 'bdg-failure-note',
       candleIndex: 5,
-      price: 134,
+      price: 140,
       text: 'Failure Swing: Pembeli Kehabisan Bensin',
       style: 'pill',
       bgColor: '#F59E0B',
@@ -295,7 +612,7 @@ export const EO_CHANNEL_AND_FAN_PRINCIPLE_CHART: CustomChartConfig = {
     {
       id: 'bdg-fan-break3',
       candleIndex: 8,
-      price: 104,
+      price: 100,
       text: 'TEMBUS GARIS 3: REVERSAL BEARISH MUTLAK!',
       style: 'pill',
       bgColor: '#EF4444',
@@ -305,8 +622,9 @@ export const EO_CHANNEL_AND_FAN_PRINCIPLE_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-fan-rules',
-      candleIndex: 5,
-      price: 109,
+      candleIndex: 11,
+      price: 138,
+      width: 175,
       stepBadge: 'FAN',
       title: 'THE THREE TRENDLINE RULE',
       lines: [
@@ -402,7 +720,7 @@ export const EO_SUPPORT_RESISTANCE_ROLE_REVERSAL_CHART: CustomChartConfig = {
     {
       id: 'bdg-sr-breakout',
       candleIndex: 3,
-      price: 124,
+      price: 126,
       text: 'Breakout Valid: Volume 2x Rata-Rata',
       style: 'pill',
       bgColor: '#10B981',
@@ -411,7 +729,7 @@ export const EO_SUPPORT_RESISTANCE_ROLE_REVERSAL_CHART: CustomChartConfig = {
     {
       id: 'bdg-throwback-test',
       candleIndex: 5,
-      price: 117,
+      price: 119,
       text: 'Throwback: Volume Menyusut Kering (1600)',
       style: 'pill',
       bgColor: '#F59E0B',
@@ -420,7 +738,7 @@ export const EO_SUPPORT_RESISTANCE_ROLE_REVERSAL_CHART: CustomChartConfig = {
     {
       id: 'bdg-hammer-entry',
       candleIndex: 6,
-      price: 107,
+      price: 104,
       text: 'Pinbar Rebound: Tiket Entri Aman',
       style: 'pill',
       bgColor: '#10B981',
@@ -430,8 +748,9 @@ export const EO_SUPPORT_RESISTANCE_ROLE_REVERSAL_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-throwback-mechanics',
-      candleIndex: 4,
-      price: 131,
+      candleIndex: 10,
+      price: 134,
+      width: 175,
       stepBadge: 'RETEST',
       title: 'MEKANIKA THROWBACK RETEST',
       lines: [
@@ -529,7 +848,7 @@ export const EO_FIBONACCI_RETRACEMENT_EXPANSION_CHART: CustomChartConfig = {
     {
       id: 'bdg-fib-swing-b',
       candleIndex: 2,
-      price: 143,
+      price: 146,
       text: 'Swing High B (Puncak Reli: $140)',
       style: 'pill',
       bgColor: '#38BDF8',
@@ -538,7 +857,7 @@ export const EO_FIBONACCI_RETRACEMENT_EXPANSION_CHART: CustomChartConfig = {
     {
       id: 'bdg-fib-reversal-point',
       candleIndex: 5,
-      price: 111,
+      price: 107,
       text: 'Golden Pocket 61.8% ($114): Rebound Masif',
       style: 'pill',
       bgColor: '#8B5CF6',
@@ -547,7 +866,7 @@ export const EO_FIBONACCI_RETRACEMENT_EXPANSION_CHART: CustomChartConfig = {
     {
       id: 'bdg-fib-target-achieved',
       candleIndex: 8,
-      price: 167,
+      price: 171,
       text: 'Take Profit 161.8% Tercapai Sempurna',
       style: 'pill',
       bgColor: '#10B981',
@@ -557,8 +876,9 @@ export const EO_FIBONACCI_RETRACEMENT_EXPANSION_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-fib-confluence',
-      candleIndex: 2,
+      candleIndex: 11,
       price: 156,
+      width: 175,
       stepBadge: 'FIBO',
       title: 'GOLDEN RATIO RETRACEMENT',
       lines: [
@@ -928,12 +1248,14 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
         "title": "3. Struktur Anatomi Puncak & Lembah",
         "illustrationMode": "custom_builder",
         "customChartConfig": EO_DOW_PEAK_TROUGH_CHART,
-        "content": "Edianto Ong menegaskan: jangan melihat indikator yang rumit sebelum Anda bisa mengidentifikasi secara telanjang apakah harga sedang mencetak **HH-HL** atau **LH-LL**.\n\n```\nSTRUKTUR UPTREND (BULLISH):                  STRUKTUR DOWNTREND (BEARISH):\n                HH2 (Puncak 2)               Puncak 1\n                 /\\                             /\\\n          HH1   /  \\                           /  \\    LH1 (Puncak Lebih Rendah)\n          /\\   /    \\                         /    \\   /\\\n         /  \\ /      \\                       /      \\ /  \\    LH2\n        /    V        \\                     /        V    \\   /\\\n       /    HL1        \\                   /        LL1    \\ /  \\\n      /  (Lembah Baru   \\                 /      (Lembah    V    \\\n     /    Lebih Tinggi)  \\               /        Baru)    LL2    V\n    V                     V             V               (Lebih Dalam)\n  Lembah Awal            HL2          Lembah Awal\n```\n\n```mermaid\ngraph LR\n    subgraph SiklusUptrend[\"Struktur Uptrend: Tangga Menanjak\"]\n        L1[\"Lembah Awal\"] --> P1[\"Puncak 1 (High)\"]\n        P1 --> HL1[\"Lembah Lebih Tinggi (Higher Low)\"]\n        HL1 --> P2[\"Puncak Lebih Tinggi (Higher High)\"]\n        P2 --> HL2[\"Lembah Lebih Tinggi (Higher Low)\"]\n        HL2 --> P3[\"Puncak Lebih Tinggi (Higher High)\"]\n    end\n\n    style L1 fill:#1e293b,stroke:#64748b,color:#ffffff\n    style P1 fill:#065f46,stroke:#10b981,color:#ffffff\n    style HL1 fill:#1e3a8a,stroke:#3b82f6,color:#ffffff\n    style P2 fill:#065f46,stroke:#10b981,color:#ffffff\n    style HL2 fill:#1e3a8a,stroke:#3b82f6,color:#ffffff\n    style P3 fill:#065f46,stroke:#10b981,color:#ffffff\n```\n\n* **Hukum Mutlak Uptrend:**  \n  Selama harga tidak pernah mencetak lembah yang lebih rendah dari lembah sebelumnya ($HL > Low\\ Sebelumnya$), tren naik masih utuh 100%. Jangan pernah terburu-buru menjual seluruh barang hanya karena lilin merah sesaat.\n* **Tanda Awal Pembalikan Arah (*Trend Reversal Warning*):**  \n  Ketika dalam suatu tren naik harga gagal mencetak puncak baru yang lebih tinggi (gagal membuat *Higher High*), dan justru berbalik menjebol titik lembah sebelumnya (*Lower Low*), itu adalah alarm darurat bahwa tren naik telah berakhir dan tren turun baru saja dimulai.\n\n---"
+        "content": "Edianto Ong menegaskan: jangan melihat indikator yang rumit sebelum Anda bisa mengidentifikasi secara telanjang apakah harga sedang mencetak **HH-HL** atau **LH-LL**.\n\n```mermaid\ngraph LR\n    subgraph SiklusUptrend[\"Struktur Uptrend: Tangga Menanjak\"]\n        L1[\"Lembah Awal\"] --> P1[\"Puncak 1 (High)\"]\n        P1 --> HL1[\"Lembah Lebih Tinggi (Higher Low)\"]\n        HL1 --> P2[\"Puncak Lebih Tinggi (Higher High)\"]\n        P2 --> HL2[\"Lembah Lebih Tinggi (Higher Low)\"]\n        HL2 --> P3[\"Puncak Lebih Tinggi (Higher High)\"]\n    end\n\n    style L1 fill:#1e293b,stroke:#64748b,color:#ffffff\n    style P1 fill:#065f46,stroke:#10b981,color:#ffffff\n    style HL1 fill:#1e3a8a,stroke:#3b82f6,color:#ffffff\n    style P2 fill:#065f46,stroke:#10b981,color:#ffffff\n    style HL2 fill:#1e3a8a,stroke:#3b82f6,color:#ffffff\n    style P3 fill:#065f46,stroke:#10b981,color:#ffffff\n```\n\n* **Hukum Mutlak Uptrend:**  \n  Selama harga tidak pernah mencetak lembah yang lebih rendah dari lembah sebelumnya ($HL > Low\\ Sebelumnya$), tren naik masih utuh 100%. Jangan pernah terburu-buru menjual seluruh barang hanya karena lilin merah sesaat.\n* **Tanda Awal Pembalikan Arah (*Trend Reversal Warning*):**  \n  Ketika dalam suatu tren naik harga gagal mencetak puncak baru yang lebih tinggi (gagal membuat *Higher High*), dan justru berbalik menjebol titik lembah sebelumnya (*Lower Low*), itu adalah alarm darurat bahwa tren naik telah berakhir dan tren turun baru saja dimulai.\n\n---"
       },
       {
         "id": "sec-5",
         "title": "4. Kaidah Menarik Garis Tren (*Trendline Drawing Rules*)",
-        "content": "Menggambar garis tren (*trendline*) adalah keahlian tangan paling berharga bagi analis teknikal. Banyak pemula membuat kesalahan fatal dengan menarik garis sembarangan hanya untuk mencocok-cocokkan dengan keinginannya (*curve fitting*).\n\nIkuti aturan baku menurut Edianto Ong:\n\n```\n        UPTREND LINE (Support Dinamis)             DOWNTREND LINE (Resistance Dinamis)\n        \n              / (Puncak 2)                                \\ (Puncak 1)\n             / \\                                          \\   /\n            /   \\ (Titik Sentuh 2)                         \\ / (Titik Sentuh 2)\n           /     \\                                          \\   /\n  (Puncak 1)/     \\                                          \\ / (Titik Sentuh 3)\n   /\\      /       \\                                          \\   \n  /  \\    /         \\                                          \\\n /    \\  /           \\                                          \\\n/      \\/ (Titik Sentuh 1)                                       \\\n----------------------------------               ----------------------------------\nGARIS DITARIK DI BAWAH LEMBAH-LEMBAH             GARIS DITARIK DI ATAS PUNCAK-PUNCAK\n(Berfungsi sebagai Lantai Pantulan)              (Berfungsi sebagai Plafon Hambatan)\n```\n\n### A. Titik Tarik Garis\n1. **Garis Uptrend:** Ditarik menghubungkan titik-titik **Lembah (*Lows*)** yang meninggi. Garis ini berada di **bawah** lilin harga dan berfungsi sebagai lantai penahan (*Support Dinamis*).\n2. **Garis Downtrend:** Ditarik menghubungkan titik-titik **Puncak (*Highs*)** yang merendah. Garis ini berada di **atas** lilin harga dan berfungsi sebagai atap penahan (*Resistance Dinamis*).\n\n### B. Validasi Jumlah Titik Sentuh (*Touch Points*)\n* **2 Titik Sentuh (Garis Percobaan / Tentative Trendline):** Anda baru bisa menghubungkan dua titik lembah/puncak. Garis ini belum sah diakui oleh pasar, statusnya masih dugaan sementara.\n* **3 Titik Sentuh (Garis Sah / Confirmed Trendline):** Ketika harga kembali turun mendekati garis tersebut untuk ketiga kalinya dan berhasil memantul (*rebound*) tanpa menembusnya, barulah garis tersebut resmi terkonfirmasi sah (*valid*).\n* **Semakin banyak titik sentuh** yang berhasil diuji tanpa jebol, semakin keramat dan kokoh garis tren tersebut di mata para manajer investasi institusional dunia.\n\n### C. Sudut Kemiringan Ideal (~45 Derajat)\n* **Sudut Normal (~45 Derajat):** Menunjukkan laju apresiasi harga yang seimbang dan sehat antara kecepatan waktu dan dorongan modal. Tren dengan sudut ini dapat bertahan sangat awet berbulan-bulan hingga bertahun-tahun.\n* **Sudut Terlalu Curam (> 60 Derajat):** Menunjukkan kenaikan spekulatif akibat keserakahan (*frenzy buying*). Tren seperti ini ibarat pelari cepat (sprinter) yang akan segera kehabisan napas dan berisiko jatuh terjungkal secara tiba-tiba (*flash crash*).\n* **Sudut Terlalu Landai (< 20 Derajat):** Menunjukkan tren yang sangat lemah dan lesu, rawan berubah menjadi konsolidasi sideways tanpa arah.\n\n---"
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_TRENDLINE_RULES_CHART,
+        "content": "Menggambar garis tren (*trendline*) adalah keahlian tangan paling berharga bagi analis teknikal. Banyak pemula membuat kesalahan fatal dengan menarik garis sembarangan hanya untuk mencocok-cocokkan dengan keinginannya (*curve fitting*).\n\n### A. Titik Tarik Garis\n1. **Garis Uptrend:** Ditarik menghubungkan titik-titik **Lembah (*Lows*)** yang meninggi. Garis ini berada di **bawah** lilin harga dan berfungsi sebagai lantai penahan (*Support Dinamis*).\n2. **Garis Downtrend:** Ditarik menghubungkan titik-titik **Puncak (*Highs*)** yang merendah. Garis ini berada di **atas** lilin harga dan berfungsi sebagai atap penahan (*Resistance Dinamis*).\n\n### B. Validasi Jumlah Titik Sentuh (*Touch Points*)\n* **2 Titik Sentuh (Garis Percobaan / Tentative Trendline):** Anda baru bisa menghubungkan dua titik lembah/puncak. Garis ini belum sah diakui oleh pasar, statusnya masih dugaan sementara.\n* **3 Titik Sentuh (Garis Sah / Confirmed Trendline):** Ketika harga kembali turun mendekati garis tersebut untuk ketiga kalinya dan berhasil memantul (*rebound*) tanpa menembusnya, barulah garis tersebut resmi terkonfirmasi sah (*valid*).\n* **Semakin banyak titik sentuh** yang berhasil diuji tanpa jebol, semakin keramat dan kokoh garis tren tersebut di mata para manajer investasi institusional dunia.\n\n### C. Sudut Kemiringan Ideal (~45 Derajat)\n* **Sudut Normal (~45 Derajat):** Menunjukkan laju apresiasi harga yang seimbang dan sehat antara kecepatan waktu dan dorongan modal. Tren dengan sudut ini dapat bertahan sangat awet berbulan-bulan hingga bertahun-tahun.\n* **Sudut Terlalu Curam (> 60 Derajat):** Menunjukkan kenaikan spekulatif akibat keserakahan (*frenzy buying*). Tren seperti ini ibarat pelari cepat (sprinter) yang akan segera kehabisan napas dan berisiko jatuh terjungkal secara tiba-tiba (*flash crash*).\n* **Sudut Terlalu Landai (< 20 Derajat):** Menunjukkan tren yang sangat lemah dan lesu, rawan berubah menjadi konsolidasi sideways tanpa arah.\n\n---"
       },
       {
         "id": "sec-6",
@@ -943,7 +1265,9 @@ export const EDIANTO_ONG_ARTICLES: Record<string, EducationalArticle> = {
       {
         "id": "sec-7",
         "title": "6. Studi Kasus Konkret: Membeli Ayunan Trendline Saham Bank Mandiri (BMRI)",
-        "content": "Mari kita pelajari skenario riil transaksi *Trend Following* pada saham **PT Bank Mandiri (Persero) Tbk (BMRI)**:\n\n```\nHarga\n Rp7.400 |                                              [Target TP: Puncak Baru]\n         |                                                 /\n Rp7.000 |                               /-----\\          /\n         |                   /-----\\    /       \\        /\n Rp6.600 |                  /       \\  /         \\      /\n         |      /-----\\    /         \\/           \\    /\n Rp6.200 |     /       \\  /       (Sentuh 2)       \\  / <- TITIK BELI (Sentuh 3): Rp6.350\n         |    /         \\/                          \\/    Rebound lilin Hammer di Trendline\n Rp5.800 |   /       (Sentuh 1)                     /\\\n         |  /                                      /  \\\n Rp5.400 | V (Dasar Lembah Awal)                  /    \\-- STOP LOSS: Rp6.150 (Jebol Trendline)\n         +---------------------------------------/---------------------------------\n          Garis Uptrendline Ditarik Menghubungkan Titik Pantulan Lembah\n```\n\n* **Struktur Tren:**  \n  Saham BMRI sedang berada dalam tren naik yang sangat rapi dan konsisten dengan sudut kemiringan sekitar 40 derajat.\n* **Titik Pembentukan Garis:**  \n  * Titik Sentuh 1: Lembah di Rp5.800.\n  * Titik Sentuh 2: Lembah di Rp6.050.  \n  Trader menarik garis *Uptrendline* menghubungkan kedua titik ini dan memperpanjangnya ke masa depan.\n* **Momen Masuk (Entry Point):**  \n  Tiga minggu kemudian, harga terkoreksi turun dari puncak Rp6.800 dan mendarat mulus di garis trendline pada level **Rp6.300 - Rp6.350** (Sentuhan ke-3).  \n  Muncul lilin hijau konfirmasi pantulan dengan volume transaksi kembali meningkat. Trader mengeksekusi pembelian di harga **Rp6.350**.\n* **Manajemen Risiko (Stop Loss):**  \n  Jika harga jebol menembus ke bawah garis tren, artinya tren naik telah rusak (*breakdown*). Maka titik *Stop Loss* dipasang secara disiplin di **Rp6.150** (sedikit di bawah garis tren).  \n  * Risiko kerugian per lembar: Rp6.350 - Rp6.150 = Rp200 (-3,15%).\n* **Target Keuntungan (Take Profit):**  \n  Proyeksi target mengacu pada resistensi puncak sebelumnya di **Rp7.150**.  \n  * Potensi keuntungan per lembar: Rp7.150 - Rp6.350 = Rp800 (+12,6%).\n* **Hasil Transaksi:**  \n  Rasio *Risk to Reward* adalah **1 : 4**. Saham BMRI berhasil memantul kencang menembus Rp7.200 dalam waktu kurang dari sebulan kalender.\n\n---"
+        "illustrationMode": "custom_builder",
+        "customChartConfig": EO_BMRI_STUDY_CHART,
+        "content": "Mari kita pelajari skenario riil transaksi *Trend Following* pada saham **PT Bank Mandiri (Persero) Tbk (BMRI)**:\n\n* **Struktur Tren:**  \n  Saham BMRI sedang berada dalam tren naik yang sangat rapi dan konsisten dengan sudut kemiringan sekitar 40 derajat.\n* **Titik Pembentukan Garis:**  \n  * Titik Sentuh 1: Lembah di Rp5.800.\n  * Titik Sentuh 2: Lembah di Rp6.050.  \n  Trader menarik garis *Uptrendline* menghubungkan kedua titik ini dan memperpanjangnya ke masa depan.\n* **Momen Masuk (Entry Point):**  \n  Tiga minggu kemudian, harga terkoreksi turun dari puncak Rp6.800 dan mendarat mulus di garis trendline pada level **Rp6.300 - Rp6.350** (Sentuhan ke-3).  \n  Muncul lilin hijau konfirmasi pantulan dengan volume transaksi kembali meningkat. Trader mengeksekusi pembelian di harga **Rp6.350**.\n* **Manajemen Risiko (Stop Loss):**  \n  Jika harga jebol menembus ke bawah garis tren, artinya tren naik telah rusak (*breakdown*). Maka titik *Stop Loss* dipasang secara disiplin di **Rp6.150** (sedikit di bawah garis tren).  \n  * Risiko kerugian per lembar: Rp6.350 - Rp6.150 = Rp200 (-3,15%).\n* **Target Keuntungan (Take Profit):**  \n  Proyeksi target mengacu pada resistensi puncak sebelumnya di **Rp7.150**.  \n  * Potensi keuntungan per lembar: Rp7.150 - Rp6.350 = Rp800 (+12,6%).\n* **Hasil Transaksi:**  \n  Rasio *Risk to Reward* adalah **1 : 4**. Saham BMRI berhasil memantul kencang menembus Rp7.200 dalam waktu kurang dari sebulan kalender.\n\n---"
       },
       {
         "id": "sec-8",
