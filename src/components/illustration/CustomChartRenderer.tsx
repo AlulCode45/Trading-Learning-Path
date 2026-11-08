@@ -212,19 +212,29 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
         </div>
       </div>
 
-      <svg
-        viewBox={`0 0 ${width} ${totalHeight}`}
-        style={{ width: `${width}px`, minWidth: `${width}px`, height: `${totalHeight}px` }}
-        className="block select-none"
-      >
-        <defs>
-          <pattern id="viewer-grid-pro" width="28" height="28" patternUnits="userSpaceOnUse">
-            <path d="M 28 0 L 0 0 0 28" fill="none" stroke={gridStroke} strokeWidth="1" />
-          </pattern>
-        </defs>
+      {/* Horizontal Scroll Hint for Mobile Viewports */}
+      <div className="flex md:hidden items-center justify-between text-[10px] font-mono text-slate-400 mb-2 px-1">
+        <span className="flex items-center space-x-1">
+          <Move className="w-3 h-3 text-emerald-500" />
+          <span>Geser horizontal untuk melihat grafik lengkap</span>
+        </span>
+        <span>Lebar: {width}px</span>
+      </div>
 
-        <rect width={width} height={totalHeight} fill={themeBg} />
-        <rect width={width} height={totalHeight} fill="url(#viewer-grid-pro)" />
+      <div className="w-full overflow-x-auto touch-pan-x scrollbar-thin">
+        <svg
+          viewBox={`0 0 ${width} ${totalHeight}`}
+          style={{ width: `${width}px`, minWidth: `${width}px`, height: `${totalHeight}px` }}
+          className="block select-none"
+        >
+          <defs>
+            <pattern id="viewer-grid-pro" width="28" height="28" patternUnits="userSpaceOnUse">
+              <path d="M 28 0 L 0 0 0 28" fill="none" stroke={gridStroke} strokeWidth="1" />
+            </pattern>
+          </defs>
+
+          <rect width={width} height={totalHeight} fill={themeBg} />
+          <rect width={width} height={totalHeight} fill="url(#viewer-grid-pro)" />
 
         {/* Horizontal Price Lines & Labels */}
         {priceGridLevels.map((price) => {
@@ -840,6 +850,7 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
           </g>
         )}
       </svg>
+      </div>
     </div>
   );
 };

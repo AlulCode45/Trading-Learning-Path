@@ -43,7 +43,10 @@ import {
   Search,
   GraduationCap,
   Sparkles,
-  Target
+  Target,
+  Menu,
+  X,
+  List
 } from 'lucide-react';
 
 interface DocReaderProps {
@@ -70,6 +73,8 @@ export const DocReader: React.FC<DocReaderProps> = ({
   const [dynamicArticle, setDynamicArticle] = useState<EducationalArticle | null>(null);
   const [dynamicRoadmapMeta, setDynamicRoadmapMeta] = useState<{ title: string; slug: string } | null>(null);
   const [loadingArticle, setLoadingArticle] = useState<boolean>(true);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false);
+  const [mobileTocOpen, setMobileTocOpen] = useState<boolean>(false);
   const { articles: manifestArticles } = useCurriculumManifest();
 
   useEffect(() => {
@@ -419,17 +424,26 @@ export const DocReader: React.FC<DocReaderProps> = ({
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#08090D] text-slate-900 dark:text-[#E2E8F0] transition-colors">
-      {/* Top Sticky Subheader Bar */}
-      <div className="sticky top-15 z-30 bg-white/95 dark:bg-[#0D1017]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#1D2532] px-4 sm:px-8 py-2.5 flex items-center justify-between transition-colors">
-        <div className="flex items-center space-x-2 text-xs font-mono text-slate-500 dark:text-[#94A3B8] overflow-x-auto">
+      {/* Top Sticky Subheader Bar with Mobile Drawer Triggers */}
+      <div className="sticky top-15 z-30 bg-white/95 dark:bg-[#0D1017]/95 backdrop-blur-md border-b border-slate-200 dark:border-[#1D2532] px-3 sm:px-8 py-2.5 flex items-center justify-between transition-colors">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 text-xs font-mono text-slate-500 dark:text-[#94A3B8] overflow-x-auto min-w-0 pr-2">
+          {/* Mobile Sidebar Menu Button */}
+          <button
+            onClick={() => setMobileSidebarOpen(true)}
+            className="lg:hidden p-1.5 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 border border-slate-200 dark:border-zinc-700 flex-shrink-0"
+            title="Daftar Materi Modul"
+          >
+            <Menu className="w-4 h-4 text-emerald-500" />
+          </button>
+
           <Link
             to="/docs"
-            className="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-[#121722] dark:hover:bg-[#1D2532] text-slate-700 dark:text-[#94A3B8] hover:text-black dark:hover:text-white border border-slate-300 dark:border-[#1D2532] transition-colors flex-shrink-0 font-medium"
+            className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 dark:bg-[#121722] dark:hover:bg-[#1D2532] text-slate-700 dark:text-[#94A3B8] hover:text-black dark:hover:text-white border border-slate-300 dark:border-[#1D2532] transition-colors flex-shrink-0 font-medium"
           >
             <BookOpen className="w-3.5 h-3.5 text-[#10B981]" />
             <span>Dokumentasi Hub</span>
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 flex-shrink-0 opacity-40 text-slate-400" />
+          <ChevronRight className="hidden sm:inline w-3.5 h-3.5 flex-shrink-0 opacity-40 text-slate-400" />
           <button
             onClick={() => setSelectedCategory(currentModuleId)}
             className={`px-2 py-0.5 rounded text-[11px] font-bold font-mono transition-colors flex-shrink-0 ${currentModuleInfo.badgeBg} ${currentModuleInfo.badgeText}`}
@@ -437,12 +451,24 @@ export const DocReader: React.FC<DocReaderProps> = ({
             {currentModuleInfo.shortTitle}
           </button>
           <ChevronRight className="w-3.5 h-3.5 flex-shrink-0 opacity-40 text-slate-400" />
-          <span className="truncate max-w-[220px] sm:max-w-none text-emerald-600 dark:text-[#10B981] font-semibold">
+          <span className="truncate max-w-[140px] sm:max-w-none text-emerald-600 dark:text-[#10B981] font-semibold">
             {article.title}
           </span>
         </div>
 
-        <div className="flex items-center space-x-2 flex-shrink-0">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 flex-shrink-0">
+          {/* Mobile TOC Quick Button */}
+          {article.tableOfContents && article.tableOfContents.length > 0 && (
+            <button
+              onClick={() => setMobileTocOpen(true)}
+              className="xl:hidden p-1.5 rounded-lg border border-slate-300 dark:border-[#1D2532] hover:bg-slate-100 dark:hover:bg-[#1D2532] text-slate-600 dark:text-[#94A3B8] text-xs flex items-center space-x-1"
+              title="Daftar Isi Halaman"
+            >
+              <List className="w-4 h-4 text-sky-500" />
+              <span className="hidden md:inline font-mono text-[11px]">Daftar Isi</span>
+            </button>
+          )}
+
           <button
             onClick={onReturnToRoadmap}
             className="hidden sm:inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-[#1D2532] hover:bg-slate-100 dark:hover:bg-[#1D2532] text-slate-600 dark:text-[#94A3B8] hover:text-black dark:hover:text-white text-xs font-mono transition-colors"
@@ -464,14 +490,14 @@ export const DocReader: React.FC<DocReaderProps> = ({
           {article.nodeId && onUpdateNodeStatus && (
             <button
               onClick={handleToggleCompleted}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 border transition-all ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 border transition-all ${
                 isCompleted
                   ? 'bg-[#10B981] text-black border-[#10B981] shadow-xs'
                   : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-[#121722] dark:text-[#10B981] dark:border-[#10B981]/40 dark:hover:bg-[#10B981]/15'
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{isCompleted ? 'Selesai Dipelajari ✓' : 'Tandai Selesai'}</span>
+              <span className="hidden xs:inline sm:inline">{isCompleted ? 'Selesai ✓' : 'Selesai'}</span>
             </button>
           )}
         </div>
@@ -1075,6 +1101,147 @@ export const DocReader: React.FC<DocReaderProps> = ({
           </div>
         </aside>
       </div>
+
+      {/* Mobile Drawer 1: Navigation Sidebar Drawer */}
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileSidebarOpen(false)}
+          />
+
+          <div className="relative w-4/5 max-w-sm bg-white dark:bg-[#0D1017] h-full shadow-2xl flex flex-col z-10 border-r border-slate-200 dark:border-zinc-800">
+            {/* Drawer Header */}
+            <div className="p-4 border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <BookOpen className="w-4 h-4 text-[#10B981]" />
+                <span className="font-bold text-sm text-slate-900 dark:text-white">Silabus Materi</span>
+              </div>
+              <button
+                onClick={() => setMobileSidebarOpen(false)}
+                className="p-1 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Current Module Focus */}
+            <div className="p-4 border-b border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/30">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className={`text-[10px] font-mono font-extrabold uppercase px-2 py-0.5 rounded ${currentModuleInfo.badgeBg} ${currentModuleInfo.badgeText}`}>
+                  {currentModuleInfo.badge}
+                </span>
+                <span className="text-[11px] font-mono text-slate-500 dark:text-zinc-400">
+                  {moduleCompletedCount}/{currentModuleArticles.length} ({moduleProgressPercent}%)
+                </span>
+              </div>
+              <h4 className="text-xs font-bold text-slate-900 dark:text-white">{currentModuleInfo.title}</h4>
+            </div>
+
+            {/* Search */}
+            <div className="p-3 border-b border-slate-200 dark:border-zinc-800">
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Cari materi..."
+                  value={sidebarSearch}
+                  onChange={(e) => setSidebarSearch(e.target.value)}
+                  className="w-full pl-8 pr-3 py-1.5 rounded-lg text-xs bg-slate-100 dark:bg-[#121722] border border-slate-200 dark:border-[#1D2532] text-slate-900 dark:text-white placeholder-slate-400"
+                />
+              </div>
+            </div>
+
+            {/* List */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+              {filteredCurrentModuleArticles.map((item, idx) => {
+                const isActive = item.slug === article.slug;
+                return (
+                  <button
+                    key={`m-item-${item.slug}-${idx}`}
+                    onClick={() => {
+                      onSelectArticle(item.slug);
+                      setMobileSidebarOpen(false);
+                    }}
+                    className={`w-full text-left p-2.5 rounded-xl text-xs flex items-center justify-between ${
+                      isActive
+                        ? 'bg-emerald-500/15 text-emerald-900 dark:text-[#10B981] font-bold border-2 border-emerald-500/60'
+                        : 'bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-[#94A3B8]'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2 truncate">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-zinc-800 text-slate-500">
+                        #{String(idx + 1).padStart(2, '0')}
+                      </span>
+                      <span className="truncate">{item.title}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="p-3 border-t border-slate-200 dark:border-zinc-800">
+              <Link
+                to="/docs"
+                className="w-full py-2 px-3 text-center rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200 font-bold text-xs flex items-center justify-center space-x-1.5"
+                onClick={() => setMobileSidebarOpen(false)}
+              >
+                <span>Buka Dokumentasi Hub</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Drawer 2: Table of Contents Drawer */}
+      {mobileTocOpen && (
+        <div className="fixed inset-0 z-50 xl:hidden flex justify-end">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileTocOpen(false)}
+          />
+
+          <div className="relative w-4/5 max-w-sm bg-white dark:bg-[#0D1017] h-full shadow-2xl flex flex-col z-10 border-l border-slate-200 dark:border-zinc-800">
+            <div className="p-4 border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <FileText className="w-4 h-4 text-[#38BDF8]" />
+                <span className="font-bold text-sm text-slate-900 dark:text-white">Daftar Isi (TOC)</span>
+              </div>
+              <button
+                onClick={() => setMobileTocOpen(false)}
+                className="p-1 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-1">
+              {(article.tableOfContents || []).map(toc => {
+                const isActive = activeSectionId === toc.id;
+                return (
+                  <button
+                    key={`m-toc-${toc.id}`}
+                    onClick={() => {
+                      scrollToSection(toc.id);
+                      setMobileTocOpen(false);
+                    }}
+                    className={`w-full text-left py-2 px-3 rounded-lg text-xs leading-snug transition-colors truncate block ${
+                      isActive
+                        ? 'text-emerald-700 dark:text-[#10B981] font-bold bg-emerald-100/60 dark:bg-[#10B981]/10 border-l-2 border-emerald-500'
+                        : 'text-slate-600 dark:text-[#94A3B8]'
+                    }`}
+                  >
+                    {toc.title}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
