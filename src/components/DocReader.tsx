@@ -421,10 +421,10 @@ export const DocReader: React.FC<DocReaderProps> = ({
         </div>
       </div>
 
-      {/* Main 3-Column Technical Documentation Layout */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex gap-8">
+      {/* Main 3-Column Technical Documentation Layout - Expanded Main Content Focus */}
+      <div className="max-w-[96rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex gap-6">
         {/* Left Navigation: Focussed on Current Module + Smart Recommendation Engine */}
-        <aside className="hidden lg:block w-80 flex-shrink-0">
+        <aside className="hidden lg:block w-64 xl:w-72 flex-shrink-0">
           <div className="sticky top-28 space-y-4">
             
             {/* Back to Blog Hub Button */}
@@ -544,8 +544,8 @@ export const DocReader: React.FC<DocReaderProps> = ({
           </div>
         </aside>
 
-        {/* Center: Main Educational Article Body */}
-        <article className="flex-1 min-w-0 max-w-3xl">
+        {/* Center: Main Educational Article Body - Expanded & Focused */}
+        <article className="flex-1 min-w-0 max-w-none">
           {/* Article Header Metadata */}
           <div className="border-b border-slate-200 dark:border-[#1D2532] pb-6 mb-8">
             <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -925,7 +925,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
         </article>
 
         {/* Right Sticky Column: Table of Contents + Smart Recommendations System */}
-        <aside className="hidden xl:block w-72 2xl:w-80 flex-shrink-0">
+        <aside className="hidden xl:block w-64 2xl:w-72 flex-shrink-0">
           <div className="sticky top-28 space-y-5 max-h-[calc(100vh-8rem)] overflow-y-auto pr-1 scrollbar-none">
             
             {/* 1. Table of Contents (Daftar Isi) */}
