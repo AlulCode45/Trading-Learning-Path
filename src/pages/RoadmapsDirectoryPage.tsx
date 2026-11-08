@@ -132,6 +132,13 @@ export const RoadmapsDirectoryPage: React.FC<RoadmapsDirectoryPageProps> = ({
           accent: '#E11D48',
           shadow: 'shadow-[4px_4px_0px_#000000]'
         };
+      case 'technical-analysis-mega-profit':
+        return {
+          bg: 'bg-[#FED7AA] hover:bg-[#FDBA74] text-zinc-950',
+          badge: 'bg-black text-[#F97316]',
+          accent: '#EA580C',
+          shadow: 'shadow-[4px_4px_0px_#000000]'
+        };
       case 'quantitative-algo-trading':
       default:
         return {

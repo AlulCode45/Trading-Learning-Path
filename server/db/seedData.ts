@@ -78,5 +78,16 @@ export const ALL_ROADMAPS_METADATA = [
     is_official: 1,
     estimated_hours: 80,
     nodes_count: 12
+  },
+  {
+    id: 'rm-edianto-ong',
+    slug: 'technical-analysis-mega-profit',
+    title: 'Technical Analysis for Mega Profit (Edianto Ong)',
+    description: 'Kurikulum lengkap 29 Bab buku legendaris Edianto Ong: dari 3 Aksioma, Dow Theory, Geometri Tren & Fan Principle, Elliott Wave, Indikator, hingga Suicide Anomaly & Trading System.',
+    category: 'Master Curriculum',
+    difficulty: 'Semua Level (Dasar s/d Mahir)',
+    is_official: 1,
+    estimated_hours: 75,
+    nodes_count: 29
   }
 ];

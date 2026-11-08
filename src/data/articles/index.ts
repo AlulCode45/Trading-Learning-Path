@@ -4,13 +4,15 @@ import { SMC_ARTICLES } from './smcArticles.ts';
 import { WYCKOFF_ARTICLES } from './wyckoffArticles.ts';
 import { RISK_ARTICLES } from './riskArticles.ts';
 import { QUANT_ARTICLES } from './quantArticles.ts';
+import { EDIANTO_ONG_ARTICLES } from './ediantoOngArticles.ts';
 
 export const EDUCATIONAL_ARTICLES: Record<string, EducationalArticle> = {
   ...PRICE_ACTION_ARTICLES,
   ...SMC_ARTICLES,
   ...WYCKOFF_ARTICLES,
   ...RISK_ARTICLES,
-  ...QUANT_ARTICLES
+  ...QUANT_ARTICLES,
+  ...EDIANTO_ONG_ARTICLES
 };
 
 // Aliases mapping for common alternative slugs
@@ -43,6 +45,9 @@ export function getRoadmapSlugForArticle(articleOrSlug?: EducationalArticle | st
   }
   if (category === 'Quantitative' || slug.startsWith('quant-')) {
     return 'quantitative-algo-trading';
+  }
+  if (category === 'Edianto Ong Mega Profit' || slug.startsWith('edianto-ong-')) {
+    return 'technical-analysis-mega-profit';
   }
   return 'price-action-market-structure';
 }
