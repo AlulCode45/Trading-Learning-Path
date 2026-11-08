@@ -123,15 +123,19 @@ export const WYCKOFF_ACCUMULATION_SCHEMATIC_CHART: CustomChartConfig = {
       price: 88,
       text: 'Selling Climax (SC)',
       style: 'pill',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-ar',
       candleIndex: 2,
-      price: 121,
+      price: 122,
       text: 'Automatic Rally (AR)',
       style: 'pill',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     },
@@ -141,24 +145,30 @@ export const WYCKOFF_ACCUMULATION_SCHEMATIC_CHART: CustomChartConfig = {
       price: 85,
       text: 'Spring: Vol Mengering (No Supply)',
       style: 'pill',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-sos',
       candleIndex: 8,
-      price: 126,
+      price: 128,
       text: 'Sign of Strength (SOS Breakout)',
       style: 'pill',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-lps',
       candleIndex: 9,
-      price: 109,
+      price: 108,
       text: 'Last Point of Support (LPS)',
       style: 'badge',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#F59E0B',
       textColor: '#FFFFFF'
     }
@@ -166,9 +176,11 @@ export const WYCKOFF_ACCUMULATION_SCHEMATIC_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-phases',
-      candleIndex: 13,
-      price: 128,
-      width: 175,
+      candleIndex: 11,
+      price: 114,
+      alignX: 'left',
+      alignY: 'middle',
+      width: 200,
       stepBadge: 'C',
       title: 'FASE C: THE SPRING',
       lines: [
@@ -300,9 +312,11 @@ export const WYCKOFF_DISTRIBUTION_SCHEMATIC_CHART: CustomChartConfig = {
     {
       id: 'bdg-bc',
       candleIndex: 1,
-      price: 133,
+      price: 135,
       text: 'Buying Climax (BC)',
       style: 'pill',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     },
@@ -312,15 +326,19 @@ export const WYCKOFF_DISTRIBUTION_SCHEMATIC_CHART: CustomChartConfig = {
       price: 104,
       text: 'Automatic Reaction (AR)',
       style: 'pill',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-utad',
       candleIndex: 6,
-      price: 140,
+      price: 143,
       text: 'UTAD (Bull Trap Pucuk)',
       style: 'pill',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     },
@@ -330,15 +348,19 @@ export const WYCKOFF_DISTRIBUTION_SCHEMATIC_CHART: CustomChartConfig = {
       price: 99,
       text: 'Major SOW (Break Ice)',
       style: 'pill',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#EF4444',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-lpsy',
       candleIndex: 8,
-      price: 118,
+      price: 121,
       text: 'LPSY (Weak Pullback)',
       style: 'badge',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#F59E0B',
       textColor: '#FFFFFF'
     }
@@ -346,9 +368,11 @@ export const WYCKOFF_DISTRIBUTION_SCHEMATIC_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-utad-anatomy',
-      candleIndex: 12,
-      price: 136,
-      width: 175,
+      candleIndex: 10,
+      price: 115,
+      alignX: 'left',
+      alignY: 'middle',
+      width: 200,
       stepBadge: 'UTAD',
       title: 'JEBAKAN UTAD DI PUCUK',
       lines: [
@@ -431,7 +455,7 @@ export const WYCKOFF_VSA_EFFORT_RESULT_CHART: CustomChartConfig = {
       topPrice: 120,
       bottomPrice: 102,
       label: 'Wide Spread Bullish (Effort = Result)',
-      labelPosition: 'top-left',
+      labelPosition: 'bottom-left',
       color: '#38BDF8',
       opacity: 0.18,
       boxType: 'fvg'
@@ -444,24 +468,30 @@ export const WYCKOFF_VSA_EFFORT_RESULT_CHART: CustomChartConfig = {
       price: 90,
       text: 'Effort Raksasa (9500) Menahan Harga',
       style: 'pill',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#10B981',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-no-supply-vol',
       candleIndex: 3,
-      price: 98,
+      price: 96,
       text: 'No Supply: Vol Kering (1100)',
       style: 'pill',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#F59E0B',
       textColor: '#FFFFFF'
     },
     {
       id: 'bdg-sos-vol',
       candleIndex: 4,
-      price: 125,
+      price: 127,
       text: 'SOS: Volume Tinggi (8800) + Spread Lebar',
       style: 'pill',
+      size: 'sm',
+      alignX: 'center',
       bgColor: '#38BDF8',
       textColor: '#FFFFFF'
     }
@@ -469,9 +499,11 @@ export const WYCKOFF_VSA_EFFORT_RESULT_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-vsa-logic',
-      candleIndex: 6.8,
-      price: 125,
-      width: 175,
+      candleIndex: 6,
+      price: 110,
+      alignX: 'left',
+      alignY: 'middle',
+      width: 205,
       stepBadge: 'VSA',
       title: 'HUKUM EFFORT VS RESULT',
       lines: [
