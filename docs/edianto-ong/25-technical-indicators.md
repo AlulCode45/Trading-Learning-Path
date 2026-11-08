@@ -5,34 +5,59 @@
 
 ---
 
-## 1. Taksonomi & Klasifikasi Indikator Teknikal
+## 1. Analogi Membumi: Dashboard Speedometer & Kompas Mobil Balap
 
-Edianto Ong membagi indikator teknikal ke dalam empat kelompok fungsional utama untuk mencegah bias redundansi (menggunakan beberapa indikator dengan rumus yang serupa). Seorang trader profesional idealnya hanya memilih satu perwakilan terbaik dari setiap kategori:
+Bayangkan Anda sedang mengendarai sebuah mobil balap Formula 1 di tengah lintasan sirkuit yang berkabut tebal:
+- **Kaca Depan Mobil (Aksi Harga / Candlestick):** Adalah pandangan utama Anda melihat kondisi jalan secara langsung di depan mata.
+- **Kompas / Sistem Navigasi GPS (Moving Average):** Menunjukkan ke arah mana lintasan jalan sedang membujur—apakah jalan sedang menanjak curam ke atas, menurun, atau berkelok menyamping.
+- **Jarum Speedometer & Tachometer (RSI & Stochastic):** Menunjukkan seberapa kencang putaran mesin bekerja. Jika jarum RPM masuk ke zona merah (*Overbought*), bukan berarti mesin langsung mogok detik itu juga, melainkan peringatan bahwa Anda tidak bisa membejek pedal gas lebih dalam tanpa risiko mesin meledak jika tidak menurunkan gigi.
+- **Akselerometer & Torsi Mesin (MACD):** Mengukur apakah laju percepatan mobil sedang bertambah kencang (*momentum acceleration*) ataukah mobil mulai kehilangan tenaga dorong (*deceleration*) meskipun rodanya masih berputar maju.
+- **Batas Pembatas Jalan Sirkuit (Bollinger Bands):** Menunjukkan lebar koridor aman aspal lintasan. Saat jalan menyempit di tikungan (*Squeeze*), Anda tahu bahwa trek lurus panjang berkecepatan tinggi akan segera menyambut di depan.
 
 ```mermaid
 flowchart TD
-    Indikator["Taksonomi 4 Pilar Indikator Teknikal"]
+    subgraph DashboardMobil["Dashboard Mobil Balap Trader"]
+        direction LR
+        Price["Kaca Depan Utama<br/>(Aksi Harga Candlestick)"]
+        MA["Kompas Arah Jalan<br/>(Moving Average - Trend)"]
+        Speedo["Speedometer & RPM<br/>(RSI / Stochastic - Osilator)"]
+        MACD["Akselerometer Torsi<br/>(MACD - Momentum)"]
+        BB["Batas Jalur Lintasan<br/>(Bollinger Bands - Volatilitas)"]
+    end
+```
+
+Seorang pembalap handal tidak memenuhi kaca depannya dengan 20 layar monitor kecil hingga ia tidak bisa melihat jalanan. Begitu pula seorang trader: **gunakan indikator sebagai pelengkap dashboard konfirmasi, bukan pengganti pandangan mata Anda terhadap aksi harga!**
+
+---
+
+## 2. Taksonomi 4 Pilar Indikator Teknikal
+
+Untuk mencegah redundansi (memasang banyak indikator dengan rumus matematika yang sama persis), Edianto Ong mengklasifikasikan indikator ke dalam **4 pilar fungsional independen**. Pilih satu perwakilan terbaik dari setiap pilar:
+
+```mermaid
+flowchart TD
+    Indikator["Sistem 4 Pilar Indikator Teknikal"]
     
-    subgraph Pilar1["1. Trend Following & Volume"]
+    subgraph Pilar1["Pilar 1: Trend Following & Aliran Dana"]
         P1A["Moving Averages (SMA, WMA, EMA)"]
         P1B["MA Envelopes & Ribbons"]
         P1C["OBV (On Balance Volume)"]
     end
     
-    subgraph Pilar2["2. Volatilitas & Momentum"]
-        P2A["Bollinger Bands (2 Std Dev)"]
-        P2B["Parabolic SAR"]
-        P2C["Momentum Indicator"]
+    subgraph Pilar2["Pilar 2: Volatilitas Pasar"]
+        P2A["Bollinger Bands (2 Standar Deviasi)"]
+        P2B["Parabolic SAR (Trailing Stop)"]
+        P2C["Average True Range (ATR)"]
     end
     
-    subgraph Pilar3["3. Osilator & Kekuatan Relatif"]
+    subgraph Pilar3["Pilar 3: Osilator & Kekuatan Relatif"]
         P3A["RSI (Relative Strength Index)"]
-        P3B["Comparative Relative Strength (CRS vs IHSG)"]
-        P3C["William %R & Stochastic Oscillator"]
+        P3B["Stochastic Oscillator (%K & %D)"]
+        P3C["Comparative Relative Strength (CRS vs IHSG)"]
     end
     
-    subgraph Pilar4["4. Trend Strength & Konvergensi"]
-        P4A["MACD (Moving Average Convergence Divergence)"]
+    subgraph Pilar4["Pilar 4: Momentum & Kekuatan Tren"]
+        P4A["MACD (Convergence Divergence)"]
         P4B["ADX / DMI (+DI / -DI)"]
     end
 
@@ -44,142 +69,128 @@ flowchart TD
 
 ---
 
-## 2. Trend Following & Volume Indicators
+## 3. Kamus Istilah Pemula (Glossary Box)
 
-### A. Moving Averages (SMA, WMA, EMA)
-Moving Average (MA) adalah indikator perata harga yang berfungsi menghaluskan fluktuasi harga harian guna menampilkan arah tren yang mendasari.
-
-1. **Simple Moving Average (SMA):**  
-   Memberikan bobot yang sama untuk setiap data harga dalam periode $N$.
-   $$SMA = \frac{\sum_{i=1}^{N} Close_i}{N}$$
-2. **Weighted Moving Average (WMA):**  
-   Memberikan bobot linier lebih besar pada harga terbaru.
-3. **Exponential Moving Average (EMA):**  
-   Memberikan bobot eksponensial pada harga terkini, menjadikannya jauh lebih responsif terhadap perubahan arah mendadak dibanding SMA.
-   $$EMA_{today} = \left( Close_{today} \times \left( \frac{2}{N + 1} \right) \right) + \left( EMA_{yesterday} \times \left( 1 - \frac{2}{N + 1} \right) \right)$$
-
-#### Konsep Kunci Moving Average:
-* **Golden Cross:** Perpotongan MA jangka pendek (misal: EMA 50) menembus ke atas MA jangka panjang (misal: SMA 200). Sinyal pasar *bullish* makro.
-* **Death Cross:** Perpotongan MA jangka pendek menembus ke bawah MA jangka panjang. Sinyal pasar *bearish* makro.
-* **MA Ribbon:** Susunan berlapis dari serangkaian MA (misal: MA 5, 10, 20, 50, 100, 200). Ketika pita MA melebar (*fanning out*) dengan urutan teratur dari kecil ke besar, menandakan tren yang sangat kuat (*raging uptrend*).
-* **MA Envelopes:** Pita batas atas dan batas bawah yang diproyeksikan pada persentase tertentu (misal: $\pm 5\%$) dari garis MA sentral untuk mendeteksi kondisi *overbought* dan *oversold* dalam tren.
-
-### B. On Balance Volume (OBV)
-Diciptakan oleh **Joseph Granville**, OBV mengaitkan volume transaksi secara kumulatif dengan pergerakan harga:
-* Jika harga penutupan hari ini > kemarin: $OBV_{t} = OBV_{t-1} + Volume$
-* Jika harga penutupan hari ini < kemarin: $OBV_{t} = OBV_{t-1} - Volume$
-* Jika harga penutupan sama: $OBV_{t} = OBV_{t-1}$
-
-> **Aksioma OBV:** Volume selalu mendahului harga (*Volume precedes price*). Jika harga saham bergerak menyamping (*sideways*) namun garis OBV merangkak naik tajam, itu merupakan bukti nyata akumulasi *smart money* sebelum lonjakan harga terjadi.
+> [!NOTE]
+> **Kamus Istilah Indikator Teknikal untuk Pemula:**
+> - **Golden Cross:** Perpotongan garis Moving Average jangka pendek menembus ke atas Moving Average jangka panjang (misal: EMA 50 menembus ke atas SMA 200). Sinyal pasar *bullish* makro.
+> - **Death Cross:** Perpotongan garis Moving Average jangka pendek menembus ke bawah Moving Average jangka panjang. Sinyal bahaya pasar *bearish* makro.
+> - **Overbought (Jenuh Beli):** Kondisi saat harga telah melesat naik terlalu cepat dalam waktu singkat (RSI > 70 atau Stochastic > 80). Bukan sinyal otomatis untuk langsung menjual, melainkan peringatan bahwa tenaga pembeli mulai lelah.
+> - **Oversold (Jenuh Jual):** Kondisi saat harga telah anjlok terlalu tajam dalam waktu singkat (RSI < 30 atau Stochastic < 20). Menandakan potensi terjadinya pantulan teknikal.
+> - **Divergence (Penyimpangan):** Ketidaksinkronan arah antara grafik harga dan grafik indikator momentum (misal: harga mencetak puncak baru yang lebih tinggi, tetapi indikator justru mencetak puncak yang lebih rendah). Sinyal dini paling akurat mengenai pembalikan tren.
+> - **MACD Histogram:** Batang-batang diagram vertikal yang mengukur jarak selisih antara Garis MACD dan Garis Sinyal. Merefleksikan akselerasi kecepatan tren.
+> - **Bollinger Squeeze:** Penyempitan ekstrem pita atas dan bawah Bollinger Bands yang menandakan penurunan volatilitas drastis, seringkali menjadi bibit sebelum terjadinya ledakan harga dahsyat.
 
 ---
 
-## 3. Indikator Volatilitas & Momentum
+## 4. Bedah Pilar Indikator Utama
 
-### A. Bollinger Bands (BB)
-Dikembangkan oleh **John Bollinger**, indikator ini memetakan volatilitas harga dengan menggunakan standar deviasi statistik:
-* **Middle Band:** Simple Moving Average 20 periode (SMA 20).
-* **Upper Band:** $SMA 20 + (2 \times \sigma)$
-* **Lower Band:** $SMA 20 - (2 \times \sigma)$
-*(Secara statistik distribusi normal, $\pm 2$ standar deviasi mencakup sekitar 95.4% dari seluruh fluktuasi harga historis).*
+### A. Pilar 1: Moving Averages (EMA & SMA) & On Balance Volume (OBV)
+- **Simple Moving Average (SMA):** Menghitung nilai rata-rata aritmatika harga penutupan selama $N$ hari ke belakang. SMA 200 hari diakui secara global sebagai batas pemisah resmi antara tren *Bullish* dan *Bearish*.
+- **Exponential Moving Average (EMA):** Memberikan bobot persentase lebih besar pada data harga terkini, menjadikannya jauh lebih gesit mendeteksi perubahan arah dibanding SMA tanpa terlalu banyak jeda waktu (*lagging*). EMA 20 dan EMA 50 sangat ideal bagi *swing trader*.
+- **On Balance Volume (OBV):** Diciptakan oleh Joseph Granville dengan filosofi dasar: **"Volume selalu mendahului harga (*Volume precedes price*)"**. Jika harga saham sedang bergerak datar (*sideways*) namun garis OBV merangkak naik mencetak rekor baru, itu adalah bukti sah bahwa *smart money* sedang diam-diam memborong saham sebelum harga diledakkan.
+
+### B. Pilar 2: Bollinger Bands (BB) & Volatilitas Pasar
+Diciptakan oleh John Bollinger, indikator ini membungkus pergerakan harga dengan kurva lonceng distribusi normal statistik (2 Standar Deviasi $\approx$ mencakup 95.4% fluktuasi harga):
+- **Middle Band:** Rata-rata pergerakan sederhana 20 hari (SMA 20).
+- **Upper & Lower Band:** Ditambahkan dan dikurangkan dengan $2 \times$ Standar Deviasi dari SMA 20.
 
 ```mermaid
 flowchart LR
-    BBState["Siklus Volatilitas Bollinger Bands"]
-    BBState --> Squeeze["Bollinger Squeeze (Penyempitan Pita)"]
-    Squeeze --> Breakout["Pelepasan Energi Eksplosif (Band Expansion)"]
-    Breakout --> Walking["Walking the Bands (Harga Menempel pada Upper Band)"]
-    Walking --> Exhaustion["Head Fake / Mean Reversion ke Middle Band"]
+    subgraph SiklusBollinger["Siklus Dinamika Bollinger Bands"]
+        Squeeze["1. Bollinger Squeeze<br/>Pita menyempit ketat, volatilitas terendah"] --> Breakout["2. Band Expansion<br/>Pita meledak melebar dengan volume tinggi"]
+        Breakout --> Walking["3. Walking the Bands<br/>Harga menempel terus di pita luar dalam tren super"]
+        Walking --> MeanRev["4. Mean Reversion<br/>Harga kembali ditarik menuju garis tengah (SMA 20)"]
+    end
 ```
 
-* **Bollinger Squeeze:** Ketika pita menyempit ke tingkat ekstrem, mengindikasikan penurunan volatilitas drastis. Ini adalah peringatan bahwa pergerakan eksplosif (*explosive breakout*) akan segera terjadi.
-* **Walking the Bands:** Dalam tren *bullish* yang luar biasa kuat, harga tidak memantul turun saat menyentuh *Upper Band*, melainkan terus "berjalan menempel" di pita atas. Jangan terburu-buru melakukan *short sell* hanya karena harga menyentuh Upper Band dalam tren yang sedang mengamuk.
+> **Aturan Emas Bollinger Bands:**  
+> Jangan pernah gegabah melakukan *short-sell* atau panik menjual saham hanya karena lilin menyentuh pita atas (*Upper Band*). Pada tren naik yang super perkasa, harga dapat terus "berjalan menempel" di pita atas (*Walking the Bands*) selama berbulan-bulan!
 
-### B. Parabolic SAR (Stop and Reverse)
-Dirancang oleh **J. Welles Wilder Jr.**, indikator ini menempatkan titik-titik (*dots*) di atas atau di bawah lilin harga berdasarkan faktor akselerasi:
-* Titik SAR di bawah harga = Tren Bullish (pertahankan posisi beli).
-* Titik SAR melompat ke atas harga = Tren Bearish (tutup posisi beli dan pasang proteksi jual).
-* **Kegunaan Utama:** Sangat efektif sebagai penentu batas *Trailing Stop* dinamis yang objektif.
+### C. Pilar 3: RSI (Relative Strength Index) & Stochastic Oscillator
+- **RSI 14 Periode (J. Welles Wilder):** Mengukur perbandingan rasio kenaikan rata-rata terhadap penurunan rata-rata dalam rentang 0 hingga 100. Level 70 menandai ambang jenuh beli (*Overbought*) dan level 30 menandai ambang jenuh jual (*Oversold*).
+  - *Failure Swing Bullish:* RSI turun di bawah 30, memantul ke atas 30, turun kembali namun tertahan di atas 30 (*Higher Low*), lalu menembus puncak pantulan sebelumnya. Ini adalah sinyal konfirmasi pembalikan arah paling bertenaga.
+- **Comparative Relative Strength (CRS vs IHSG):** Mengukur rasio kekuatan saham terhadap indeks pasar acuan ($Price_{Saham} \div Level_{IHSG}$). Saham yang garis CRS-nya menanjak naik di saat IHSG sedang lesu adalah **Saham Pemimpin Pasar (*Market Leader*)** yang wajib Anda koleksi pertama kali saat IHSG mulai pulih.
 
----
-
-## 4. Osilator & Kekuatan Relatif (Oscillators & Relative Strength)
-
-### A. RSI (Relative Strength Index)
-Juga diciptakan oleh J. Welles Wilder, RSI mengukur kecepatan dan perubahan pergerakan harga dalam skala rentang 0 hingga 100 (periode standar: 14):
-* **Zona Klasik:** Di atas 70 = *Overbought* (jenuh beli), di bawah 30 = *Oversold* (jenuh jual).
-* **Failure Swings (Sinyal Paling Valid):** Sinyal pembalikan arah paling kuat terjadi saat RSI mencetak *Failure Swing*:
-  - *Bullish Failure Swing:* RSI turun di bawah 30, memantul ke atas 30, terkoreksi namun bertahan di atas 30 (*Higher Low* pada RSI), lalu menembus titik puncak ayunan sebelumnya.
-
-### B. Comparative Relative Strength (CRS vs IHSG)
-Edianto Ong menekankan pentingnya membandingkan performa suatu saham dengan indeks acuannya (IHSG di Bursa Efek Indonesia):
-$$CRS = \frac{Price_{Saham}}{Level_{IHSG}}$$
-* Jika garis CRS menanjak naik saat IHSG sedang turun atau *sideways*, saham tersebut adalah **Market Leader (Alfa Stock)** yang didukung oleh institusi besar. Saham inilah yang akan melesat paling cepat saat pasar pulih kembali.
-
-### C. Stochastic Oscillator & William %R
-* **Stochastic (%K & %D):** Menghitung posisi harga penutupan relatif terhadap rentang tertinggi dan terendah selama $N$ periode. 
-  - *Jebakan Tren Kuat:* Dalam tren naik yang kuat, Stochastic dapat bertahan di zona *overbought* (> 80) selama berminggu-minggu. Menjual saham hanya karena Stochastic > 80 di tengah tren naik kuat adalah kesalahan fatal pemula.
-* **William %R:** Mirip dengan Stochastic namun berskala negatif (0 hingga -100). Sangat sensitif untuk mendeteksi keletihan momentum jangka pendek.
-
----
-
-## 5. Indikator Trend Strength, Konvergensi & Divergensi
-
-### A. MACD (Moving Average Convergence Divergence)
-Diciptakan oleh **Gerald Appel**, MACD adalah raja indikator momentum-tren:
-* **MACD Line:** $EMA(12) - EMA(26)$
-* **Signal Line:** $EMA(9)$ dari MACD Line
-* **MACD Histogram:** $MACD\ Line - Signal\ Line$
+### D. Pilar 4: MACD (Trend & Momentum King)
+Dikembangkan oleh Gerald Appel, MACD terdiri dari tiga komponen inti:
+1. **MACD Line:** Selisih antara $EMA(12) - EMA(26)$.
+2. **Signal Line:** Garis rata-rata $EMA(9)$ dari MACD Line.
+3. **MACD Histogram:** Nilai $MACD\ Line - Signal\ Line$.
 
 ```mermaid
 flowchart TD
-    subgraph DivergenceTypes["Anatomi Divergensi MACD"]
+    subgraph TaksonomiDivergensi["Anatomi Divergensi MACD / RSI"]
         direction TB
-        subgraph Regular["Regular Divergence (Sinyal Pembalikan Tren Utama)"]
-            RD1["Bullish Regular: Harga Lower Low (LL), MACD Higher Low (HL) -> Reversal Naik"]
-            RD2["Bearish Regular: Harga Higher High (HH), MACD Lower High (LH) -> Reversal Turun"]
+        subgraph Regular["1. Regular Divergence (Sinyal Pembalikan Tren Utama)"]
+            RD1["Bullish Regular: Harga Lower Low (LL), Indikator Higher Low (HL) ➔ Reversal Naik"]
+            RD2["Bearish Regular: Harga Higher High (HH), Indikator Lower High (LH) ➔ Reversal Turun"]
         end
-        subgraph Hidden["Hidden Divergence (Sinyal Kelanjutan Tren Kuat)"]
-            HD1["Bullish Hidden: Harga Higher Low (HL), MACD Lower Low (LL) -> Tren Naik Berlanjut"]
-            HD2["Bearish Hidden: Harga Lower High (LH), MACD Higher High (HH) -> Tren Turun Berlanjut"]
+        subgraph Hidden["2. Hidden Divergence (Sinyal Kelanjutan Tren Kuat)"]
+            HD1["Bullish Hidden: Harga Higher Low (HL), Indikator Lower Low (LL) ➔ Tren Naik Berlanjut"]
+            HD2["Bearish Hidden: Harga Lower High (LH), Indikator Higher High (HH) ➔ Tren Turun Berlanjut"]
         end
     end
 ```
 
-### B. ADX & DMI (Directional Movement Index)
-Sistem DMI karya Wilder terdiri dari tiga garis: **+DI**, **-DI**, dan **ADX**:
-1. **+DI & -DI (Arah):** Jika +DI melintas di atas -DI, pembeli memegang kendali. Jika -DI di atas +DI, penjual memegang kendali.
-2. **ADX (Kekuatan Murni):** ADX tidak mengukur arah, melainkan **intensitas kekuatan tren**:
-   - $ADX < 20$: Pasar tidak memiliki tren (*non-trending / choppy / sideways*). Hindari indikator *trend following*.
-   - $20 \le ADX \le 25$: Tren mulai terbentuk.
-   - $ADX > 25$: Tren sangat kuat (*strong trend*). Gunakan sistem Moving Average dan tahan posisi (*riding the trend*).
-   - $ADX > 40$: Tren ekstrem (waspadai klimaks euforia atau kapitulasi).
-
 ---
 
-## 6. Studi Kasus Integrasi Multi-Panel (Confluence Dashboard)
+## 5. Panduan Step-by-Step Pemula: Membaca Indikator Tanpa Kebingungan (Confluence Checklist)
 
-Berikut adalah cetak biru konfigurasi multi-panel profesional yang direkomendasikan Edianto Ong:
+Jangan biarkan layar grafik Anda tampak seperti "piring mi spaghetti". Terapkan sistem penyaringan bertahap (*Filter Funnel System*) 4 langkah berikut sebelum membuka posisi beli:
 
 ```mermaid
 flowchart TD
-    Panel1["Panel 1 (Grafik Utama): Candlestick + EMA 20/50/200 + Bollinger Bands + Parabolic SAR"]
-    Panel2["Panel 2 (Volume): Real Volume Bars + 20-Day SMA Volume + OBV Line"]
-    Panel3["Panel 3 (Momentum & Trend): MACD Line + Signal Line + Histogram"]
-    Panel4["Panel 4 (Trend Strength & Overbought): RSI 14 + ADX/DMI System"]
-
-    Panel1 --> ConfluenceEngine["Sistem Verifikasi Masuk (Entry Checklist)"]
-    Panel2 --> ConfluenceEngine
-    Panel3 --> ConfluenceEngine
-    Panel4 --> ConfluenceEngine
-
-    ConfluenceEngine --> RuleExecution["Eksekusi: Hanya Masuk Jika Minimal 3 Panel Memberikan Sinyal Searah"]
+    Step1["Langkah 1: Cek Filter Tren Makro (Kompas)<br/>Apakah harga berada di atas SMA 200 dan EMA 50 melandai naik?"] --> Step2["Langkah 2: Cek Aliran Dana & Volatilitas (Bahan Bakar)<br/>Apakah OBV mencetak Higher High & Pita Bollinger Bands mulai melebar?"]
+    Step2 --> Step3["Langkah 3: Cek Titik Ayunan & Momentum (Pemicu)<br/>Apakah RSI memantul dari area support (40-50) & MACD Golden Cross?"]
+    Step3 --> Step4["Langkah 4: Konfirmasi Aksi Harga Candlestick (Pelatuk)<br/>Apakah muncul lilin Hammer / Engulfing di area support?"]
+    Step4 --> ValidEntry["EKSEKUSI TRANSAKSI: Hanya Masuk Jika Minimal 3 dari 4 Syarat Terpenuhi!"]
 ```
 
-### Checklist Eksekusi Sinyal Beli Mega Profit:
-1. **Kondisi Tren (Panel 1):** Lilin harga membentuk pola pembalikan (*Hammer/Bullish Engulfing*) di atas EMA 50 yang sedang melandai naik, memantul dari Middle Bollinger Band.
-2. **Kondisi Aliran Dana (Panel 2):** Volume transaksi di atas rata-rata 20 hari dan garis OBV mencetak *Higher High* (terjadi akumulasi nyata).
-3. **Kondisi Momentum (Panel 3):** MACD Histogram berputar dari negatif ke positif, atau MACD Line memotong ke atas Signal Line (*Golden Cross*) tepat di atas garis nol.
-4. **Kondisi Kekuatan Tren (Panel 4):** ADX berada di atas level 20 dan mulai mendaki naik bersamaan dengan +DI yang memotong ke atas -DI; RSI memantul dari level 45–50 (*support bounce* dalam kondisi tren sehat).
+---
 
-Dengan mengintegrasikan keempat dimensi ini, probabilitas keberhasilan transaksi meningkat secara drastis, sekaligus melindungi modal dari sinyal palsu (*whipsaw*) yang mematikan.
+## 6. Studi Kasus Konkret: Setup Confluence Sempurna pada Saham BMRI
+
+Mari kita bedah skenario transaksi nyata dengan kombinasi indikator lintas fungsi pada saham PT Bank Mandiri (Persero) Tbk (BMRI):
+
+```
+Harga Saham BMRI: Rp 6.800 (Puncak Swing)
+             \
+              \  Koreksi Sehat Menuju Support
+               \
+                ▼ Rp 6.200 (Titik Eksekusi Beli Berbasis Confluence)
+```
+
+### Data Pembacaan Multi-Panel Dashboard:
+1. **Panel 1 (Grafik Lilin & Tren):**
+   - Harga saham BMRI terkoreksi dari Rp 6.800 ke level psikologis **Rp 6.200**.
+   - Level Rp 6.200 berhimpit tepat dengan garis **EMA 50 harian** dan **Middle Bollinger Band** (SMA 20).
+   - Terbentuk lilin pembalikan arah **Bullish Engulfing** pada penutupan sesi harian di Rp 6.250.
+2. **Panel 2 (Aliran Dana Volume):**
+   - Volume perdagangan pada saat lilin Bullish Engulfing muncul mencatatkan lonjakan 1.8 kali lipat dari volume rata-rata 20 hari.
+   - Garis **OBV** bergerak naik tajam mencetak titik tertinggi baru, membuktikan adanya aksi beli masif oleh institusi asing.
+3. **Panel 3 (Momentum MACD):**
+   - Garis MACD memotong ke atas Garis Sinyal (*Golden Cross*) tepat di atas garis nol (*Centerline*), menandakan momentum akselerasi tren naik baru dimulai.
+   - Histogram MACD berbalik arah dari warna merah negatif menjadi batang hijau positif.
+4. **Panel 4 (Kekuatan Relatif RSI):**
+   - Indikator RSI 14 memantul kuat dari level 48 (level pertahanan *bull market support* khas RSI).
+
+### Eksekusi Trading Plan:
+- **Titik Beli (*Entry Point*):** Rp 6.275 (pada pembukaan sesi berikutnya).
+- **Titik Proteksi Kerugian (*Stop Loss*):** Rp 6.050 (di bawah titik terendah lilin engulfing dan di bawah garis EMA 50). Risiko per lembar $= 6.275 - 6.050 = \mathbf{Rp\ 225}$ (sekitar 3.5%).
+- **Target Ambil Untung 1 (*Take Profit 1*):** Upper Bollinger Band di **Rp 6.750** (Potensi keuntungan $= Rp\ 475$). Rasio $Risk : Reward = 1 : 2.11$.
+- **Target Ambil Untung 2 (*Take Profit 2*):** Level resistensi rekor baru di **Rp 7.200** (Potensi keuntungan $= Rp\ 925$). Rasio $Risk : Reward = 1 : 4.11$.
+- *Hasil Transaksi:* Saham BMRI melesat mencapai target keuntungan tanpa pernah menyentuh level stop loss berkat dukungan *confluence* multi-panel yang sangat solid.
+
+---
+
+## 7. Kesalahan Fatal Pemula dalam Menggunakan Indikator
+
+1. **Jebakan Kelumpuhan Analisa (*Analysis Paralysis*):**  
+   Memasang 10 hingga 15 indikator sekaligus di satu grafik (misal: RSI, Stochastic, CCI, William %R, dan Williams Accumulation secara bersamaan). Ketika 3 indikator memberi sinyal beli, 4 memberi sinyal netral, dan 3 memberi sinyal jual, trader akhirnya menjadi lumpuh dan tidak berani mengambil keputusan apa pun. Gunakan konsep 4 pilar di atas secara hemat!
+2. **Menganggap Overbought Selalu Berarti Harus Langsung Menjual:**  
+   Ini adalah kesalahan paling klasik dari pemula. Dalam tren *Super Bullish*, indikator seperti RSI dan Stochastic dapat bertahan di zona *Overbought* (> 70) selama berminggu-minggu bahkan berbulan-bulan seiring saham naik 200%. Menjual saham hanya karena RSI menyentuh level 70 di awal sebuah tren baru akan membuat Anda kehilangan momentum cuan terbesar seumur hidup Anda.
+3. **Mengabaikan Arah Tren Pasar Utama:**  
+   Mencoba mengambil sinyal *Oversold* (RSI < 20) pada saham yang sedang mengalami tren penurunan bebas di bawah garis SMA 200 (*Downtrending Stock*). Pada saham berkinerja buruk, kondisi *Oversold* bisa terus menjadi "lebih *oversold*" hingga harga saham menyentuh gocap.
+4. **Memburu Indikator Ajaib (*The Holy Grail Fallacy*):**  
+   Terus-menerus mengganti indikator setiap kali mengalami satu kali transaksi merugi. Sadarilah bahwa tidak ada satupun indikator di dunia ini yang memiliki akurasi 100%. Keunggulan trader sejati terletak pada konsistensi sistem, disiplin manajemen risiko (*Money Management*), dan pemahaman aksi harga.
