@@ -105,10 +105,8 @@ const boxLabelReplacements: Record<string, string> = {
   'Demand Zone (Fresh)': 'Fresh Demand'
 };
 
-let modifiedCharts = 0;
-
-seedData.charts.forEach((chartObj: any) => {
-  const cfg = JSON.parse(chartObj.config_json);
+function refineChartConfig(cfg: any): boolean {
+  if (!cfg) return false;
   let changed = false;
 
   // 1. Candlestick spacing to wide or ultra-wide
@@ -119,10 +117,10 @@ seedData.charts.forEach((chartObj: any) => {
 
   // 2. InfoCards stage alignment & indexing
   if (cfg.infoCards && cfg.infoCards.length > 0) {
+    const numCandles = (cfg.candles || []).length;
     cfg.infoCards.forEach((ic: any) => {
-      // Ensure all cards are set to alignX left and positioned on the stage
-      if (ic.candleIndex < cfg.candles.length - 1) {
-        ic.candleIndex = cfg.candles.length + 1.2;
+      if (ic.candleIndex < numCandles - 1) {
+        ic.candleIndex = numCandles + 1.2;
         changed = true;
       }
       if (ic.alignX !== 'left') {
@@ -182,32 +180,70 @@ seedData.charts.forEach((chartObj: any) => {
     });
   }
 
-  if (changed) {
+  return changed;
+}
+
+// 1. Refine chart presets
+let modifiedPresets = 0;
+seedData.charts.forEach((chartObj: any) => {
+  const cfg = JSON.parse(chartObj.config_json);
+  if (refineChartConfig(cfg)) {
     chartObj.config_json = JSON.stringify(cfg, null, 2);
-    modifiedCharts++;
+    modifiedPresets++;
   }
 });
+console.log(`Refined ${modifiedPresets} presets in seed data.`);
 
-console.log(`Updated ${modifiedCharts} charts in seed data.`);
+// 2. Refine embedded charts in articles
+let modifiedArticles = 0;
+seedData.articles.forEach((art: any) => {
+  if (!art.sections_json) return;
+  const sections = JSON.parse(art.sections_json);
+  let artChanged = false;
+
+  sections.forEach((s: any) => {
+    if (s.customChartConfig) {
+      if (refineChartConfig(s.customChartConfig)) {
+        artChanged = true;
+      }
+    }
+  });
+
+  if (artChanged) {
+    art.sections_json = JSON.stringify(sections);
+    modifiedArticles++;
+  }
+});
+console.log(`Refined ${modifiedArticles} articles containing custom charts in seed data.`);
 
 // Save back to curriculum_seed.json
 fs.writeFileSync(seedPath, JSON.stringify(seedData, null, 2), 'utf8');
 console.log('Saved updated curriculum_seed.json.');
 
-// Now sync directly to SQLite database
+// 3. Now sync directly to SQLite database
 const db = new Database(dbPath);
-const updateStmt = db.prepare(`
+
+const updatePresetStmt = db.prepare(`
   UPDATE chart_presets
   SET config_json = ?, updated_at = CURRENT_TIMESTAMP
   WHERE id = ? OR slug = ?
 `);
 
+const updateArticleStmt = db.prepare(`
+  UPDATE curriculum_articles
+  SET sections_json = ?, updated_at = CURRENT_TIMESTAMP
+  WHERE id = ? OR slug = ?
+`);
+
 const syncTransaction = db.transaction(() => {
   seedData.charts.forEach((c: any) => {
-    updateStmt.run(c.config_json, c.id, c.slug);
+    updatePresetStmt.run(c.config_json, c.id, c.slug);
+  });
+  seedData.articles.forEach((a: any) => {
+    updateArticleStmt.run(a.sections_json, a.id, a.slug);
   });
 });
 
 syncTransaction();
-console.log('Synchronized all 38 chart configs into SQLite database: data/trading_learning_path.db');
+console.log(`Synchronized all chart presets & curriculum articles into SQLite database: ${dbPath}`);
 db.close();
