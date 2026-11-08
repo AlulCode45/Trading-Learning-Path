@@ -221,22 +221,34 @@ export function getModuleIdForArticle(articleOrSlug?: EducationalArticle | strin
 }
 
 export function getArticlesByModule(moduleId: string): EducationalArticle[] {
+  const getUnique = (articles: Record<string, EducationalArticle>) => {
+    const seen = new Set<string>();
+    const list: EducationalArticle[] = [];
+    for (const art of Object.values(articles)) {
+      if (!seen.has(art.slug)) {
+        seen.add(art.slug);
+        list.push(art);
+      }
+    }
+    return list;
+  };
+
   switch (moduleId) {
     case 'crypto-smart-money':
-      return Object.values(CRYPTO_SMART_MONEY_ARTICLES);
+      return getUnique(CRYPTO_SMART_MONEY_ARTICLES);
     case 'edianto-ong':
-      return Object.values(EDIANTO_ONG_ARTICLES);
+      return getUnique(EDIANTO_ONG_ARTICLES);
     case 'smc':
-      return Object.values(SMC_ARTICLES);
+      return getUnique(SMC_ARTICLES);
     case 'wyckoff':
-      return Object.values(WYCKOFF_ARTICLES);
+      return getUnique(WYCKOFF_ARTICLES);
     case 'risk':
-      return Object.values(RISK_ARTICLES);
+      return getUnique(RISK_ARTICLES);
     case 'quant':
-      return Object.values(QUANT_ARTICLES);
+      return getUnique(QUANT_ARTICLES);
     case 'price-action':
     default:
-      return Object.values(PRICE_ACTION_ARTICLES);
+      return getUnique(PRICE_ACTION_ARTICLES);
   }
 }
 

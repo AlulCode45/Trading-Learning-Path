@@ -51,6 +51,19 @@ export interface InteractiveTradingChartProps {
   className?: string;
 }
 
+// Helper to normalize any date/time format to what Lightweight Charts accepts
+const normalizeChartTime = (time: any): any => {
+  if (typeof time === 'number') return time;
+  if (typeof time === 'string') {
+    // If strict YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(time)) return time;
+    // If date with time like '2026-05-12 01:00' or ISO
+    const timestamp = Math.floor(new Date(time.replace(' ', 'T') + (time.includes('Z') || time.includes('+') ? '' : 'Z')).getTime() / 1000);
+    if (!isNaN(timestamp) && timestamp > 0) return timestamp;
+  }
+  return time;
+};
+
 // Built-in Sample Datasets for Educational Demonstrations
 export const SAMPLE_CHART_PRESETS: Record<string, {
   symbol: string;
@@ -226,7 +239,7 @@ export const InteractiveTradingChart: React.FC<InteractiveTradingChartProps> = (
 
     // Format and set candle data
     const formattedData = activeData.map(d => ({
-      time: d.time as any,
+      time: normalizeChartTime(d.time),
       open: d.open,
       high: d.high,
       low: d.low,
@@ -238,7 +251,7 @@ export const InteractiveTradingChart: React.FC<InteractiveTradingChartProps> = (
     const volumeData = activeData
       .filter(d => d.volume !== undefined)
       .map(d => ({
-        time: d.time as any,
+        time: normalizeChartTime(d.time),
         value: d.volume || 100,
         color: d.close >= d.open ? 'rgba(16, 185, 129, 0.25)' : 'rgba(244, 63, 94, 0.25)',
       }));
@@ -274,7 +287,11 @@ export const InteractiveTradingChart: React.FC<InteractiveTradingChartProps> = (
     // Structural Markers (BOS, CHoCH, Sweeps)
     if (activeMarkers && activeMarkers.length > 0) {
       try {
-        createSeriesMarkers(candleSeries, activeMarkers as any);
+        const normalizedMarkers = activeMarkers.map(m => ({
+          ...m,
+          time: normalizeChartTime(m.time),
+        }));
+        createSeriesMarkers(candleSeries, normalizedMarkers as any);
       } catch (err) {
         console.warn('Failed to apply series markers:', err);
       }

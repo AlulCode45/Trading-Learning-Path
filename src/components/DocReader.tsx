@@ -504,7 +504,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
 
                 return (
                   <button
-                    key={item.slug}
+                    key={`${item.slug}-${idx}`}
                     onClick={() => onSelectArticle(item.slug)}
                     className={`w-full text-left p-2.5 rounded-xl text-xs transition-all flex items-center justify-between group ${
                       isActive
@@ -843,9 +843,9 @@ export const DocReader: React.FC<DocReaderProps> = ({
                   Topik Terkait dalam Jalur Belajar
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {article.relatedTopics.map(rel => (
+                  {article.relatedTopics.map((rel, rIdx) => (
                     <button
-                      key={rel.slug}
+                      key={`${rel.slug}-${rIdx}`}
                       onClick={() => onSelectArticle(rel.slug)}
                       className="p-3.5 rounded-lg bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-[#1D2532] hover:border-emerald-500 text-left transition-colors group flex items-center justify-between shadow-xs"
                     >
@@ -990,9 +990,9 @@ export const DocReader: React.FC<DocReaderProps> = ({
               </p>
 
               <div className="space-y-2.5">
-                {smartRecommendations.map(rec => (
+                {smartRecommendations.map((rec, recIdx) => (
                   <div
-                    key={rec.article.slug}
+                    key={`${rec.article.slug}-${recIdx}`}
                     onClick={() => onSelectArticle(rec.article.slug)}
                     className="p-3 rounded-xl bg-white dark:bg-[#0D1017] border border-slate-200 dark:border-zinc-800 hover:border-emerald-500 dark:hover:border-emerald-500/70 transition-all cursor-pointer group shadow-2xs"
                   >
