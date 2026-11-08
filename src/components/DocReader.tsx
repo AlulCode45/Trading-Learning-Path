@@ -71,8 +71,12 @@ export const DocReader: React.FC<DocReaderProps> = ({
   const [dynamicArticle, setDynamicArticle] = useState<EducationalArticle | null>(null);
   const [dynamicRoadmapMeta, setDynamicRoadmapMeta] = useState<{ title: string; slug: string } | null>(null);
 
+  const isCommunitySlug = !EDUCATIONAL_ARTICLES[articleSlug];
+  const [loadingCommunity, setLoadingCommunity] = useState<boolean>(isCommunitySlug);
+
   useEffect(() => {
-    if (!EDUCATIONAL_ARTICLES[articleSlug]) {
+    if (isCommunitySlug) {
+      setLoadingCommunity(true);
       fetch(`/api/community/articles/${articleSlug}`)
         .then(res => res.json())
         .then(json => {
@@ -137,7 +141,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
                     {
                       id: 'sec-materi',
                       title: row.title,
-                      illustrationMode: (payload.illustrationMode || row.illustration_mode || 'custom_builder') as any,
+                      illustrationMode: (payload.illustrationMode || row.illustration_mode || 'none') as any,
                       customChartConfig: payload.customChartConfig,
                       snapshotConfig: payload.snapshotConfig,
                       content: row.content_markdown || ''
@@ -179,14 +183,16 @@ export const DocReader: React.FC<DocReaderProps> = ({
             setDynamicArticle(art);
           }
         })
-        .catch(err => console.error('Failed to load community article', err));
+        .catch(err => console.error('Failed to load community article', err))
+        .finally(() => setLoadingCommunity(false));
     } else {
       setDynamicArticle(null);
       setDynamicRoadmapMeta(null);
+      setLoadingCommunity(false);
     }
-  }, [articleSlug]);
+  }, [articleSlug, isCommunitySlug]);
 
-  const article: EducationalArticle | undefined = EDUCATIONAL_ARTICLES[articleSlug] || dynamicArticle || Object.values(EDUCATIONAL_ARTICLES)[0];
+  const article: EducationalArticle | undefined = EDUCATIONAL_ARTICLES[articleSlug] || dynamicArticle;
   const allArticlesList = getAllArticles();
 
   const currentModuleId = useMemo(() => getModuleIdForArticle(article), [article]);
@@ -345,6 +351,15 @@ export const DocReader: React.FC<DocReaderProps> = ({
       onUpdateNodeStatus(article.nodeId, 'available');
     }
   };
+
+  if (loadingCommunity) {
+    return (
+      <div className="max-w-4xl mx-auto py-24 px-6 text-center space-y-3">
+        <div className="w-8 h-8 mx-auto border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs font-mono text-slate-500 dark:text-zinc-400">Memuat artikel komunitas...</p>
+      </div>
+    );
+  }
 
   if (!article) {
     return (
