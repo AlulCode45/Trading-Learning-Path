@@ -75,7 +75,51 @@ export const DocReader: React.FC<DocReaderProps> = ({
   const [loadingCommunity, setLoadingCommunity] = useState<boolean>(isCommunitySlug);
 
   useEffect(() => {
-    if (isCommunitySlug) {
+    // 1. First attempt to fetch from high-performance Database API
+    fetch(`/api/curriculum/articles/${articleSlug}`)
+      .then(res => res.json())
+      .then(json => {
+        if (json.success && json.data) {
+          const row = json.data;
+          const art: EducationalArticle = {
+            id: row.id,
+            nodeId: row.nodeId,
+            slug: row.slug,
+            title: row.title,
+            category: row.category,
+            level: row.level,
+            readingTimeMinutes: row.readingTimeMinutes,
+            summary: row.summary,
+            difficulty: row.difficulty,
+            prerequisites: [],
+            tableOfContents: (row.sections || []).map((s: any) => ({
+              id: s.id,
+              title: s.title
+            })),
+            sections: row.sections || [],
+            keyTakeaways: row.keyTakeaways || [],
+            commonMistakes: row.commonMistakes || [],
+            relatedTopics: row.relatedTopics || [],
+            references: row.references || []
+          };
+          setDynamicArticle(art);
+          setLoadingCommunity(false);
+        } else if (isCommunitySlug) {
+          // Fallback to community articles
+          fetchCommunityArticle();
+        } else {
+          setLoadingCommunity(false);
+        }
+      })
+      .catch(() => {
+        if (isCommunitySlug) {
+          fetchCommunityArticle();
+        } else {
+          setLoadingCommunity(false);
+        }
+      });
+
+    function fetchCommunityArticle() {
       setLoadingCommunity(true);
       fetch(`/api/community/articles/${articleSlug}`)
         .then(res => res.json())
@@ -185,10 +229,6 @@ export const DocReader: React.FC<DocReaderProps> = ({
         })
         .catch(err => console.error('Failed to load community article', err))
         .finally(() => setLoadingCommunity(false));
-    } else {
-      setDynamicArticle(null);
-      setDynamicRoadmapMeta(null);
-      setLoadingCommunity(false);
     }
   }, [articleSlug, isCommunitySlug]);
 

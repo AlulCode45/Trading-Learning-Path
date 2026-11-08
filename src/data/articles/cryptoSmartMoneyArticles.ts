@@ -227,7 +227,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           timeframe: 'H1',
           showCandles: true,
           showVolume: true,
-          candleSpacing: 'normal',
+          candleSpacing: 'wide',
           candles: [
             { id: 'c0', index: 0, open: 64800, high: 65200, low: 64700, close: 65100, volume: 1200, label: 'Konsolidasi' },
             { id: 'c1', index: 1, open: 65100, high: 65350, low: 64900, close: 65000, volume: 1400 },
@@ -307,7 +307,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-trap',
               candleIndex: 2,
-              price: 65500,
+              price: 65700,
               text: 'Funding Rate +0.08% (Greed Ekstrem)',
               style: 'pill',
               bgColor: '#EF4444',
@@ -316,7 +316,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-sweep',
               candleIndex: 4,
-              price: 61100,
+              price: 60700,
               text: 'Stop Hunt $61.500 (Long Flushout)',
               style: 'badge',
               bgColor: '#F43F5E',
@@ -324,8 +324,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             },
             {
               id: 'b-vshape',
-              candleIndex: 5,
-              price: 65600,
+              candleIndex: 6,
+              price: 66400,
               text: 'Institutional Re-Absorption',
               style: 'pill',
               bgColor: '#10B981',
@@ -335,9 +335,9 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-1',
-              candleIndex: 2,
-              price: 66300,
-              width: 170,
+              candleIndex: 1,
+              price: 67300,
+              width: 175,
               stepBadge: '1',
               title: 'JEBAKAN LIQUIDITY',
               lines: [
@@ -349,8 +349,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             },
             {
               id: 'card-2',
-              candleIndex: 5,
-              price: 62800,
+              candleIndex: 7,
+              price: 63600,
               width: 175,
               stepBadge: '2',
               title: 'EKSEKUSI PEMBUNUHAN',
@@ -586,7 +586,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           timeframe: 'H1',
           showCandles: true,
           showVolume: true,
-          candleSpacing: 'normal',
+          candleSpacing: 'wide',
           candles: [
             { id: 'c0', index: 0, open: 140, high: 145, low: 139, close: 144, volume: 1500, label: 'Swing High 1' },
             { id: 'c1', index: 1, open: 144, high: 144.5, low: 135, close: 136, volume: 1800, label: 'EQL Low 1' },
@@ -675,7 +675,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-ssl-hit',
               candleIndex: 4,
-              price: 126.5,
+              price: 124,
               text: 'SSL Swept (Wick-Only Rejection)',
               style: 'badge',
               bgColor: '#EF4444',
@@ -693,7 +693,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-bsl-hit',
               candleIndex: 6,
-              price: 153.5,
+              price: 154.5,
               text: 'BSL Liquidity Run Terpenuhi',
               style: 'pill',
               bgColor: '#38BDF8',
@@ -703,8 +703,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-judas',
-              candleIndex: 4,
-              price: 133,
+              candleIndex: 2,
+              price: 152,
               width: 175,
               stepBadge: '⚡',
               title: 'JUDAS SWING TRIGGER',
@@ -797,7 +797,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           timeframe: 'H4',
           showCandles: true,
           showVolume: true,
-          candleSpacing: 'normal',
+          candleSpacing: 'wide',
           candles: [
             { id: 'c0', index: 0, open: 3100, high: 3250, low: 3080, close: 3220, volume: 2200, label: 'Origin' },
             { id: 'c1', index: 1, open: 3220, high: 3400, low: 3200, close: 3380, volume: 3100, label: 'Swing High 1' },
@@ -859,7 +859,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-fake-sweep',
               candleIndex: 4,
-              price: 3450,
+              price: 3470,
               text: 'Wick Only = Bukan BOS Sah!',
               style: 'pill',
               bgColor: '#EF4444',
@@ -868,7 +868,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-valid-bos',
               candleIndex: 5,
-              price: 3570,
+              price: 3600,
               text: 'Body Close Valid di Atas $3.400 (BOS)',
               style: 'badge',
               bgColor: '#10B981',
@@ -877,7 +877,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-strong-low',
               candleIndex: 3,
-              price: 3190,
+              price: 3160,
               text: 'Strong Low (Pelindung Akumulasi)',
               style: 'pill',
               bgColor: '#10B981',
@@ -887,8 +887,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-bos-rule',
-              candleIndex: 5,
-              price: 3470,
+              candleIndex: 1,
+              price: 3620,
               width: 175,
               stepBadge: '✓',
               title: 'ATURAN BODY CLOSE BOS',
@@ -971,7 +971,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           timeframe: 'M15',
           showCandles: true,
           showVolume: true,
-          candleSpacing: 'normal',
+          candleSpacing: 'wide',
           candles: [
             { id: 'c0', index: 0, open: 66800, high: 67600, low: 66700, close: 67500, volume: 2200, label: 'Higher High 1' },
             { id: 'c1', index: 1, open: 67500, high: 67550, low: 66900, close: 67050, volume: 1800, label: 'Higher Low (HL)' },
@@ -1046,7 +1046,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-top-sweep',
               candleIndex: 2,
-              price: 68650,
+              price: 68850,
               text: 'Liquidity Sweep Pucuk ($68.400)',
               style: 'badge',
               bgColor: '#F59E0B',
@@ -1055,7 +1055,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-choch-break',
               candleIndex: 4,
-              price: 66200,
+              price: 65900,
               text: 'Body Close Menembus Strong HL (CHoCH)',
               style: 'pill',
               bgColor: '#EF4444',
@@ -1064,7 +1064,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-sell-retest',
               candleIndex: 5,
-              price: 67450,
+              price: 67650,
               text: 'Retest FVG Mitigasi (High-Probability Sell)',
               style: 'pill',
               bgColor: '#10B981',
@@ -1074,8 +1074,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-choch-step',
-              candleIndex: 3,
-              price: 67400,
+              candleIndex: 7,
+              price: 67800,
               width: 175,
               stepBadge: '⚡',
               title: '3 SYARAT MUTLAK CHOCH',
@@ -1183,7 +1183,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           timeframe: 'H1',
           showCandles: true,
           showVolume: true,
-          candleSpacing: 'normal',
+          candleSpacing: 'wide',
           candles: [
             { id: 'c0', index: 0, open: 62400, high: 62500, low: 61900, close: 62000, volume: 1800, label: 'Langkah Awal' },
             { id: 'c1', index: 1, open: 62000, high: 62100, low: 61600, close: 61750, volume: 4200, label: 'Lilin Bullish OB' },
@@ -1265,7 +1265,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-sweep-ob',
               candleIndex: 1,
-              price: 61350,
+              price: 61150,
               text: 'Liquidity Swept di $61.600',
               style: 'badge',
               bgColor: '#F43F5E',
@@ -1274,7 +1274,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-mitigation',
               candleIndex: 6,
-              price: 61600,
+              price: 61350,
               text: 'Mitigasi Tepat di 50% MT ($61.850)',
               style: 'pill',
               bgColor: '#10B981',
@@ -1283,7 +1283,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-unmitigated',
               candleIndex: 1,
-              price: 62300,
+              price: 62750,
               text: 'Fresh Unmitigated OB',
               style: 'pill',
               bgColor: '#38BDF8',
@@ -1293,8 +1293,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-ob-criteria',
-              candleIndex: 2,
-              price: 64100,
+              candleIndex: 4,
+              price: 66800,
               width: 175,
               stepBadge: '⭐',
               title: 'ANATOMI VALID OB',
@@ -1451,7 +1451,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-rebalance',
               candleIndex: 5,
-              price: 2540,
+              price: 2510,
               text: 'Wick Mengisi 50% CE ($2.575)',
               style: 'pill',
               bgColor: '#10B981',
@@ -1461,8 +1461,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-fvg-formula',
-              candleIndex: 1,
-              price: 2690,
+              candleIndex: 0,
+              price: 2900,
               width: 175,
               stepBadge: '📐',
               title: 'RUMUS ANATOMI FVG',
@@ -1580,7 +1580,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           timeframe: 'M15',
           showCandles: true,
           showVolume: true,
-          candleSpacing: 'normal',
+          candleSpacing: 'wide',
           candles: [
             { id: 'c0', index: 0, open: 64400, high: 64500, low: 64000, close: 64050, volume: 2100, label: 'EQL Lows ($64k)' },
             { id: 'c1', index: 1, open: 64050, high: 64150, low: 63750, close: 63900, volume: 5400, label: 'Langkah 1: Sweep' },
@@ -1656,7 +1656,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-sweep-low',
               candleIndex: 1,
-              price: 63550,
+              price: 63350,
               text: 'Langkah 1: Sweep EQL ($63.750)',
               style: 'badge',
               bgColor: '#F43F5E',
@@ -1665,7 +1665,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-choch-badge',
               candleIndex: 2,
-              price: 64750,
+              price: 64900,
               text: 'Langkah 2: CHoCH Valid Body Close',
               style: 'pill',
               bgColor: '#38BDF8',
@@ -1674,7 +1674,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-limit-entry',
               candleIndex: 5,
-              price: 64150,
+              price: 63700,
               text: 'Langkah 3: Limit Order Terisi di $64.150',
               style: 'pill',
               bgColor: '#10B981',
@@ -1683,7 +1683,7 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
             {
               id: 'b-tp2-hit',
               candleIndex: 7,
-              price: 66750,
+              price: 67100,
               text: 'Langkah 4: TP2 Panen di $66.550 (R:R 1:6)',
               style: 'pill',
               bgColor: '#10B981',
@@ -1693,8 +1693,8 @@ export const CRYPTO_SMART_MONEY_ARTICLES: Record<string, EducationalArticle> = {
           infoCards: [
             {
               id: 'card-sop-execution',
-              candleIndex: 4,
-              price: 65700,
+              candleIndex: 0,
+              price: 66800,
               width: 180,
               stepBadge: '🎯',
               title: 'MATRIKS RESIKO 1%',

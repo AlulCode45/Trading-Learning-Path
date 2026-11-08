@@ -201,4 +201,95 @@ export class RoadmapRepository {
     );
     return this.getCommunityArticle(article.slug);
   }
+
+  // ==========================================================================
+  // CURRICULUM ARTICLES & MODULAR CHART PRESETS (DATABASE-DRIVEN ENGINE)
+  // ==========================================================================
+
+  getCurriculumArticleBySlug(slug: string) {
+    const row = db.prepare('SELECT * FROM curriculum_articles WHERE slug = ?').get(slug) as any;
+    if (!row) return null;
+    return this.formatCurriculumArticle(row);
+  }
+
+  getCurriculumArticlesByModule(moduleId: string) {
+    const rows = db.prepare('SELECT * FROM curriculum_articles WHERE module_id = ? ORDER BY level ASC, rowid ASC').all(moduleId) as any[];
+    return rows.map(r => this.formatCurriculumArticle(r));
+  }
+
+  getAllCurriculumArticles() {
+    const rows = db.prepare('SELECT * FROM curriculum_articles ORDER BY module_id ASC, rowid ASC').all() as any[];
+    return rows.map(r => this.formatCurriculumArticle(r));
+  }
+
+  getChartPresets(category?: string) {
+    if (category) {
+      return db.prepare('SELECT * FROM chart_presets WHERE category = ? ORDER BY created_at DESC').all(category) as any[];
+    }
+    return db.prepare('SELECT * FROM chart_presets ORDER BY category ASC, created_at DESC').all() as any[];
+  }
+
+  getChartPresetBySlug(slug: string) {
+    return db.prepare('SELECT * FROM chart_presets WHERE slug = ?').get(slug) as any;
+  }
+
+  saveChartPreset(preset: {
+    id?: string;
+    slug: string;
+    title: string;
+    subtitle?: string;
+    engine_type?: string;
+    category: string;
+    timeframe?: string;
+    config_json: string;
+  }) {
+    const id = preset.id || 'ch-' + Date.now();
+    db.prepare(`
+      INSERT INTO chart_presets (id, slug, title, subtitle, engine_type, category, timeframe, config_json, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(slug) DO UPDATE SET
+        title = excluded.title,
+        subtitle = excluded.subtitle,
+        engine_type = excluded.engine_type,
+        category = excluded.category,
+        timeframe = excluded.timeframe,
+        config_json = excluded.config_json,
+        updated_at = CURRENT_TIMESTAMP
+    `).run(
+      id,
+      preset.slug,
+      preset.title,
+      preset.subtitle || '',
+      preset.engine_type || 'custom_builder',
+      preset.category,
+      preset.timeframe || 'Daily',
+      preset.config_json
+    );
+    return this.getChartPresetBySlug(preset.slug);
+  }
+
+  private formatCurriculumArticle(row: any) {
+    return {
+      id: row.id,
+      slug: row.slug,
+      roadmapId: row.roadmap_id,
+      nodeId: row.node_id,
+      moduleId: row.module_id,
+      title: row.title,
+      summary: row.summary,
+      category: row.category,
+      level: row.level,
+      readingTimeMinutes: row.reading_time_minutes,
+      difficulty: row.difficulty,
+      sections: JSON.parse(row.sections_json || '[]'),
+      quiz: JSON.parse(row.quiz_json || '[]'),
+      keyTakeaways: JSON.parse(row.key_takeaways_json || '[]'),
+      commonMistakes: JSON.parse(row.common_mistakes_json || '[]'),
+      relatedTopics: JSON.parse(row.related_topics_json || '[]'),
+      references: JSON.parse(row.references_json || '[]'),
+      isOfficial: Boolean(row.is_official),
+      createdAt: row.created_at,
+      updatedAt: row.updated_at
+    };
+  }
 }

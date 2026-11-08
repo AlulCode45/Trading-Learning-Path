@@ -63,7 +63,7 @@ const CANDLESTICK_ANATOMY_CHART: CustomChartConfig = {
     {
       id: 'bdg-wick-trap',
       candleIndex: 2,
-      price: 136,
+      price: 139,
       text: 'Iceberg Orders Absorbed (65% Wick)',
       style: 'pill',
       bgColor: '#EF4444',
@@ -91,8 +91,8 @@ const CANDLESTICK_ANATOMY_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-candle-mechanics',
-      candleIndex: 2,
-      price: 130,
+      candleIndex: 4.8,
+      price: 132,
       stepBadge: '1',
       title: 'ANATOMI REJEKSI LELANG',
       lines: [
@@ -189,7 +189,7 @@ const VALID_SWING_CHART: CustomChartConfig = {
     {
       id: 'bdg-high-confirmed',
       candleIndex: 2,
-      price: 133,
+      price: 135,
       text: 'VALID SWING HIGH',
       style: 'pill',
       bgColor: '#10B981',
@@ -198,7 +198,7 @@ const VALID_SWING_CHART: CustomChartConfig = {
     {
       id: 'bdg-low-confirmed',
       candleIndex: 4,
-      price: 99,
+      price: 97,
       text: 'VALID SWING LOW (HL)',
       style: 'pill',
       bgColor: '#06B6D4',
@@ -207,7 +207,7 @@ const VALID_SWING_CHART: CustomChartConfig = {
     {
       id: 'bdg-bos-confirmed',
       candleIndex: 6,
-      price: 140,
+      price: 142,
       text: 'BOS (Body Close Confirmed)',
       style: 'pill',
       bgColor: '#3B82F6',
@@ -217,8 +217,8 @@ const VALID_SWING_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-swing-rule',
-      candleIndex: 3,
-      price: 122,
+      candleIndex: 0.8,
+      price: 135,
       stepBadge: '2',
       title: 'ATURAN 3-CANDLE OBJEKTIF',
       lines: [
@@ -239,7 +239,7 @@ const SUPPORT_RESISTANCE_REVERSAL_CHART: CustomChartConfig = {
   showCandles: true,
   showVolume: true,
   showEma: false,
-  candleSpacing: 'normal',
+  candleSpacing: 'wide',
   candles: [
     { id: 'sr0', index: 0, open: 98, high: 104, low: 97, close: 103, volume: 1500, label: 'Approach' },
     { id: 'sr1', index: 1, open: 103, high: 110, low: 102, close: 109, volume: 1900, label: 'Touch 1' },
@@ -301,7 +301,7 @@ const SUPPORT_RESISTANCE_REVERSAL_CHART: CustomChartConfig = {
     {
       id: 'bdg-old-res',
       candleIndex: 1,
-      price: 112,
+      price: 113,
       text: 'Resistance Ceiling',
       style: 'pill',
       bgColor: '#EF4444',
@@ -310,7 +310,7 @@ const SUPPORT_RESISTANCE_REVERSAL_CHART: CustomChartConfig = {
     {
       id: 'bdg-breakout-body',
       candleIndex: 4,
-      price: 122,
+      price: 125,
       text: 'Impulsive Breakout (High Vol)',
       style: 'pill',
       bgColor: '#10B981',
@@ -319,7 +319,7 @@ const SUPPORT_RESISTANCE_REVERSAL_CHART: CustomChartConfig = {
     {
       id: 'bdg-pinbar-retest',
       candleIndex: 7,
-      price: 107,
+      price: 105,
       text: 'Wick Rejection at New Support',
       style: 'pill',
       bgColor: '#3B82F6',
@@ -329,8 +329,8 @@ const SUPPORT_RESISTANCE_REVERSAL_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-reversal-step',
-      candleIndex: 6,
-      price: 128,
+      candleIndex: 1.5,
+      price: 133,
       stepBadge: '3',
       title: 'PROTOKOL ROLE REVERSAL',
       lines: [
@@ -351,7 +351,7 @@ const SUPPLY_DEMAND_FRESH_MITIGATED_CHART: CustomChartConfig = {
   showCandles: true,
   showVolume: true,
   showEma: false,
-  candleSpacing: 'normal',
+  candleSpacing: 'wide',
   candles: [
     { id: 'ob0', index: 0, open: 108, high: 110, low: 101, close: 102, volume: 2100, label: 'Last Bearish' },
     { id: 'ob1', index: 1, open: 102, high: 120, low: 101, close: 119, volume: 4500, label: 'Displacement' },
@@ -413,7 +413,7 @@ const SUPPLY_DEMAND_FRESH_MITIGATED_CHART: CustomChartConfig = {
     {
       id: 'bdg-fresh-bounce',
       candleIndex: 4,
-      price: 104,
+      price: 102,
       text: 'First Touch (Prime Reaction)',
       style: 'pill',
       bgColor: '#10B981',
@@ -422,7 +422,7 @@ const SUPPLY_DEMAND_FRESH_MITIGATED_CHART: CustomChartConfig = {
     {
       id: 'bdg-mitigated-fragile',
       candleIndex: 7,
-      price: 102,
+      price: 100,
       text: 'Sentuhan ke-2 (Orders Menipis)',
       style: 'pill',
       bgColor: '#F59E0B',
@@ -431,7 +431,7 @@ const SUPPLY_DEMAND_FRESH_MITIGATED_CHART: CustomChartConfig = {
     {
       id: 'bdg-zone-broken',
       candleIndex: 9,
-      price: 94,
+      price: 92,
       text: 'Zone Broken (Liquidity Exhausted)',
       style: 'pill',
       bgColor: '#EF4444',
@@ -441,8 +441,8 @@ const SUPPLY_DEMAND_FRESH_MITIGATED_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-ob-freshness',
-      candleIndex: 4,
-      price: 125,
+      candleIndex: 7.2,
+      price: 134,
       stepBadge: '4',
       title: 'EVALUASI KUALITAS ORDER BLOCK',
       lines: [
@@ -463,7 +463,7 @@ const INDUCEMENT_FALSE_BREAKOUT_CHART: CustomChartConfig = {
   showCandles: true,
   showVolume: true,
   showEma: false,
-  candleSpacing: 'normal',
+  candleSpacing: 'wide',
   candles: [
     { id: 'f0', index: 0, open: 100, high: 114, low: 99, close: 113, volume: 1800, label: 'Peak 1' },
     { id: 'f1', index: 1, open: 113, high: 114, low: 105, close: 106, volume: 1600, label: 'Pullback' },
@@ -532,7 +532,7 @@ const INDUCEMENT_FALSE_BREAKOUT_CHART: CustomChartConfig = {
     {
       id: 'bdg-eqh-induce',
       candleIndex: 2,
-      price: 115.5,
+      price: 102,
       text: 'Inducement: Rapi Mengundang BSL',
       style: 'pill',
       bgColor: '#F59E0B',
@@ -541,7 +541,7 @@ const INDUCEMENT_FALSE_BREAKOUT_CHART: CustomChartConfig = {
     {
       id: 'bdg-stop-hunt-wick',
       candleIndex: 4,
-      price: 124,
+      price: 126,
       text: 'LIQUIDITY SWEEP (Turtle Soup)',
       style: 'pill',
       bgColor: '#EF4444',
@@ -550,7 +550,7 @@ const INDUCEMENT_FALSE_BREAKOUT_CHART: CustomChartConfig = {
     {
       id: 'bdg-displace-close',
       candleIndex: 5,
-      price: 96,
+      price: 94,
       text: 'Displacement Down (Close Inside)',
       style: 'pill',
       bgColor: '#8B5CF6',
@@ -560,8 +560,8 @@ const INDUCEMENT_FALSE_BREAKOUT_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-sweep-phases',
-      candleIndex: 4,
-      price: 119,
+      candleIndex: 6.8,
+      price: 124,
       stepBadge: '5',
       title: 'MEKANIKA FALSE BREAKOUT',
       lines: [

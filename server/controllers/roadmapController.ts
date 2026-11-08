@@ -169,4 +169,67 @@ export class RoadmapController {
       res.status(400).json({ success: false, message: error.message });
     }
   };
+
+  // ==========================================================================
+  // CURRICULUM ARTICLES & CHART PRESETS CONTROLLER
+  // ==========================================================================
+
+  getCurriculumArticle = (req: Request, res: Response) => {
+    try {
+      const { slug } = req.params;
+      const article = this.service.getCurriculumArticle(slug);
+      if (!article) {
+        res.status(404).json({ success: false, message: 'Artikel kurikulum tidak ditemukan di database' });
+        return;
+      }
+      res.json({ success: true, data: article });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  getCurriculumArticles = (req: Request, res: Response) => {
+    try {
+      const { module } = req.query;
+      const articles = module
+        ? this.service.getCurriculumArticlesByModule(String(module))
+        : this.service.getAllCurriculumArticles();
+      res.json({ success: true, data: articles });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  getChartPresets = (req: Request, res: Response) => {
+    try {
+      const { category } = req.query;
+      const presets = this.service.getChartPresets(category ? String(category) : undefined);
+      res.json({ success: true, data: presets });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  getChartPreset = (req: Request, res: Response) => {
+    try {
+      const { slug } = req.params;
+      const preset = this.service.getChartPresetBySlug(slug);
+      if (!preset) {
+        res.status(404).json({ success: false, message: 'Preset chart tidak ditemukan' });
+        return;
+      }
+      res.json({ success: true, data: preset });
+    } catch (error: any) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+
+  saveChartPreset = (req: Request, res: Response) => {
+    try {
+      const result = this.service.saveChartPreset(req.body);
+      res.status(201).json({ success: true, data: result });
+    } catch (error: any) {
+      res.status(400).json({ success: false, message: error.message });
+    }
+  };
 }

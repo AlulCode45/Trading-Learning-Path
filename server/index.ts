@@ -30,6 +30,14 @@ app.get('/api/community/articles', controller.getAllCommunityArticles);
 app.get('/api/community/articles/:slug', controller.getCommunityArticle);
 app.post('/api/community/articles', controller.saveCommunityArticle);
 
+// Database-Driven Curriculum Articles & Modular Chart Endpoints
+app.get('/api/curriculum/articles', controller.getCurriculumArticles);
+app.get('/api/curriculum/articles/:slug', controller.getCurriculumArticle);
+
+app.get('/api/charts/presets', controller.getChartPresets);
+app.get('/api/charts/presets/:slug', controller.getChartPreset);
+app.post('/api/charts/presets', controller.saveChartPreset);
+
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
 });

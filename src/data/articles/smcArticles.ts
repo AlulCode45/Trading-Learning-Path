@@ -17,7 +17,7 @@ const SMC_ORDER_BLOCK_MITIGATION_CHART: CustomChartConfig = {
   showCandles: true,
   showVolume: true,
   showEma: false,
-  candleSpacing: 'normal',
+  candleSpacing: 'wide',
   candles: [
     { id: 'c0', index: 0, open: 104, high: 106, low: 101, close: 102, volume: 1900, label: 'Pre-Sweep' },
     { id: 'c1', index: 1, open: 102, high: 103, low: 96, close: 98, volume: 3800, label: 'Sweep & OB Origin' },
@@ -79,7 +79,7 @@ const SMC_ORDER_BLOCK_MITIGATION_CHART: CustomChartConfig = {
     {
       id: 'bdg-ob-candle',
       candleIndex: 1,
-      price: 94.5,
+      price: 93,
       text: 'Last Bearish Candle (OB Origin)',
       style: 'pill',
       bgColor: '#10B981',
@@ -88,7 +88,7 @@ const SMC_ORDER_BLOCK_MITIGATION_CHART: CustomChartConfig = {
     {
       id: 'bdg-mt-test',
       candleIndex: 5,
-      price: 99,
+      price: 96,
       text: 'Pinpoint 50% MT Mitigation',
       style: 'pill',
       bgColor: '#10B981',
@@ -97,7 +97,7 @@ const SMC_ORDER_BLOCK_MITIGATION_CHART: CustomChartConfig = {
     {
       id: 'bdg-expansion-win',
       candleIndex: 7,
-      price: 136,
+      price: 137,
       text: 'Target High Liquidated (+32 pts)',
       style: 'badge',
       bgColor: '#059669',
@@ -121,8 +121,8 @@ const SMC_ORDER_BLOCK_MITIGATION_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-ob-anatomy',
-      candleIndex: 4,
-      price: 125,
+      candleIndex: 0.8,
+      price: 133,
       stepBadge: 'OB',
       title: 'RULE MEAN THRESHOLD (MT 50%)',
       lines: [
@@ -223,7 +223,7 @@ const SMC_FAIR_VALUE_GAP_CHART: CustomChartConfig = {
     {
       id: 'bdg-ce-touch',
       candleIndex: 4,
-      price: 113,
+      price: 111,
       text: '50% CE Rebalanced & Protected',
       style: 'pill',
       bgColor: '#10B981',
@@ -232,7 +232,7 @@ const SMC_FAIR_VALUE_GAP_CHART: CustomChartConfig = {
     {
       id: 'bdg-fvg-fly',
       candleIndex: 5,
-      price: 150,
+      price: 151,
       text: 'Target Expansion Reached',
       style: 'badge',
       bgColor: '#059669',
@@ -256,8 +256,8 @@ const SMC_FAIR_VALUE_GAP_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-fvg-rules',
-      candleIndex: 2,
-      price: 136,
+      candleIndex: 0.6,
+      price: 147,
       stepBadge: 'FVG',
       title: 'SYARAT KESAHAN FVG:',
       lines: [
@@ -289,7 +289,7 @@ const SMC_LIQUIDITY_SWEEP_CHART: CustomChartConfig = {
   showCandles: true,
   showVolume: true,
   showEma: false,
-  candleSpacing: 'normal',
+  candleSpacing: 'wide',
   candles: [
     { id: 'sw0', index: 0, open: 102, high: 115, low: 101, close: 114, volume: 2100, label: 'Swing High 1' },
     { id: 'sw1', index: 1, open: 114, high: 115, low: 106, close: 107, volume: 1800, label: 'Pullback' },
@@ -348,7 +348,7 @@ const SMC_LIQUIDITY_SWEEP_CHART: CustomChartConfig = {
     {
       id: 'bdg-eqh-trap',
       candleIndex: 2,
-      price: 116.5,
+      price: 103,
       text: 'Inducement Trap: Retail Buy Stop Bertumpuk',
       style: 'pill',
       bgColor: '#F59E0B',
@@ -357,7 +357,7 @@ const SMC_LIQUIDITY_SWEEP_CHART: CustomChartConfig = {
     {
       id: 'bdg-sweep-wick',
       candleIndex: 4,
-      price: 125,
+      price: 126,
       text: 'SWEEP ONLY: Body Closed Inside (< $115)',
       style: 'pill',
       bgColor: '#EF4444',
@@ -390,8 +390,8 @@ const SMC_LIQUIDITY_SWEEP_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-sweep-logic',
-      candleIndex: 4,
-      price: 122,
+      candleIndex: 6.8,
+      price: 125,
       stepBadge: 'SWEEP',
       title: 'HAKIKAT TURTLE SOUP SWEEP:',
       lines: [
@@ -423,7 +423,7 @@ const SMC_BOS_CHOCH_STRUCTURE_CHART: CustomChartConfig = {
   showCandles: true,
   showVolume: true,
   showEma: false,
-  candleSpacing: 'normal',
+  candleSpacing: 'wide',
   candles: [
     { id: 'b0', index: 0, open: 95, high: 96, low: 90, close: 92, volume: 1400, label: 'Swing Low' },
     { id: 'b1', index: 1, open: 92, high: 106, low: 91, close: 105, volume: 3200, label: 'Swing High 1' },
@@ -504,7 +504,7 @@ const SMC_BOS_CHOCH_STRUCTURE_CHART: CustomChartConfig = {
     {
       id: 'bdg-valid-bos',
       candleIndex: 3,
-      price: 119,
+      price: 120,
       text: 'BOS: Full Body Close Di Atas $106',
       style: 'pill',
       bgColor: '#10B981',
@@ -513,7 +513,7 @@ const SMC_BOS_CHOCH_STRUCTURE_CHART: CustomChartConfig = {
     {
       id: 'bdg-choch-alert',
       candleIndex: 7,
-      price: 104,
+      price: 103,
       text: 'CHoCH: HL Terakhir $111 Dijebol',
       style: 'pill',
       bgColor: '#EF4444',
@@ -522,7 +522,7 @@ const SMC_BOS_CHOCH_STRUCTURE_CHART: CustomChartConfig = {
     {
       id: 'bdg-sell-retest',
       candleIndex: 8,
-      price: 118,
+      price: 119,
       text: 'Sell Entry pada Retest Breaker',
       style: 'badge',
       bgColor: '#DC2626',
@@ -546,7 +546,7 @@ const SMC_BOS_CHOCH_STRUCTURE_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-bos-vs-choch',
-      candleIndex: 4,
+      candleIndex: 1.2,
       price: 128,
       stepBadge: 'BOS',
       title: 'PERBEDAAN UTAMA:',
@@ -578,7 +578,7 @@ const SMC_FIBONACCI_OTE_POSITION_CHART: CustomChartConfig = {
   showCandles: true,
   showVolume: true,
   showEma: false,
-  candleSpacing: 'normal',
+  candleSpacing: 'wide',
   candles: [
     { id: 'o0', index: 0, open: 101, high: 102, low: 100, close: 101, volume: 1500, label: 'Swing Low (0%)' },
     { id: 'o1', index: 1, open: 101, high: 118, low: 100.5, close: 117, volume: 4800, label: 'Impulse Leg' },
@@ -644,7 +644,7 @@ const SMC_FIBONACCI_OTE_POSITION_CHART: CustomChartConfig = {
     {
       id: 'bdg-eq-line',
       candleIndex: 5,
-      price: 123,
+      price: 124,
       text: '50% EQ: $120.00 (Batas Diskon)',
       style: 'pill',
       bgColor: '#64748B',
@@ -653,7 +653,7 @@ const SMC_FIBONACCI_OTE_POSITION_CHART: CustomChartConfig = {
     {
       id: 'bdg-ote-entry',
       candleIndex: 6,
-      price: 106,
+      price: 105,
       text: 'OTE Entry Fill @ 70.5% ($111.00)',
       style: 'pill',
       bgColor: '#10B981',
@@ -662,7 +662,7 @@ const SMC_FIBONACCI_OTE_POSITION_CHART: CustomChartConfig = {
     {
       id: 'bdg-tp-ext',
       candleIndex: 9,
-      price: 160,
+      price: 161,
       text: 'Take Profit Hit (+45 pts / +4.4R)',
       style: 'badge',
       bgColor: '#059669',
@@ -672,8 +672,8 @@ const SMC_FIBONACCI_OTE_POSITION_CHART: CustomChartConfig = {
   infoCards: [
     {
       id: 'card-ote-math',
-      candleIndex: 3,
-      price: 142,
+      candleIndex: 0.8,
+      price: 146,
       stepBadge: 'OTE',
       title: 'KALKULASI RISK TO REWARD OTE:',
       lines: [

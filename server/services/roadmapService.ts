@@ -312,4 +312,44 @@ export class RoadmapService {
   upvoteCommunityRoadmap(id: string) {
     return this.repo.upvoteCommunityRoadmap(id);
   }
+
+  // ==========================================================================
+  // CURRICULUM ARTICLES & CHART PRESETS SERVICES
+  // ==========================================================================
+
+  getCurriculumArticle(slug: string) {
+    return this.repo.getCurriculumArticleBySlug(slug);
+  }
+
+  getCurriculumArticlesByModule(moduleId: string) {
+    return this.repo.getCurriculumArticlesByModule(moduleId);
+  }
+
+  getAllCurriculumArticles() {
+    return this.repo.getAllCurriculumArticles();
+  }
+
+  getChartPresets(category?: string) {
+    const rows = this.repo.getChartPresets(category);
+    return rows.map(r => ({
+      ...r,
+      config: JSON.parse(r.config_json || '{}')
+    }));
+  }
+
+  getChartPresetBySlug(slug: string) {
+    const row = this.repo.getChartPresetBySlug(slug);
+    if (!row) return null;
+    return {
+      ...row,
+      config: JSON.parse(row.config_json || '{}')
+    };
+  }
+
+  saveChartPreset(data: any) {
+    return this.repo.saveChartPreset({
+      ...data,
+      config_json: typeof data.config === 'object' ? JSON.stringify(data.config) : data.config_json
+    });
+  }
 }

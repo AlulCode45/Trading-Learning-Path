@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { ALL_ROADMAPS_METADATA, ALL_SEEDED_NODES } from './seeds/index.ts';
+import { seedCurriculumArticlesAndCharts } from './seeds/seedCurriculumArticles.ts';
 
 const dataDir = path.resolve(process.cwd(), 'data');
 if (!fs.existsSync(dataDir)) {
@@ -115,9 +116,51 @@ export function initDatabase() {
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
+    -- Enterprise Database-Driven Curriculum Articles
+    CREATE TABLE IF NOT EXISTS curriculum_articles (
+      id TEXT PRIMARY KEY,
+      slug TEXT UNIQUE NOT NULL,
+      roadmap_id TEXT,
+      node_id TEXT,
+      module_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      summary TEXT,
+      category TEXT NOT NULL,
+      level INTEGER DEFAULT 1,
+      reading_time_minutes INTEGER DEFAULT 10,
+      difficulty TEXT DEFAULT 'Beginner',
+      sections_json TEXT NOT NULL,
+      quiz_json TEXT,
+      key_takeaways_json TEXT,
+      common_mistakes_json TEXT,
+      related_topics_json TEXT,
+      references_json TEXT,
+      is_official INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- Enterprise Modular Chart Presets Library
+    CREATE TABLE IF NOT EXISTS chart_presets (
+      id TEXT PRIMARY KEY,
+      slug TEXT UNIQUE NOT NULL,
+      title TEXT NOT NULL,
+      subtitle TEXT,
+      engine_type TEXT NOT NULL DEFAULT 'custom_builder',
+      category TEXT NOT NULL,
+      timeframe TEXT DEFAULT 'Daily',
+      config_json TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
     CREATE INDEX IF NOT EXISTS idx_roadmaps_slug ON roadmaps(slug);
     CREATE INDEX IF NOT EXISTS idx_community_roadmaps_slug ON community_roadmaps(slug);
     CREATE INDEX IF NOT EXISTS idx_community_articles_slug ON community_articles(slug);
+    CREATE INDEX IF NOT EXISTS idx_curriculum_articles_slug ON curriculum_articles(slug);
+    CREATE INDEX IF NOT EXISTS idx_curriculum_articles_module ON curriculum_articles(module_id);
+    CREATE INDEX IF NOT EXISTS idx_chart_presets_slug ON chart_presets(slug);
+    CREATE INDEX IF NOT EXISTS idx_chart_presets_category ON chart_presets(category);
     CREATE INDEX IF NOT EXISTS idx_roadmap_nodes_parent ON roadmap_nodes(roadmap_id, parent_node_id, order_index);
     CREATE INDEX IF NOT EXISTS idx_node_checklists_node ON node_checklists(node_id, order_index);
     CREATE INDEX IF NOT EXISTS idx_node_resources_node ON node_resources(node_id);
@@ -317,4 +360,7 @@ function seedInitialData() {
       98
     );
   }
+
+  // Seed curriculum articles and modular chart presets into database
+  seedCurriculumArticlesAndCharts();
 }
