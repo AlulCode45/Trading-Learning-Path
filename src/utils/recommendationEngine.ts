@@ -27,9 +27,11 @@ export interface ArticleRecommendation {
  * 5. Explicit related topics defined on the article
  */
 export function getSmartRecommendations(
-  currentArticle: EducationalArticle,
+  currentArticle: EducationalArticle | null | undefined,
   maxResults = 4
 ): ArticleRecommendation[] {
+  if (!currentArticle || !currentArticle.slug) return [];
+
   const recommendations: ArticleRecommendation[] = [];
   const currentSlug = currentArticle.slug;
   const currentModuleId = getModuleIdForArticle(currentArticle);

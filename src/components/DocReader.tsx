@@ -290,7 +290,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
     return getSmartRecommendations(article, 4);
   }, [article]);
 
-  const moduleIndex = currentModuleArticles.findIndex(a => a.slug === article.slug);
+  const moduleIndex = article ? currentModuleArticles.findIndex(a => a.slug === article.slug) : -1;
   const prevArticle = moduleIndex > 0 ? currentModuleArticles[moduleIndex - 1] : null;
   const nextArticle = moduleIndex >= 0 && moduleIndex < currentModuleArticles.length - 1 ? currentModuleArticles[moduleIndex + 1] : null;
 
@@ -335,9 +335,10 @@ export const DocReader: React.FC<DocReaderProps> = ({
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
-  const isCompleted = article.nodeId ? nodeStatus[article.nodeId] === 'completed' : false;
+  const isCompleted = article && article.nodeId ? nodeStatus[article.nodeId] === 'completed' : false;
 
   const handleToggleCompleted = () => {
+    if (!article || !article.nodeId) return;
     if (!article.nodeId || !onUpdateNodeStatus) return;
     if (!isCompleted) {
       confetti({
