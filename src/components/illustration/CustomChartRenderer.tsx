@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { CustomChartConfig } from '../../types/chartBuilderTypes';
 import { buildSmoothCurvePath } from '../chart-builder/ChartCanvas';
+import { ZoomIn, ZoomOut, RotateCcw, Move } from 'lucide-react';
 
 interface CustomChartRendererProps {
   config: CustomChartConfig;
@@ -31,14 +32,16 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
   const isDarkMode = config.isDarkMode ?? (typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : true);
   const candleSpacing = config.candleSpacing || 'normal';
 
-  const candleStep = candleSpacing === 'compact' ? 30 : candleSpacing === 'wide' ? 54 : 42;
-  const candleWidth = candleSpacing === 'compact' ? 14 : candleSpacing === 'wide' ? 24 : 18;
+  const [userZoom, setUserZoom] = useState<number>(1);
+  const candleStepBase = candleSpacing === 'compact' ? 36 : candleSpacing === 'wide' ? 62 : 48;
+  const candleStep = Math.round(candleStepBase * userZoom);
+  const candleWidth = Math.max(10, Math.round((candleSpacing === 'compact' ? 16 : candleSpacing === 'wide' ? 26 : 20) * Math.min(1.4, userZoom)));
 
   const hasLegend = legends.length > 0;
   const legendHeight = hasLegend ? 26 : 0;
   const totalHeight = 460;
   const volumeHeight = showVolume ? 55 : 0;
-  const padding = { top: 40, right: 80, bottom: 35 + volumeHeight + legendHeight, left: 45 };
+  const padding = { top: 40, right: 90, bottom: 35 + volumeHeight + legendHeight, left: 50 };
 
   const maxBarIndex = useMemo(() => {
     let maxIdx = Math.max(10, candles.length);
@@ -155,28 +158,59 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
         ? 'bg-[#070A12] border-black dark:border-[#1E293B] shadow-[4px_4px_0px_#000]'
         : 'bg-white border-slate-300 shadow-sm'
     } ${className}`}>
-      {/* Title & Subtitle Header Bar (Hanya tampil jika diisi) */}
-      {(config.title || config.subtitle) && (
-        <div className={`flex flex-wrap items-center justify-between gap-2 w-full mb-3 pb-2 border-b text-xs font-mono ${
-          isDarkMode ? 'border-slate-800' : 'border-slate-200'
-        }`}>
+      {/* Title, Subtitle, & Interactive Zoom Toolbar */}
+      <div className={`flex flex-wrap items-center justify-between gap-2 w-full mb-3 pb-2 border-b text-xs font-mono ${
+        isDarkMode ? 'border-slate-800' : 'border-slate-200'
+      }`}>
+        <div className="flex items-center space-x-2">
           {config.title ? (
             <span className="text-[#10B981] font-bold uppercase tracking-wider flex items-center space-x-1.5">
               <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
               <span>{config.title}</span>
             </span>
-          ) : <span />}
+          ) : (
+            <span className="text-slate-400 font-semibold flex items-center space-x-1.5">
+              <Move className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Ilustrasi Visual Interaktif</span>
+            </span>
+          )}
           {config.subtitle && (
-            <div className="flex items-center space-x-2 text-[10px] text-slate-400">
-              <span className={`px-2 py-0.5 rounded border ${
-                isDarkMode ? 'bg-black/60 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
-              }`}>
-                {config.subtitle}
-              </span>
-            </div>
+            <span className={`hidden sm:inline-block px-2 py-0.5 rounded border text-[10px] ${
+              isDarkMode ? 'bg-black/60 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+            }`}>
+              {config.subtitle}
+            </span>
           )}
         </div>
-      )}
+
+        {/* Viewport Zoom & Reset Controls */}
+        <div className="flex items-center space-x-1 ml-auto">
+          <span className="text-[10px] text-slate-400 font-mono mr-1">Zoom: {Math.round(userZoom * 100)}%</span>
+          <button
+            onClick={() => setUserZoom(prev => Math.max(0.75, Number((prev - 0.15).toFixed(2))))}
+            className="p-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+            title="Persempit Spacing (Zoom Out)"
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => setUserZoom(prev => Math.min(1.85, Number((prev + 0.15).toFixed(2))))}
+            className="p-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+            title="Lebarkan Spacing (Zoom In)"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
+          {userZoom !== 1 && (
+            <button
+              onClick={() => setUserZoom(1)}
+              className="p-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors"
+              title="Reset Spacing"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
 
       <svg
         viewBox={`0 0 ${width} ${totalHeight}`}
@@ -290,17 +324,31 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
                 </g>
               )}
               {b.label && (
-                <text
-                  x={labelX}
-                  y={labelY}
-                  fill={textColor}
-                  fontSize={fontSize}
-                  fontWeight="bold"
-                  fontFamily="JetBrains Mono, monospace"
-                  textAnchor={anchor}
-                >
-                  {b.label}
-                </text>
+                <g>
+                  {/* Pill backplate for box label to guarantee crisp readability */}
+                  <rect
+                    x={anchor === 'start' ? labelX - 2 : anchor === 'end' ? labelX - Math.min(boxW - 12, b.label.length * (fontSize * 0.62) + 8) : labelX - (b.label.length * (fontSize * 0.62) + 8) / 2}
+                    y={labelY - fontSize}
+                    width={Math.min(boxW - 8, b.label.length * (fontSize * 0.62) + 10)}
+                    height={fontSize + 6}
+                    fill={isDarkMode ? '#070A12' : '#FFFFFF'}
+                    fillOpacity={0.92}
+                    stroke={strokeColor}
+                    strokeWidth="0.8"
+                    rx="3"
+                  />
+                  <text
+                    x={labelX}
+                    y={labelY - 1}
+                    fill={textColor}
+                    fontSize={fontSize}
+                    fontWeight="bold"
+                    fontFamily="JetBrains Mono, monospace"
+                    textAnchor={anchor}
+                  >
+                    {b.label}
+                  </text>
+                </g>
               )}
             </g>
           );
@@ -617,14 +665,42 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
         {infoCards.map((card) => {
           const rawX = indexToX(card.candleIndex);
           const rawY = priceToY(card.price);
-          const cardW = card.width || 155;
-          const lines = card.lines || [];
+          const rawLines = card.lines || [];
           const hasFooter = Boolean(card.footerBadge);
-          const cardH = 30 + lines.length * 13.5 + (hasFooter ? 22 : 6);
           const accent = card.color || '#10B981';
           const bgCol = card.bgColor || accent;
           const bgOp = card.bgOpacity ?? 0.14;
           const bodyTextCol = card.textColor || (isDarkMode ? '#E2E8F0' : '#1E293B');
+
+          // Dynamic Text-Wrapping & Auto-Sizing
+          const maxCharPerLine = 34;
+          const wrappedLines: string[] = [];
+          rawLines.forEach(ln => {
+            if (ln.length <= maxCharPerLine) {
+              wrappedLines.push(ln);
+            } else {
+              const words = ln.split(' ');
+              let cur = '';
+              words.forEach(w => {
+                if ((cur + ' ' + w).trim().length <= maxCharPerLine) {
+                  cur = (cur + ' ' + w).trim();
+                } else {
+                  if (cur) wrappedLines.push(cur);
+                  cur = w;
+                }
+              });
+              if (cur) wrappedLines.push(cur);
+            }
+          });
+
+          // Compute optimal width based on content length
+          const longestLineChars = Math.max(
+            (card.title?.length || 10) + (card.stepBadge ? 4 : 0),
+            ...wrappedLines.map(l => l.length)
+          );
+          const computedCardW = Math.max(165, Math.min(260, longestLineChars * 6.8 + 28));
+          const cardW = card.width ? Math.max(card.width, computedCardW) : computedCardW;
+          const cardH = 32 + wrappedLines.length * 14 + (hasFooter ? 24 : 8);
 
           // Boundary clamping to prevent info card overflowing SVG viewport edges
           const x = Math.max(padding.left + cardW / 2 + 5, Math.min(width - padding.right - cardW / 2 - 5, rawX));
@@ -651,8 +727,8 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
                   {card.title}
                 </text>
               )}
-              {lines.map((ln, idx) => (
-                <text key={`${card.id}-l-${idx}`} x={x - cardW / 2 + 10} y={y + 34 + idx * 13} fill={bodyTextCol} fontSize="8.5" fontFamily="JetBrains Mono">
+              {wrappedLines.map((ln, idx) => (
+                <text key={`${card.id}-l-${idx}`} x={x - cardW / 2 + 10} y={y + 34 + idx * 13.5} fill={bodyTextCol} fontSize="8.5" fontFamily="JetBrains Mono">
                   {ln}
                 </text>
               ))}
