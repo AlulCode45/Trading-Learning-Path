@@ -29,6 +29,7 @@ Agent dapat mengaktifkan skill modular berikut secara selektif:
 | **`industrial-brutalist-ui`** | [SKILL.md](file:///.agents/skills/industrial-brutalist-ui/SKILL.md) | Style taste klasik: Gaya industrial brutalist, tipografi Swiss kaku, grid tajam, dan kontras skala ekstrem. |
 | **`stitch-design-taste`** | [SKILL.md](file:///.agents/skills/stitch-design-taste/SKILL.md) | Pembuatan file DESIGN.md berstandar Google Stitch untuk panduan gaya agent. |
 | **`graphify`** | [SKILL.md](file:///.agents/skills/graphify/SKILL.md) | Membangun knowledge graph codebase, mendeteksi god nodes & communities, serta mengekspor Obsidian vault untuk second brain & konteks mendalam. |
+| **`trading-chart-engine`** | [SKILL.md](file:///.agents/skills/trading-chart-engine/SKILL.md) | Merancang dan memvalidasi konfigurasi chart ilustrasi trading menggunakan native SVG Chart Builder dan Lightweight Charts saat membuat kurikulum materi. |
 | **`antislop-code`** | [SKILL.md](file:///.agents/skills/antislop-code/SKILL.md) | Filter kebersihan kode untuk menghilangkan komentar dekoratif AI, narasi langkah trivial, dan over-engineering. |
 
 ---

@@ -92,7 +92,8 @@ export interface ArticleSection {
   title: string;
   content: string;
   visualType?: string;
-  illustrationMode?: 'preset' | 'interactive_chart' | 'snapshot';
+  illustrationMode?: 'preset' | 'interactive_chart' | 'snapshot' | 'custom_builder' | 'none';
+  customChartConfig?: import('./chartBuilderTypes').CustomChartConfig;
   chartConfig?: {
     symbol?: string;
     title?: string;
