@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { RoadmapNode } from '../types';
 import { DocReader } from '../components/DocReader';
-import { getRoadmapSlugForArticle } from '../data/articles';
+import { getRoadmapSlugForArticle } from '../data/curriculumMeta';
 
 export const DocPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();

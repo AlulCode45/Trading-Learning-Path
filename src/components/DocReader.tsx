@@ -7,13 +7,12 @@ import rehypeKatex from 'rehype-katex';
 import { MermaidDiagram } from './MermaidDiagram';
 import { EducationalArticle, RoadmapNode } from '../types';
 import { 
-  EDUCATIONAL_ARTICLES, 
-  getAllArticles, 
   getRoadmapSlugForArticle, 
   DOC_MODULES, 
   getModuleIdForArticle, 
-  getArticlesByModule 
-} from '../data/articles';
+  ArticleMeta 
+} from '../data/curriculumMeta';
+import { useCurriculumManifest } from '../hooks/useCurriculumManifest';
 import { getSmartRecommendations } from '../utils/recommendationEngine';
 import { VisualDiagram } from './VisualDiagram';
 import { InteractiveTradingChart } from './illustration/InteractiveTradingChart';
@@ -70,12 +69,12 @@ export const DocReader: React.FC<DocReaderProps> = ({
   const [sidebarSearch, setSidebarSearch] = useState<string>('');
   const [dynamicArticle, setDynamicArticle] = useState<EducationalArticle | null>(null);
   const [dynamicRoadmapMeta, setDynamicRoadmapMeta] = useState<{ title: string; slug: string } | null>(null);
-
-  const isCommunitySlug = !EDUCATIONAL_ARTICLES[articleSlug];
-  const [loadingCommunity, setLoadingCommunity] = useState<boolean>(isCommunitySlug);
+  const [loadingArticle, setLoadingArticle] = useState<boolean>(true);
+  const { articles: manifestArticles } = useCurriculumManifest();
 
   useEffect(() => {
-    // 1. First attempt to fetch from high-performance Database API
+    setLoadingArticle(true);
+    // 1. Fetch article on-demand from high-performance Database API
     fetch(`/api/curriculum/articles/${articleSlug}`)
       .then(res => res.json())
       .then(json => {
@@ -103,20 +102,14 @@ export const DocReader: React.FC<DocReaderProps> = ({
             references: row.references || []
           };
           setDynamicArticle(art);
-          setLoadingCommunity(false);
-        } else if (isCommunitySlug) {
+          setLoadingArticle(false);
+        } else {
           // Fallback to community articles
           fetchCommunityArticle();
-        } else {
-          setLoadingCommunity(false);
         }
       })
       .catch(() => {
-        if (isCommunitySlug) {
-          fetchCommunityArticle();
-        } else {
-          setLoadingCommunity(false);
-        }
+        fetchCommunityArticle();
       });
 
     function fetchCommunityArticle() {
@@ -228,17 +221,18 @@ export const DocReader: React.FC<DocReaderProps> = ({
           }
         })
         .catch(err => console.error('Failed to load community article', err))
-        .finally(() => setLoadingCommunity(false));
+        .finally(() => setLoadingArticle(false));
     }
-  }, [articleSlug, isCommunitySlug]);
+  }, [articleSlug]);
 
-  const article: EducationalArticle | undefined = EDUCATIONAL_ARTICLES[articleSlug] || dynamicArticle;
-  const allArticlesList = getAllArticles();
+  const article: EducationalArticle | null = dynamicArticle;
 
   const currentModuleId = useMemo(() => getModuleIdForArticle(article), [article]);
   const currentModuleInfo = useMemo(() => DOC_MODULES.find(m => m.id === currentModuleId) || DOC_MODULES[0], [currentModuleId]);
 
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({
+    'crypto-smart-money': true,
+    'edianto-ong': true,
     'price-action': true,
     'smc': true,
     'wyckoff': true,
@@ -256,6 +250,8 @@ export const DocReader: React.FC<DocReaderProps> = ({
 
   const DOC_CATEGORIES = [
     { id: 'all', label: 'Semua Modul' },
+    { id: 'crypto-smart-money', label: 'Akademi Crypto' },
+    { id: 'edianto-ong', label: 'Edianto Ong' },
     { id: 'price-action', label: 'Price Action' },
     { id: 'smc', label: 'SMC & ICT' },
     { id: 'wyckoff', label: 'Wyckoff' },
@@ -263,10 +259,10 @@ export const DocReader: React.FC<DocReaderProps> = ({
     { id: 'quant', label: 'Kuantitatif' }
   ];
 
-  // Grouped modules for the sidebar
+  // Grouped modules for the sidebar using lightweight manifestArticles
   const groupedModulesForSidebar = useMemo(() => {
     return DOC_MODULES.map(mod => {
-      const articles = getArticlesByModule(mod.id);
+      const articles = manifestArticles.filter(a => a.moduleId === mod.id);
       const filtered = articles.filter(item => {
         if (!sidebarSearch.trim()) return true;
         const q = sidebarSearch.toLowerCase();
@@ -280,7 +276,7 @@ export const DocReader: React.FC<DocReaderProps> = ({
         total: articles.length
       };
     }).filter(mod => selectedCategory === 'all' || mod.id === selectedCategory);
-  }, [sidebarSearch, selectedCategory]);
+  }, [manifestArticles, sidebarSearch, selectedCategory]);
 
   const connectedRoadmap = useMemo(() => {
     if (dynamicRoadmapMeta) {
@@ -288,6 +284,10 @@ export const DocReader: React.FC<DocReaderProps> = ({
     }
     const rSlug = getRoadmapSlugForArticle(article);
     switch (rSlug) {
+      case 'crypto-smart-money-concept':
+        return { title: 'Crypto Smart Money Concept', slug: rSlug };
+      case 'technical-analysis-mega-profit':
+        return { title: 'Technical Analysis for Mega Profit', slug: rSlug };
       case 'smart-money-concepts-ict':
         return { title: 'Smart Money Concepts & ICT', slug: rSlug };
       case 'wyckoff-method-vsa':
@@ -303,8 +303,8 @@ export const DocReader: React.FC<DocReaderProps> = ({
 
   // Current module's articles for logical in-module prev/next
   const currentModuleArticles = useMemo(() => {
-    return getArticlesByModule(currentModuleId);
-  }, [currentModuleId]);
+    return manifestArticles.filter(a => a.moduleId === currentModuleId);
+  }, [manifestArticles, currentModuleId]);
 
   const moduleCompletedCount = useMemo(() => {
     return currentModuleArticles.filter(a => a.nodeId && nodeStatus[a.nodeId] === 'completed').length;
@@ -327,8 +327,8 @@ export const DocReader: React.FC<DocReaderProps> = ({
 
   // Contextual smart recommendations engine
   const smartRecommendations = useMemo(() => {
-    return getSmartRecommendations(article, 4);
-  }, [article]);
+    return getSmartRecommendations(article, manifestArticles, 4);
+  }, [article, manifestArticles]);
 
   const moduleIndex = article ? currentModuleArticles.findIndex(a => a.slug === article.slug) : -1;
   const prevArticle = moduleIndex > 0 ? currentModuleArticles[moduleIndex - 1] : null;
@@ -393,11 +393,11 @@ export const DocReader: React.FC<DocReaderProps> = ({
     }
   };
 
-  if (loadingCommunity) {
+  if (loadingArticle) {
     return (
       <div className="max-w-4xl mx-auto py-24 px-6 text-center space-y-3">
         <div className="w-8 h-8 mx-auto border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-mono text-slate-500 dark:text-zinc-400">Memuat artikel komunitas...</p>
+        <p className="text-xs font-mono text-slate-500 dark:text-zinc-400">Memuat materi kurikulum dari database...</p>
       </div>
     );
   }

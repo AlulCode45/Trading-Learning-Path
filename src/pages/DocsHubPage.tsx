@@ -23,12 +23,9 @@ import {
 import { 
   DOC_MODULES, 
   DocModuleInfo, 
-  getArticlesByModule, 
-  getAllArticles, 
-  getModuleIdForArticle,
-  EDUCATIONAL_ARTICLES
-} from '../data/articles';
-import { EducationalArticle } from '../types';
+  ArticleMeta
+} from '../data/curriculumMeta';
+import { useCurriculumManifest } from '../hooks/useCurriculumManifest';
 
 export const DocsHubPage: React.FC = () => {
   const navigate = useNavigate();
@@ -36,6 +33,7 @@ export const DocsHubPage: React.FC = () => {
   const [selectedModuleId, setSelectedModuleId] = useState<string>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [communityArticles, setCommunityArticles] = useState<any[]>([]);
+  const { articles: allArticles } = useCurriculumManifest();
 
   useEffect(() => {
     fetch('/api/community/articles')
@@ -48,11 +46,9 @@ export const DocsHubPage: React.FC = () => {
       .catch(err => console.error('Failed to load community articles', err));
   }, []);
 
-  const allArticles = useMemo(() => getAllArticles(), []);
-
-  // Spotlight Featured Article: Mengenal Trading Fundamentals or Candlestick Anatomy
-  const featuredArticle: EducationalArticle = useMemo(() => {
-    return EDUCATIONAL_ARTICLES['what-is-trading-fundamentals'] || allArticles[0];
+  // Spotlight Featured Article: Mengenal Trading Fundamentals or first article
+  const featuredArticle: ArticleMeta | undefined = useMemo(() => {
+    return allArticles.find(a => a.slug === 'what-is-trading-fundamentals') || allArticles[0];
   }, [allArticles]);
 
   const getModuleIcon = (iconName: string) => {
@@ -71,8 +67,8 @@ export const DocsHubPage: React.FC = () => {
   // Filtered list based on search and tab
   const modulesWithFilteredArticles = useMemo(() => {
     return DOC_MODULES.map(module => {
-      const articles = getArticlesByModule(module.id);
-      const filtered = articles.filter(article => {
+      const moduleArticles = allArticles.filter(a => a.moduleId === module.id);
+      const filtered = moduleArticles.filter(article => {
         const matchesSearch = 
           searchQuery.trim() === '' ||
           article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -90,10 +86,10 @@ export const DocsHubPage: React.FC = () => {
       return {
         ...module,
         articles: filtered,
-        totalInModule: articles.length
+        totalInModule: moduleArticles.length
       };
     }).filter(m => selectedModuleId === 'all' || m.id === selectedModuleId);
-  }, [searchQuery, selectedModuleId, selectedDifficulty]);
+  }, [allArticles, searchQuery, selectedModuleId, selectedDifficulty]);
 
   const totalFilteredCount = useMemo(() => {
     return modulesWithFilteredArticles.reduce((acc, m) => acc + m.articles.length, 0);
@@ -172,12 +168,12 @@ export const DocsHubPage: React.FC = () => {
               }`}
             >
               <GraduationCap className="w-3.5 h-3.5" />
-              <span>Semua Modul (62)</span>
+              <span>Semua Modul ({allArticles.length})</span>
             </button>
 
             {DOC_MODULES.map(mod => {
               const isSelected = selectedModuleId === mod.id;
-              const count = getArticlesByModule(mod.id).length;
+              const count = allArticles.filter(a => a.moduleId === mod.id).length;
               return (
                 <button
                   key={mod.id}

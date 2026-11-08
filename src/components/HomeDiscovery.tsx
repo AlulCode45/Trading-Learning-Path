@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Roadmap } from '../types';
-import { getAllArticles } from '../data/articles';
+import { useCurriculumManifest } from '../hooks/useCurriculumManifest';
 import { 
   Search, 
   Map, 
@@ -40,7 +40,7 @@ export const HomeDiscovery: React.FC<HomeDiscoveryProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<TabCategory>('all');
-  const allArticles = useMemo(() => getAllArticles(), []);
+  const { articles: allArticles } = useCurriculumManifest();
 
   // Categorize roadmaps into Role-based vs Skill-based (like roadmap.sh)
   const roleRoadmaps = useMemo(() => {
