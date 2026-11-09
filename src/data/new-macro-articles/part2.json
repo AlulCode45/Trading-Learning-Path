@@ -1,0 +1,548 @@
+[
+  {
+    "id": "art-macro-03",
+    "slug": "macro-data-deviation-actual-forecast",
+    "roadmap_id": "rm-macro-fundamental",
+    "node_id": "node-macro-3",
+    "module_id": "macro-fundamental",
+    "title": "Mekanika Deviasi Data: Mengapa Berita Bagus Justru Membuat Harga Turun?",
+    "summary": "Memahami fenomena priced-in, deviasi angka actual vs forecast konsensus, dan mengapa sentimen pasar terkadang bergerak terbalik dari ekspektasi data primer.",
+    "category": "Fundamental",
+    "level": "Intermediate",
+    "reading_time_minutes": 14,
+    "difficulty": "Menengah",
+    "sections": [
+      {
+        "id": "sec-1",
+        "title": "1. Logika Fenomena Priced-In & Buy the Rumor, Sell the News",
+        "content": "Pasar finansial adalah mekanisme pendiskonto masa depan (forward-looking discounting mechanism). Institusi keuangan tidak menunggu data dirilis untuk mengakumulasi posisi:\n\n- Jika konsensus ekonom 90% yakin bank sentral akan menaikkan suku bunga 25 bps, institusi telah membeli mata uang tersebut beberapa minggu sebelumnya (Buy the Rumor).\n- Ketika kenaikan suku bunga resmi diumumkan, tidak ada lagi pembeli baru di pucuk harga. Institusi memanfaatkan likuiditas ritel yang baru masuk untuk melikuidasi posisi profit mereka (Sell the Fact / News).\n\nInilah alasan mengapa berita positif seringkali diikuti oleh candlestick bearish yang sangat kuat."
+      },
+      {
+        "id": "sec-2",
+        "title": "2. Rumus Deviasi & Skala Surprise Factor",
+        "content": "Kekuatan pergerakan harga pasca rilis tidak ditentukan oleh apakah angka tersebut positif atau negatif secara absolut, melainkan oleh besaran deviasi dari konsensus:\n\nDeviation Surprise = Actual - Forecast\n\n1. Deviasi Kecil (< 0.5 Stdev): Pasar sudah siap, sering memicu reversal atau fluktuasi tanpa kelanjutan tren.\n2. Deviasi Ekstrim (> 2.0 Stdev): Memaksa hedge fund dan model kuantitatif melakukan portfolio rebalancing darurat, menciptakan tren impulsif masif yang berlangsung berhari-hari.",
+        "illustrationMode": "custom_builder",
+        "customChartConfig": {
+          "title": "SELL THE NEWS PHENOMENON & DEVIATION REVERSAL",
+          "subtitle": "GBP/USD H1 • Kenaikan Suku Bunga yang Sudah Priced-In Memicu Reversal",
+          "timeframe": "1H",
+          "candleSpacing": "wide",
+          "height": 540,
+          "candles": [
+            {
+              "id": "c0",
+              "index": 0,
+              "open": 1.26,
+              "high": 1.263,
+              "low": 1.2595,
+              "close": 1.2625,
+              "label": "Rumor Run 1"
+            },
+            {
+              "id": "c1",
+              "index": 1,
+              "open": 1.2625,
+              "high": 1.266,
+              "low": 1.262,
+              "close": 1.2655,
+              "label": "Rumor Run 2"
+            },
+            {
+              "id": "c2",
+              "index": 2,
+              "open": 1.2655,
+              "high": 1.269,
+              "low": 1.265,
+              "close": 1.2685,
+              "label": "Rumor Run 3"
+            },
+            {
+              "id": "c3",
+              "index": 3,
+              "open": 1.2685,
+              "high": 1.274,
+              "low": 1.268,
+              "close": 1.2735,
+              "label": "Pre-Rate Peak"
+            },
+            {
+              "id": "c4",
+              "index": 4,
+              "open": 1.2735,
+              "high": 1.2765,
+              "low": 1.269,
+              "close": 1.27,
+              "label": "Rate Spike"
+            },
+            {
+              "id": "c5",
+              "index": 5,
+              "open": 1.27,
+              "high": 1.271,
+              "low": 1.264,
+              "close": 1.2645,
+              "label": "Sell The News"
+            },
+            {
+              "id": "c6",
+              "index": 6,
+              "open": 1.2645,
+              "high": 1.2655,
+              "low": 1.259,
+              "close": 1.26,
+              "label": "Dumping 1"
+            },
+            {
+              "id": "c7",
+              "index": 7,
+              "open": 1.26,
+              "high": 1.261,
+              "low": 1.254,
+              "close": 1.255,
+              "label": "Dumping 2"
+            }
+          ],
+          "boxes": [
+            {
+              "id": "box-take-profit",
+              "startIndex": 3,
+              "endIndex": 5,
+              "topPrice": 1.2765,
+              "bottomPrice": 1.269,
+              "boxType": "liquidity_pool",
+              "label": "Profit Taking Zone",
+              "labelPosition": "top-left",
+              "color": "#EF4444",
+              "opacity": 0.16
+            }
+          ],
+          "trendlines": [
+            {
+              "id": "tl-rumor-trend",
+              "x1Index": 0,
+              "y1Price": 1.26,
+              "x2Index": 3,
+              "y2Price": 1.274,
+              "color": "#10B981",
+              "strokeWidth": 1.8,
+              "lineStyle": "dashed",
+              "label": "Rumor Trendline",
+              "labelAlignment": "start"
+            }
+          ],
+          "badges": [
+            {
+              "id": "b1",
+              "candleIndex": 1.5,
+              "price": 1.27,
+              "text": "Rumor Run-Up",
+              "style": "pill",
+              "size": "sm",
+              "bgColor": "#10B981",
+              "textColor": "#FFFFFF"
+            },
+            {
+              "id": "b2",
+              "candleIndex": 4,
+              "price": 1.2785,
+              "text": "Priced-In Peak",
+              "style": "pill",
+              "size": "sm",
+              "bgColor": "#EF4444",
+              "textColor": "#FFFFFF"
+            },
+            {
+              "id": "b3",
+              "candleIndex": 6,
+              "price": 1.253,
+              "text": "Sell The News",
+              "style": "badge",
+              "size": "sm",
+              "bgColor": "#F43F5E",
+              "textColor": "#FFFFFF"
+            }
+          ],
+          "infoCards": [
+            {
+              "id": "card-priced-in-rules",
+              "candleIndex": 9.2,
+              "price": 1.266,
+              "alignX": "left",
+              "alignY": "middle",
+              "width": 215,
+              "stepBadge": "3",
+              "title": "PRICED-IN DYNAMICS",
+              "lines": [
+                "1. Perhatikan jika harga sudah reli panjang sebelum rilis.",
+                "2. Jika hasil rilis persis sama dengan konsensus, waspadai reversal.",
+                "3. Likuiditas ritel saat rilis dipakai institusi untuk keluar posisi.",
+                "4. Hanya deviasi masif yang mampu melanjutkan tren reli."
+              ],
+              "footerBadge": "✓ Diskon Ekspektasi Pasar",
+              "color": "#EF4444"
+            }
+          ]
+        }
+      },
+      {
+        "id": "sec-3",
+        "title": "3. Bobot Revisi Data Bulan Sebelumnya (Prior Revisions)",
+        "content": "Banyak trader pemula tertipu oleh angka headline yang terlihat hijau di kalender, namun harga justru anjlok seketika. Penyebab utamanya adalah Revisi Data Bulan Sebelumnya:\n\n- Contoh: NFP bulan ini rilis 250k (di atas forecast 200k). Namun data bulan lalu yang semula dilaporkan 280k direvisi turun drastis menjadi 150k (-130k jobs).\n- Hasil bersih aktualnya adalah pelemahan tenaga kerja kumulatif.\n\nAlgoritma trading institusional selalu membaca angka rilis secara simultan dengan revisi periode sebelumnya."
+      }
+    ],
+    "quiz": [
+      {
+        "id": "q-dev-1",
+        "question": "Apa arti istilah Buy the Rumor, Sell the Fact/News dalam pasar keuangan?",
+        "options": [
+          "Trader harus selalu percaya rumor di media sosial",
+          "Harga naik sebelum rilis karena antisipasi, lalu jatuh saat rilis karena profit-taking institusi",
+          "Fakta berita tidak pernah dicatat oleh bursa saham",
+          "Pasar selalu tutup setiap kali ada fakta baru"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Ketika ekspektasi pasar sudah terefleksi penuh (priced-in) pada reli harga menjelang berita, rilis aktual dimanfaatkan institusi untuk menjual posisi mereka ke pembeli ritel yang terlambat."
+      },
+      {
+        "id": "q-dev-2",
+        "question": "Apa dampak revisi data periode sebelumnya yang bernilai sangat negatif terhadap rilis data bulan berjalan?",
+        "options": [
+          "Tidak memiliki dampak sama sekali",
+          "Dapat membatalkan dampak positif angka headline dan memicu reaksi sebaliknya",
+          "Membuat bursa saham ditunda selama 2 hari",
+          "Otomatis memperbesar saldo akun trader"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Revisi data bulan sebelumnya dapat mengubah gambaran tren fundamental secara drastis, sehingga angka headline yang tampak bagus dapat langsung dibatalkan oleh penurunan data revisi."
+      },
+      {
+        "id": "q-dev-3",
+        "question": "Kapan deviasi data memicu kelanjutan tren searah (continuation) alih-alih pembalikan arah (reversal)?",
+        "options": [
+          "Ketika angka actual sama persis dengan forecast konsensus",
+          "Ketika deviasi sangat ekstrim di luar rentang standar deviasi analis (Surprise Factor Tinggi)",
+          "Hanya pada hari libur bursa",
+          "Ketika rilis berita bertipe Yellow Folder"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Surprise factor yang sangat tinggi memaksa institusi mengubah proyeksi valuasi jangka menengah mereka secara mendesak, menghasilkan arus beli/jual lanjutan yang masif."
+      }
+    ],
+    "keyTakeaways": [
+      "Pasar mendiskon ekspektasi jauh hari sebelum data resmi dipublikasikan.",
+      "Berita bagus tidak menjamin harga naik jika pasar sudah priced-in.",
+      "Selalu periksa revisi data periode sebelumnya bersamaan dengan data headline.",
+      "Deviasi ekstrim (>2 Stdev) adalah penggerak tren institusional paling dapat diandalkan."
+    ],
+    "commonMistakes": [
+      {
+        "mistake": "Membeli instrumen yang sudah reli vertikal berhari-hari tepat saat berita positif keluar.",
+        "correction": "Sadarilah potensi Sell the Fact dan tunggu struktur pullback sebelum mencari entri."
+      },
+      {
+        "mistake": "Mengabaikan kolom revisi data di kalender ekonomi.",
+        "correction": "Biasakan memeriksa angka di kolom Previous apakah ditandai revisi naik atau turun."
+      },
+      {
+        "mistake": "Mengira forecast konsensus adalah kebenaran mutlak.",
+        "correction": "Forecast adalah konsensus opini analis; deviasi dari ekspektasi itulah yang menggerakkan volatilitas."
+      },
+      {
+        "mistake": "Tidak mengidentifikasi zona take profit institusi pada level resistensi sebelum berita.",
+        "correction": "Tandai level likuiditas tertinggi di timeframe H1/H4 sebelum rilis berita penting."
+      }
+    ],
+    "relatedTopics": [
+      "economic-calendar-tiering-mechanics",
+      "the-big-three-nfp-cpi-fomc-playbook",
+      "intermarket-analysis-dxy-gold-crypto"
+    ],
+    "references": [
+      {
+        "title": "Information and Market Surprises in Macroeconomic Announcements",
+        "author": "American Economic Review",
+        "year": "2022",
+        "url": "https://aeaweb.org"
+      },
+      {
+        "title": "Priced-In Expectations and Asset Price Dynamics",
+        "author": "Federal Reserve Bank of New York",
+        "year": "2021",
+        "url": "https://newyorkfed.org"
+      }
+    ]
+  },
+  {
+    "id": "art-macro-04",
+    "slug": "intermarket-analysis-dxy-gold-crypto",
+    "roadmap_id": "rm-macro-fundamental",
+    "node_id": "node-macro-4",
+    "module_id": "macro-fundamental",
+    "title": "Analisis Intermarket: Korelasi Indeks Dolar (DXY), Imbal Hasil Obligasi, Emas, & Bitcoin",
+    "summary": "Menghubungkan puzzle makro: peran DXY dan US 10-Year Treasury Yields sebagai konduktor likuiditas global yang menggerakkan Emas, Saham, dan Bitcoin.",
+    "category": "Fundamental",
+    "level": "Intermediate - Advanced",
+    "reading_time_minutes": 16,
+    "difficulty": "Menengah - Lanjutan",
+    "sections": [
+      {
+        "id": "sec-1",
+        "title": "1. DXY (U.S. Dollar Index) sebagai Barometer Likuiditas Global",
+        "content": "Indeks Dolar AS (DXY) mengukur kekuatan mata uang Dolar terhadap sekeranjang 6 mata uang utama dunia (terbesar EUR 57.6%, JPY 13.6%, GBP 11.9%):\n\n- Dolar AS adalah mata uang cadangan devisa dunia dan penyelesai 85%+ transaksi perdagangan global.\n- **DXY Menguat (Bullish)**: Likuiditas Dolar mengetat global -> Aset berbasis Dolar seperti Emas (XAUUSD), Komoditas, dan Pasar Saham/Kripto cenderung tertekan turun.\n- **DXY Melemah (Bearish)**: Likuiditas global melimpah -> Arus modal mengalir mencari imbal hasil ke Emas, Saham Berkembang, dan Kripto."
+      },
+      {
+        "id": "sec-2",
+        "title": "2. US 10-Year Treasury Yield: Jangkar Biaya Modal Dunia",
+        "content": "Imbal hasil obligasi pemerintah AS tenor 10 tahun (US10Y) mencerminkan biaya modal bebas risiko (risk-free rate):\n\n- **Yield Obligasi Naik**: Investor institusi dapat menikmati bunga 4.5% - 5% tanpa risiko ekuitas. Ini mengurangi daya tarik memegang aset tanpa yield seperti Emas (opportunity cost naik) dan menekan aset beta tinggi seperti Bitcoin.\n- **Yield Obligasi Turun**: Investor mencari imbal hasil lebih tinggi pada aset spekulatif, memicu reli pada Emas dan Crypto.\n\nBerikut visualisasi intermarket rotation ketika penguatan DXY memicu kejatuhan harga emas:",
+        "illustrationMode": "custom_builder",
+        "customChartConfig": {
+          "title": "INTERMARKET LIQUIDITY ROTATION: DXY VS XAU/USD",
+          "subtitle": "Korelasi Negatif: Lonjakan DXY & Yields Memicu Dump Komoditas Emas",
+          "timeframe": "4H",
+          "candleSpacing": "wide",
+          "height": 540,
+          "candles": [
+            {
+              "id": "c0",
+              "index": 0,
+              "open": 2360,
+              "high": 2372,
+              "low": 2358,
+              "close": 2370,
+              "label": "Gold High 1"
+            },
+            {
+              "id": "c1",
+              "index": 1,
+              "open": 2370,
+              "high": 2375,
+              "low": 2365,
+              "close": 2373,
+              "label": "Gold High 2"
+            },
+            {
+              "id": "c2",
+              "index": 2,
+              "open": 2373,
+              "high": 2374,
+              "low": 2350,
+              "close": 2352,
+              "label": "DXY Breakout"
+            },
+            {
+              "id": "c3",
+              "index": 3,
+              "open": 2352,
+              "high": 2355,
+              "low": 2335,
+              "close": 2338,
+              "label": "Yield Surge"
+            },
+            {
+              "id": "c4",
+              "index": 4,
+              "open": 2338,
+              "high": 2348,
+              "low": 2336,
+              "close": 2345,
+              "label": "Weak Pullback"
+            },
+            {
+              "id": "c5",
+              "index": 5,
+              "open": 2345,
+              "high": 2346,
+              "low": 2320,
+              "close": 2322,
+              "label": "Gold Dump"
+            },
+            {
+              "id": "c6",
+              "index": 6,
+              "open": 2322,
+              "high": 2325,
+              "low": 2300,
+              "close": 2305,
+              "label": "Continuation"
+            },
+            {
+              "id": "c7",
+              "index": 7,
+              "open": 2305,
+              "high": 2310,
+              "low": 2285,
+              "close": 2290,
+              "label": "Macro Low"
+            }
+          ],
+          "boxes": [
+            {
+              "id": "box-intermarket-drop",
+              "startIndex": 1.8,
+              "endIndex": 4,
+              "topPrice": 2375,
+              "bottomPrice": 2350,
+              "boxType": "liquidity_pool",
+              "label": "DXY Surge Pressure Zone",
+              "labelPosition": "top-left",
+              "color": "#EF4444",
+              "opacity": 0.16
+            }
+          ],
+          "trendlines": [
+            {
+              "id": "tl-dxy-impact",
+              "x1Index": 1,
+              "y1Price": 2375,
+              "x2Index": 6,
+              "y2Price": 2305,
+              "color": "#EF4444",
+              "strokeWidth": 1.8,
+              "lineStyle": "dashed",
+              "label": "Inverse DXY Pressure",
+              "labelAlignment": "start"
+            }
+          ],
+          "badges": [
+            {
+              "id": "b1",
+              "candleIndex": 2,
+              "price": 2382,
+              "text": "DXY Breakout",
+              "style": "pill",
+              "size": "sm",
+              "bgColor": "#EF4444",
+              "textColor": "#FFFFFF"
+            },
+            {
+              "id": "b2",
+              "candleIndex": 3,
+              "price": 2362,
+              "text": "Yield Spike",
+              "style": "pill",
+              "size": "sm",
+              "bgColor": "#F59E0B",
+              "textColor": "#FFFFFF"
+            },
+            {
+              "id": "b3",
+              "candleIndex": 5,
+              "price": 2310,
+              "text": "Gold Dump Retest",
+              "style": "badge",
+              "size": "sm",
+              "bgColor": "#10B981",
+              "textColor": "#FFFFFF"
+            }
+          ],
+          "infoCards": [
+            {
+              "id": "card-intermarket-rules",
+              "candleIndex": 9.2,
+              "price": 2340,
+              "alignX": "left",
+              "alignY": "middle",
+              "width": 215,
+              "stepBadge": "4",
+              "title": "KORELASI INTERMARKET",
+              "lines": [
+                "1. Pantau DXY & US10Y sebelum eksekusi XAUUSD / Crypto.",
+                "2. DXY menembus resistance kunci = Hindari posisi Long Emas.",
+                "3. Siklus Risk-On: Saham & Kripto naik, Dolar AS melemah.",
+                "4. Siklus Risk-Off: Uang mencari keamanan di kas USD / Emas."
+              ],
+              "footerBadge": "✓ Global Liquidity Flow",
+              "color": "#38BDF8"
+            }
+          ]
+        }
+      },
+      {
+        "id": "sec-3",
+        "title": "3. Rezim Pasar: Risk-On vs Risk-Off",
+        "content": "Korelasi antar aset berubah tergantung rezim sentimen global:\n\n- Risk-On: Pertumbuhan ekonomi stabil, suku bunga rendah/turun. Aset unggulan: Bitcoin, Saham Teknologi (Nasdaq), Mata Uang Komoditas (AUD, NZD). Aset melemah: Dolar AS (DXY), Obligasi Kas.\n- Risk-Off: Perang geopolitik, ancaman resesi, inflasi tak terkendali. Aset unggulan: Emas (Safe Haven), Dolar AS (Kas Darurat), Minyak Mentah. Aset melemah: Saham, Altcoin, Mata Uang Berkembang (Emerging Markets).\n\nJangan pernah melawan rezim makro yang sedang mendominasi likuiditas global."
+      }
+    ],
+    "quiz": [
+      {
+        "id": "q-im-1",
+        "question": "Apa korelasi umum antara Indeks Dolar AS (DXY) dan harga Emas dunia (XAU/USD)?",
+        "options": [
+          "Korelasi positif sempurna (keduanya selalu naik bersamaan)",
+          "Korelasi negatif / terbalik (DXY menguat kuat cenderung menekan harga Emas)",
+          "Emas menentukan nilai kurs Dolar di bursa Wall Street",
+          "Tidak ada korelasi matematis sama sekali"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Karena Emas dihargai dalam denominasi Dolar AS (USD), penguatan DXY membuat Emas lebih mahal bagi pemegang mata uang lain dan meningkatkan biaya peluang menyimpan aset tanpa bunga."
+      },
+      {
+        "id": "q-im-2",
+        "question": "Instrumen apa yang dianggap sebagai Jangkar Biaya Modal Bebas Risiko di panggung makroekonomi dunia?",
+        "options": [
+          "Bitcoin",
+          "US 10-Year Treasury Yield",
+          "Saham Apple",
+          "Minyak Mentah Brent"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Imbal hasil obligasi pemerintah AS tenor 10 tahun (US10Y) adalah acuan biaya modal bebas risiko global yang mendasari diskonto valuasi seluruh kelas aset di dunia."
+      },
+      {
+        "id": "q-im-3",
+        "question": "Pada rezim pasar Risk-On, kelas aset mana yang paling diuntungkan dari limpahan likuiditas?",
+        "options": [
+          "Kas Dolar AS dan Surat Utang Jangka Pendek",
+          "Saham Teknologi bertumbuh tinggi, Bitcoin, dan Mata Uang Komoditas",
+          "Hanya Emas murni batangan",
+          "Deposito berjangka perbankan"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Pada kondisi Risk-On, investor bersedia mengambil risiko lebih tinggi demi imbal hasil maksimal, menyalurkan modal ke saham teknologi, crypto, dan aset bertumbuh cepat."
+      }
+    ],
+    "keyTakeaways": [
+      "DXY dan US10Y Yields adalah kompas utama membaca aliran likuiditas global.",
+      "Korelasi negatif DXY terhadap Emas dan Crypto harus selalu diperiksa sebelum entri teknikal.",
+      "Rezim Risk-On menguntungkan aset berisiko tinggi; rezim Risk-Off menguntungkan safe haven.",
+      "Analisis teknikal yang diselaraskan dengan tren makro intermarket memiliki win-rate jauh lebih superior."
+    ],
+    "commonMistakes": [
+      {
+        "mistake": "Membeli Emas (Long XAUUSD) saat DXY sedang membentuk breakout impulsif di H4.",
+        "correction": "Selalu pastikan DXY berada di area resistensi atau melemah sebelum mengambil posisi beli emas."
+      },
+      {
+        "mistake": "Mengira Bitcoin kebal terhadap kenaikan suku bunga acuan The Fed dan US10Y.",
+        "correction": "Bitcoin memiliki korelasi erat dengan likuiditas global (M2 Money Supply) dan sensitif terhadap biaya modal."
+      },
+      {
+        "mistake": "Mengabaikan arah pergerakan pasar obligasi AS (Treasury Bonds).",
+        "correction": "Pasar obligasi bernilai triliunan dolar bergerak lebih awal daripada pasar saham dan forex ritel."
+      },
+      {
+        "mistake": "Mengasumsikan korelasi intermarket bersifat 100% kaku di setiap menit.",
+        "correction": "Gunakan korelasi sebagai filter probabilitas dan bias makro, bukan trigger eksekusi instan."
+      }
+    ],
+    "relatedTopics": [
+      "the-big-three-nfp-cpi-fomc-playbook",
+      "macro-data-deviation-actual-forecast",
+      "high-impact-news-trading-execution-sop"
+    ],
+    "references": [
+      {
+        "title": "Intermarket Analysis: Profiting from Global Market Relationships",
+        "author": "John J. Murphy",
+        "year": "2020",
+        "url": "https://wiley.com"
+      },
+      {
+        "title": "Global Liquidity and Cross-Border Financial Flows",
+        "author": "International Monetary Fund (IMF)",
+        "year": "2023",
+        "url": "https://imf.org"
+      }
+    ]
+  }
+]

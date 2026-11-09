@@ -1,0 +1,360 @@
+[
+  {
+    "id": "art-macro-05",
+    "slug": "high-impact-news-trading-execution-sop",
+    "roadmap_id": "rm-macro-fundamental",
+    "node_id": "node-macro-5",
+    "module_id": "macro-fundamental",
+    "title": "SOP Eksekusi Trading News: Mengatasi Slippage, Spread Widening, & Trap Wicks",
+    "summary": "Protokol taktis institusional menghadapi rilis berita: mitigasi pelebaran spread broker, eksekusi straddle, fade spikes, dan strategi post-news clean retest.",
+    "category": "Fundamental",
+    "level": "Advanced",
+    "reading_time_minutes": 18,
+    "difficulty": "Lanjutan",
+    "tableOfContents": [
+      {
+        "id": "sec-microstructure-risks",
+        "title": "1. Bahaya Mikrostruktur: Slippage & Spread Widening"
+      },
+      {
+        "id": "sec-three-execution-models",
+        "title": "2. Tiga Metode Eksekusi News (Pre-News Straddle, Spike Fade, Post-News Retest)"
+      },
+      {
+        "id": "sec-15m-rule-sop",
+        "title": "3. Protokol 15-Minute Rule: Menunggu Debu Mereda & Retest Entry"
+      }
+    ],
+    "sections": [
+      {
+        "id": "sec-microstructure-risks",
+        "title": "1. Bahaya Mikrostruktur: Slippage & Spread Widening",
+        "content": "### Anatomi Likuiditas Pasar Saat Rilis Data Makro\n\nBagi mayoritas retail trader pemula, rilis data ekonomi *high-impact*—seperti US Non-Farm Payrolls (NFP), Consumer Price Index (CPI), maupun keputusan suku bunga FOMC—terlihat seperti peluang emas untuk mendulang profit ratusan pips dalam hitungan detik. Namun di balik lonjakan lilin raksasa tersebut, tersimpan realitas brutal mikrostruktur pasar (*market microstructure*) yang kerap berujung pada *margin call* seketika.\n\nDalam studi Bank for International Settlements (BIS) mengenai likuiditas valuta asing, terungkap bahwa sekitar 30 hingga 60 detik sebelum angka konsensus dirilis ke publik, para penyedia likuiditas Tier-1 (Tier-1 Liquidity Providers seperti JPMorgan, Deutsche Bank, Citibank) secara otomatis menarik order limit (*quote withdrawal*) dari Electronic Communication Networks (ECN) seperti EBS dan Refinitiv Matching. Algoritma institusional ini membatalkan kuotasi bid dan ask untuk melindungi diri dari asimetri informasi dan risiko inventaris yang tidak terduga (*toxic order flow*).\n\n```\nKondisi Likuiditas Normal:\n[Bid Depth: 50M] <---- Spread 0.2 pip ----> [Ask Depth: 50M]\n\nKondisi Likuiditas Saat Rilis High-Impact News:\n[Bid Depth: 1.5M] <----------- Spread 18.0 pips -----------> [Ask Depth: 1.2M]\n(Order Book berlubang, kedalaman menguap, eksekusi tergelincir)\n```\n\nPenarikan kuotasi likuiditas massal ini memicu tiga fenomena destruktif bagi akun trading:\n\n1. **Spread Widening Ekstrem (Pelebaran Spread Broker)**\n   Pasangan mata uang likuid seperti EUR/USD yang biasanya memiliki spread 0.1 – 0.5 pip dapat melebar seketika menjadi 10 hingga 35 pips. Pada cross-pair seperti GBP/JPY atau EUR/NZD, spread bahkan bisa membengkak hingga 50 – 80 pips. Akibatnya, Stop Loss akun retail dapat terpicu seketika meskipun harga candlestick di chart belum menyentuh level tersebut.\n\n2. **Negative Slippage & Requotes**\n   Ketika likuiditas menguap (*liquidity vacuum*), perintah eksekusi Market Order atau Stop Order (Buy Stop/Sell Stop) tidak akan pernah dieksekusi pada harga yang tertera di layar. Order Anda akan terisi (*filled*) pada kuotasi harga berikutnya yang tersedia di kedalaman buku order (*next best available price*), yang berjarak belasan pips di bawah/atas harga yang Anda minta. Slippage negatif ini merusak kalkulasi risiko matematis akun Anda.\n\n3. **Trap Wicks (Liquidity Sweeps & Stop Hunts)**\n   Dalam 60 detik pertama, algoritma HFT (High-Frequency Trading) kerap melempar order agresif ke dua arah secara bergantian (*whipsaw*) untuk menyapu likuiditas resting orders (buy stops di atas swing high dan sell stops di bawah swing low). Pola ini menciptakan ekor lilin panjang (*long shadows*) yang menghentikan kedua belah pihak trader sebelum pergerakan sebenarnya dimulai.",
+        "callout": {
+          "type": "warning",
+          "title": "Perangkap Likuiditas Ilusif",
+          "text": "Jangan pernah mengasumsikan broker STP/ECN Anda dapat mengeksekusi order dengan spread normal saat NFP atau FOMC. Pada mikrodetik rilis data, pasar interbank mengalami pengosongan buku order (order book freeze), sehingga eksekusi market order adalah bentuk bunuh diri terencana."
+        }
+      },
+      {
+        "id": "sec-three-execution-models",
+        "title": "2. Tiga Metode Eksekusi News (Pre-News Straddle, Spike Fade, Post-News Retest)",
+        "content": "### Komparasi Taktis 3 Metode Eksekusi News\n\nDalam dunia profesional, terdapat tiga pendekatan utama yang digunakan pelaku pasar saat menghadapi rilis data berdampak tinggi. Masing-masing memiliki profil risiko-keuntungan yang sangat berbeda:\n\n#### A. Pre-News Straddle (Breakout Traps)\nMetode ini memasang sepasang pending order (Buy Stop di atas resistance terdekat dan Sell Stop di bawah support terdekat) 2 menit sebelum rilis berita, dengan ekspektasi menangkap ledakan tren ke salah satu arah.\n* **Kelemahan Fatal:** Sangat rentan terhadap *dual-trigger whipsaw* di mana lonjakan awal menyentuh Buy Stop Anda dengan slippage buruk, lalu dalam 3 detik berbalik turun menyentuh Sell Stop Anda, memicu dua kerugian maksimal sekaligus (*double stop loss hit*).",
+        "financialExample": {
+          "scenario": "Trader A memasang Buy Stop EUR/USD di 1.0850 dan Sell Stop di 1.0820 menjelang data US CPI. Stop Loss masing-masing 15 pips.",
+          "analysis": "Data CPI rilis jauh di atas ekspektasi. Harga spike naik sesaat ke 1.0858 memicu Buy Stop pada harga 1.0865 karena slippage 15 pips. Dalam 5 detik, sentimen inflasi tinggi menekan EUR/USD terjun ke 1.0790 memicu SL long, sekaligus mengaktifkan Sell Stop di 1.0810 dengan slippage 10 pips.",
+          "outcome": "Akun Trader A mengalami rugi beruntun sebesar 55 pips hanya dalam 15 detik akibat kombinasi slippage dan spread widening ekstrem."
+        }
+      },
+      {
+        "id": "sec-15m-rule-sop",
+        "title": "3. Protokol 15-Minute Rule: Menunggu Debu Mereda & Retest Entry",
+        "content": "### Protokol 15-Minute Rule Institusional\n\nDaripada berjudi menebak arah spike 60 detik pertama, trader profesional berbasis ICT / Smart Money Concepts menerapkan **Protokol 15-Minute Rule**. Aturan ini mewajibkan trader untuk sama sekali tidak menyentuh tombol eksekusi pada 15 menit pertama (menunggu penutupan 3 lilin M5 atau 1 lilin M15).\n\nSetelah 15 menit berlalu:\n1. **Penyedia Likuiditas Kembali Masuk:** Kedalaman order book interbank kembali normal dan spread menyempit kembali ke kisaran 0.2 – 0.8 pip.\n2. **Arah Fundamental Terkonfirmasi:** Volatilitas acak HFT mereda, digantikan oleh akumulasi volume institusional searah tren fundamental yang dominan.\n3. **Pembentukan Inefficiency (FVG):** Lonjakan lilin berita (*displacement candle*) meninggalkan ketidakseimbangan harga (*Fair Value Gap / Imbalance*).\n4. **Clean Retest Entry:** Harga melakukan koreksi santai (*pullback*) menuju area FVG untuk rebalance volume. Pada titik inilah limit order dieksekusi dengan Stop Loss terukur di bawah swing low lilin berita, menghasilkan rasio Risk-to-Reward (R:R) superior di atas 1:3.\n\nBerikut visualisasi struktural tahapan eksekusi SOP 15-Minute Rule menggunakan Chart Studio:",
+        "illustrationMode": "custom_builder",
+        "customChartConfig": {
+          "title": "POST-NEWS 15-MINUTE CLEAN RETEST ENTRY",
+          "subtitle": "EUR/USD M5 • Menunggu Volatilitas Awal Mereda & Entry Retest FVG",
+          "timeframe": "M5",
+          "candleSpacing": "wide",
+          "height": 540,
+          "candles": [
+            {
+              "id": "c0",
+              "index": 0,
+              "open": 1.0830,
+              "high": 1.0835,
+              "low": 1.0825,
+              "close": 1.0832,
+              "label": "Pre-News"
+            },
+            {
+              "id": "c1",
+              "index": 1,
+              "open": 1.0832,
+              "high": 1.0880,
+              "low": 1.0820,
+              "close": 1.0875,
+              "label": "News Spike"
+            },
+            {
+              "id": "c2",
+              "index": 2,
+              "open": 1.0875,
+              "high": 1.0910,
+              "low": 1.0870,
+              "close": 1.0905,
+              "label": "Displacement"
+            },
+            {
+              "id": "c3",
+              "index": 3,
+              "open": 1.0905,
+              "high": 1.0908,
+              "low": 1.0872,
+              "close": 1.0878,
+              "label": "M15 Close"
+            },
+            {
+              "id": "c4",
+              "index": 4,
+              "open": 1.0878,
+              "high": 1.0880,
+              "low": 1.0848,
+              "close": 1.0852,
+              "label": "FVG Fill"
+            },
+            {
+              "id": "c5",
+              "index": 5,
+              "open": 1.0852,
+              "high": 1.0870,
+              "low": 1.0849,
+              "close": 1.0868,
+              "label": "Rejection"
+            },
+            {
+              "id": "c6",
+              "index": 6,
+              "open": 1.0868,
+              "high": 1.0900,
+              "low": 1.0865,
+              "close": 1.0898,
+              "label": "Expansion"
+            },
+            {
+              "id": "c7",
+              "index": 7,
+              "open": 1.0898,
+              "high": 1.0925,
+              "low": 1.0895,
+              "close": 1.0922,
+              "label": "TP Target"
+            }
+          ],
+          "boxes": [
+            {
+              "id": "box-fvg",
+              "startIndex": 1,
+              "endIndex": 5,
+              "topPrice": 1.0870,
+              "bottomPrice": 1.0845,
+              "label": "Fair Value Gap (FVG)",
+              "labelPosition": "top-left",
+              "boxType": "fvg",
+              "color": "#3B82F6",
+              "opacity": 0.20,
+              "borderColor": "#2563EB",
+              "borderWidth": 1.5,
+              "borderStyle": "dashed",
+              "showMidLine": true,
+              "midLineLabel": "50% Consequent Encroachment"
+            }
+          ],
+          "positions": [
+            {
+              "id": "pos-long-news",
+              "type": "long",
+              "label": "15-Min Retest Execution (R:R 1:3.2)",
+              "startIndex": 4,
+              "endIndex": 7,
+              "entryPrice": 1.0850,
+              "targetPrice": 1.0920,
+              "stopPrice": 1.0825,
+              "targetColor": "#10B981",
+              "stopColor": "#EF4444"
+            }
+          ],
+          "trendlines": [
+            {
+              "id": "tl-news-low",
+              "x1Index": 0,
+              "y1Price": 1.0820,
+              "x2Index": 7,
+              "y2Price": 1.0820,
+              "color": "#EF4444",
+              "strokeWidth": 1.5,
+              "lineStyle": "dashed",
+              "label": "Key Protection Level (News Low: 1.0820)",
+              "labelAlignment": "start"
+            },
+            {
+              "id": "tl-bos",
+              "x1Index": 2,
+              "y1Price": 1.0910,
+              "x2Index": 7,
+              "y2Price": 1.0910,
+              "color": "#10B981",
+              "strokeWidth": 1.5,
+              "lineStyle": "dotted",
+              "label": "Bullish Structure Expansion",
+              "labelAlignment": "end"
+            }
+          ],
+          "badges": [
+            {
+              "id": "badge-spike",
+              "candleIndex": 1,
+              "price": 1.0890,
+              "text": "News Spike Shock",
+              "style": "badge",
+              "bgColor": "#EF4444",
+              "textColor": "#FFFFFF",
+              "alignX": "center",
+              "alignY": "bottom"
+            },
+            {
+              "id": "badge-normalizing",
+              "candleIndex": 3,
+              "price": 1.0918,
+              "text": "Spread Normalizing",
+              "style": "pill",
+              "bgColor": "#F59E0B",
+              "textColor": "#FFFFFF",
+              "alignX": "center",
+              "alignY": "bottom"
+            },
+            {
+              "id": "badge-retest-entry",
+              "candleIndex": 4,
+              "price": 1.0838,
+              "text": "Clean Retest Entry",
+              "style": "badge",
+              "bgColor": "#10B981",
+              "textColor": "#FFFFFF",
+              "alignX": "center",
+              "alignY": "top"
+            }
+          ],
+          "infoCards": [
+            {
+              "id": "card-sop",
+              "candleIndex": 9.2,
+              "price": 1.0880,
+              "width": 220,
+              "alignX": "left",
+              "alignY": "top",
+              "stepBadge": "SOP",
+              "title": "SOP EKSEKUSI NEWS",
+              "lines": [
+                "1: Tunggu 15 Menit Awal",
+                "2: Identifikasi Displacement",
+                "3: Pasang Limit di FVG",
+                "4: Stop di Bawah Low Berita"
+              ],
+              "footerBadge": "Disiplin Eksekusi Zero-Slippage",
+              "color": "#3B82F6",
+              "bgColor": "#1E293B",
+              "bgOpacity": 0.90,
+              "textColor": "#F8FAFC"
+            }
+          ],
+          "legends": [
+            {
+              "id": "leg-fvg",
+              "label": "Fair Value Gap (FVG)",
+              "color": "#3B82F6"
+            },
+            {
+              "id": "leg-pos",
+              "label": "Long Position R:R 3.2",
+              "color": "#10B981"
+            },
+            {
+              "id": "leg-sl",
+              "label": "Invalidation (News Low)",
+              "color": "#EF4444"
+            }
+          ]
+        },
+        "callout": {
+          "type": "tip",
+          "title": "Kekuatan Aturan 15 Menit",
+          "text": "Dengan membiarkan 3 lilin M5 terbentuk pasca rilis, Anda mentransfer risiko slippage dan pelebaran spread kepada spekulan amatir, sementara Anda masuk bersama arus modal institusional pada harga diskon di FVG."
+        }
+      }
+    ],
+    "quiz": [
+      {
+        "id": "q1",
+        "question": "Mengapa penyedia likuiditas (Tier-1 Banks) menarik kuotasi order limit tepat sebelum rilis data high-impact?",
+        "options": [
+          "Untuk memanipulasi chart agar akun retail terkena stop loss",
+          "Untuk melindungi neraca modal institusi dari toxic order flow dan ketidakpastian data",
+          "Karena sistem bursa dunia diwajibkan offline oleh regulasi CFTC",
+          "Agar broker retail dapat meningkatkan keuntungan dari komisi trading"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Tier-1 Liquidity Providers menarik kuotasi (quote withdrawal) untuk memitigasi risiko inventaris dan kerugian akibat eksekusi searah yang masif (toxic flow) ketika data belum terkonfirmasi."
+      },
+      {
+        "id": "q2",
+        "question": "Apa kelemahan utama strategi Pre-News Straddle (memasang pending buy stop dan sell stop tepat sebelum rilis)?",
+        "options": [
+          "Komisi swap overnight broker menjadi berlipat ganda",
+          "Whipsaw spike dapat mengaktifkan kedua order dengan slippage buruk lalu memicu dua stop loss sekaligus",
+          "Tidak bisa digunakan pada pair major seperti EUR/USD",
+          "Broker melarang pemasangan pending order lebih dari 1 lot"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Pada detik-detik awal, HFT sering melakukan whipsaw yang menyapu liquidity kedua sisi. Trader straddle sering terkena eksekusi buy stop di pucuk dan sell stop di dasar sebelum harga berbalik arah, berujung pada double loss."
+      },
+      {
+        "id": "q3",
+        "question": "Kapan waktu paling aman untuk mengeksekusi order menurut Protokol 15-Minute Rule?",
+        "options": [
+          "Tepat 1 detik sebelum rilis berita menggunakan script one-click",
+          "Pada detik ke-10 saat candle M1 pertama melonjak agresif",
+          "Setelah 15 menit pasca rilis, saat spread kembali normal dan harga melakukan retest ke Fair Value Gap (FVG)",
+          "Menjelang penutupan sesi New York jam 05:00 pagi"
+        ],
+        "correctAnswer": 2,
+        "explanation": "Menunggu minimal 15 menit memastikan spread broker telah menyusut ke batas normal, volatilitas spike acak mereda, dan terbentuk market structure jelas dengan displacement dan FVG yang dapat diuji ulang (clean retest)."
+      }
+    ],
+    "keyTakeaways": [
+      "Likuiditas pasar interbank menguap sesaat sebelum high-impact news, memicu pelebaran spread masif dan negative slippage pada pending/market orders.",
+      "Strategi pre-news straddle adalah perangkap berbahaya akibat risiko dual-trigger whipsaw yang melipatgandakan kerugian.",
+      "Protokol 15-Minute Rule memberikan filter terbaik untuk menghindari noise eksekusi dan membiarkan likuiditas normal kembali.",
+      "Peluang trading probabilitas tertinggi muncul saat terjadi pullback tertib menuju Fair Value Gap (FVG) yang ditinggalkan oleh lilin displacement berita."
+    ],
+    "commonMistakes": [
+      {
+        "mistake": "Memasang pending order rapat (tight stop) beberapa detik menjelang pengumuman suku bunga atau NFP.",
+        "correction": "Hindari pending order pre-news; pelebaran spread seketika akan menyentuh stop order Anda pada harga yang sangat tergelincir (slippage berat)."
+      },
+      {
+        "mistake": "Menggunakan leverage maksimal dengan asumsi bahwa rilis berita selalu memberikan one-way trend searah konsensus.",
+        "correction": "Gunakan ukuran lot konservatif (<1% risk modal) karena sentimen pasar kerap bereaksi paradoks terhadap revisi data masa lalu atau komentar konferensi pers."
+      },
+      {
+        "mistake": "Melakukan 'chase the spike' (panik entry market order di pucuk lilin M1 yang sedang melesat cepat).",
+        "correction": "Jangan mengejar harga yang telah mengalami overextension; tunggu fase rebalancing pada retest imbalance FVG di timeframe M5/M15."
+      },
+      {
+        "mistake": "Mengabaikan pelebaran spread saat memperhitungkan jarak Stop Loss pada posisi yang sudah berjalan.",
+        "correction": "Lebarkan jarak buffer Stop Loss atau kunci profit parsial sebelum rilis berita untuk mencegah stop out prematur akibat spike spread."
+      }
+    ],
+    "relatedTopics": [
+      "economic-calendar-first-principles",
+      "the-big-three-nfp-cpi-central-banks",
+      "intermarket-cross-asset-correlations",
+      "risk-management-principles",
+      "order-block-mastery"
+    ],
+    "references": [
+      {
+        "title": "FX Market Microstructure and Liquidity Provision During High-Impact Macroeconomic Announcements",
+        "author": "Bank for International Settlements (BIS)",
+        "year": "2021",
+        "url": "https://www.bis.org"
+      },
+      {
+        "title": "ICT High-Frequency News Execution Model and Post-News Imbalance Trading",
+        "author": "Inner Circle Trader (ICT)",
+        "year": "2022",
+        "url": "https://innercircletrader.net"
+      }
+    ]
+  }
+]

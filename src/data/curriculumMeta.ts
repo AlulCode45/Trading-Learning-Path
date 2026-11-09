@@ -25,11 +25,26 @@ export interface DocModuleInfo {
   badgeBg: string;
   badgeText: string;
   cardBg: string;
-  iconName: 'TrendingUp' | 'Layers' | 'BarChart3' | 'ShieldCheck' | 'Cpu' | 'Award' | 'Coins';
+  iconName: 'TrendingUp' | 'Layers' | 'BarChart3' | 'ShieldCheck' | 'Cpu' | 'Award' | 'Coins' | 'Globe';
   roadmapSlug: string;
 }
 
 export const DOC_MODULES: DocModuleInfo[] = [
+  {
+    id: 'macro-fundamental',
+    slug: 'macro-fundamental',
+    title: 'Macroeconomics & Fundamental News Trading',
+    shortTitle: 'Macro & News Trading',
+    badge: 'Red Folder & Macro',
+    description: 'Analisis fundamental makroekonomi, kalender ekonomi (NFP, CPI, FOMC), dinamika deviasi angka konsensus, korelasi intermarket (DXY, Yields, Gold), dan SOP eksekusi rilis berita.',
+    accentColor: '#F59E0B',
+    borderClass: 'border-amber-400 dark:border-amber-500/50',
+    badgeBg: 'bg-amber-100 dark:bg-amber-950/60',
+    badgeText: 'text-amber-800 dark:text-amber-300',
+    cardBg: 'hover:border-amber-400/80',
+    iconName: 'Globe',
+    roadmapSlug: 'macroeconomic-fundamental-news'
+  },
   {
     id: 'crypto-smart-money',
     slug: 'crypto-smart-money',
@@ -161,6 +176,9 @@ export function getRoadmapSlugForArticle(articleOrSlug?: { slug?: string; catego
   if (moduleId === 'quant' || category === 'Quantitative' || category === 'Quantitative Analysis' || slug.startsWith('quant-')) {
     return 'quantitative-algo-trading';
   }
+  if (moduleId === 'macro-fundamental' || category === 'Fundamental' || category === 'Fundamental & Macro' || slug.startsWith('economic-') || slug.startsWith('the-big-three') || slug.startsWith('macro-') || slug.startsWith('intermarket-') || slug.startsWith('high-impact-')) {
+    return 'macroeconomic-fundamental-news';
+  }
   return 'price-action-market-structure';
 }
 
@@ -171,6 +189,8 @@ export function getModuleIdForArticle(articleOrSlug?: { slug?: string; category?
   }
   const slug = typeof articleOrSlug === 'string' ? articleOrSlug : (articleOrSlug.slug || '');
   const category = typeof articleOrSlug === 'string' ? '' : (articleOrSlug.category || '');
+
+  if (category === 'Fundamental' || category === 'Fundamental & Macro' || slug.startsWith('economic-') || slug.startsWith('the-big-three') || slug.startsWith('macro-') || slug.startsWith('intermarket-') || slug.startsWith('high-impact-')) return 'macro-fundamental';
 
   if (category === 'Crypto Smart Money' || slug.startsWith('csm-')) return 'crypto-smart-money';
   if (category === 'Edianto Ong Mega Profit' || slug.startsWith('edianto-ong-')) return 'edianto-ong';
