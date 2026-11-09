@@ -819,5 +819,197 @@ export const allQuizzesData: Record<string, QuizQuestion[]> = {
       correctAnswer: 0,
       explanation: 'WebSocket menghilangkan overhead TCP handshake berulang dan latensi HTTP headers, krusial untuk eksekusi algoritma.'
     }
-  ]
+  ],
+
+  // Macro Fundamental Quizzes
+  "node-macro-1": [
+    {
+      id: "q-cal-1",
+      question: "Apa fenomena yang kerap terjadi pada price action 1 jam sebelum rilis data Red Folder?",
+      options: [
+        "Harga langsung trending satu arah dengan volume masif",
+        "Pre-News Drift berupa konsolidasi range sempit dan penumpukan likuiditas Equal Highs/Lows",
+        "Semua bursa menghentikan pencatatan order book secara permanen",
+        "Spread broker selalu menyempit menjadi 0 pip"
+      ],
+      correctAnswer: 1,
+      explanation: "Pre-News Drift terjadi karena partisipan institusional menahan diri untuk memasang order market besar, sehingga harga bergerak lambat dan membentuk kolam likuiditas stop loss di batas range."
+    },
+    {
+      id: "q-cal-2",
+      question: "Folder warna apa pada kalender ekonomi yang menandakan potensi pergerakan >50-100 pips dan wajib diwaspadai?",
+      options: [
+        "Green Folder",
+        "Yellow Folder",
+        "Red Folder (High Impact)",
+        "Grey Folder"
+      ],
+      correctAnswer: 2,
+      explanation: "Red Folder mengindikasikan berita berdampak tinggi (High Impact) yang berpotensi memicu volatilitas ekstrim dan penarikan likuiditas oleh bank Tier-1."
+    },
+    {
+      id: "q-cal-3",
+      question: "Kapan waktu terbaik mengeksekusi order saat ada rilis berita berdampak tinggi?",
+      options: [
+        "Tepat di detik 00:00 saat angka baru saja keluar",
+        "Memasang pending order rapat 1 menit sebelum rilis",
+        "Menunggu penutupan lilin berita dan fase retest pada struktur harga (15 menit pasca rilis)",
+        "Membeli lot maksimal dengan leverage tertinggi"
+      ],
+      correctAnswer: 2,
+      explanation: "Menunggu penutupan lilin rilis berita dan retest struktur harga (aturan 15 menit) menghindarkan trader dari slippage berat dan jebakan sumbu manipulasi awal."
+    }
+  ],
+  "node-macro-2": [
+    {
+      id: "q-b3-1",
+      question: "Jika data NFP dirilis jauh lebih tinggi daripada perkiraan (Job Growth Masif), apa dampak yang paling umum pada Dolar AS dan Emas?",
+      options: [
+        "Dolar AS anjlok, Emas reli rekor baru",
+        "Dolar AS menguat (DXY Bullish) dan Emas tertekan turun (Gold Bearish)",
+        "Tidak ada dampak volatilitas sama sekali",
+        "Semua mata uang menguat terhadap Dolar AS"
+      ],
+      correctAnswer: 1,
+      explanation: "NFP yang kuat mengindikasikan pasar tenaga kerja yang solid, membuka peluang The Fed mempertahankan suku bunga tinggi, yang menguntungkan Dolar AS dan menekan aset tanpa imbal hasil seperti Emas."
+    },
+    {
+      id: "q-b3-2",
+      question: "Mengapa konferensi pers Ketua The Fed (FOMC Press Conference) kerap membalikkan arah pergerakan lilin awal rilis suku bunga?",
+      options: [
+        "Karena trader bereaksi terhadap nada bicara (tone) Hawkish atau Dovish dan panduan prospek masa depan (Forward Guidance)",
+        "Karena bursa saham ditutup secara mendadak",
+        "Karena data suku bunga dibatalkan oleh kongres",
+        "Karena broker mengubah harga sesuka hati"
+      ],
+      correctAnswer: 0,
+      explanation: "Angka suku bunga seringkali sudah diprediksi pasar, tetapi petunjuk Forward Guidance dari kata-kata ketua The Fed mengenai proyeksi inflasi berikutnya yang memicu repricing arah portofolio global."
+    },
+    {
+      id: "q-b3-3",
+      question: "Apa perbedaan mendasar antara Headline CPI dan Core CPI?",
+      options: [
+        "Headline CPI dihitung oleh swasta, Core CPI dihitung pemerintah",
+        "Core CPI mengecualikan harga makanan dan energi yang cenderung volatil",
+        "Headline CPI hanya mencakup sektor teknologi",
+        "Core CPI tidak memperhitungkan mata uang Dolar"
+      ],
+      correctAnswer: 1,
+      explanation: "Core CPI mengeliminasi komponen harga energi dan pangan yang berfluktuasi tajam musiman, sehingga menjadi ukuran tren inflasi fundamental yang paling dicermati bank sentral."
+    }
+  ],
+  "node-macro-3": [
+    {
+      id: "q-dev-1",
+      question: "Apa arti istilah Buy the Rumor, Sell the Fact/News dalam pasar keuangan?",
+      options: [
+        "Trader harus selalu percaya rumor di media sosial",
+        "Harga naik sebelum rilis karena antisipasi, lalu jatuh saat rilis karena profit-taking institusi",
+        "Fakta berita tidak pernah dicatat oleh bursa saham",
+        "Pasar selalu tutup setiap kali ada fakta baru"
+      ],
+      correctAnswer: 1,
+      explanation: "Ketika ekspektasi pasar sudah terefleksi penuh (priced-in) pada reli harga menjelang berita, rilis aktual dimanfaatkan institusi untuk menjual posisi mereka ke pembeli ritel yang terlambat."
+    },
+    {
+      id: "q-dev-2",
+      question: "Apa dampak revisi data periode sebelumnya yang bernilai sangat negatif terhadap rilis data headline hari ini?",
+      options: [
+        "Revisi periode lalu diabaikan oleh pasar",
+        "Dapat membatalkan dampak positif headline dan membalikkan arah harga",
+        "Otomatis memicu penutupan bank sentral",
+        "Hanya berdampak pada pasar komoditas gandum"
+      ],
+      correctAnswer: 1,
+      explanation: "Institusi selalu menghitung deviasi netto; angka headline yang tampak bagus dapat langsung dibatalkan oleh penurunan data revisi."
+    },
+    {
+      id: "q-dev-3",
+      question: "Kapan deviasi data memicu kelanjutan tren searah (continuation) alih-alih pembalikan arah (reversal)?",
+      options: [
+        "Ketika angka actual sama persis dengan forecast konsensus",
+        "Ketika deviasi sangat ekstrim di luar rentang standar deviasi analis (Surprise Factor Tinggi)",
+        "Hanya pada hari libur bursa",
+        "Ketika rilis berita bertipe Yellow Folder"
+      ],
+      correctAnswer: 1,
+      explanation: "Surprise factor yang sangat tinggi memaksa institusi mengubah proyeksi valuasi jangka menengah mereka secara mendesak, menghasilkan arus beli/jual lanjutan yang masif."
+    }
+  ],
+  "node-macro-4": [
+    {
+      id: "q-im-1",
+      question: "Apa korelasi umum antara Indeks Dolar AS (DXY) dan harga Emas dunia (XAU/USD)?",
+      options: [
+        "Korelasi positif sempurna (keduanya selalu naik bersamaan)",
+        "Korelasi negatif / terbalik (DXY menguat kuat cenderung menekan harga Emas)",
+        "Emas menentukan nilai kurs Dolar di bursa Wall Street",
+        "Tidak ada korelasi matematis sama sekali"
+      ],
+      correctAnswer: 1,
+      explanation: "Karena Emas dihargai dalam denominasi Dolar AS (USD), penguatan DXY membuat Emas lebih mahal bagi pemegang mata uang lain dan meningkatkan biaya peluang menyimpan aset tanpa bunga."
+    },
+    {
+      id: "q-im-2",
+      question: "Instrumen apa yang dianggap sebagai Jangkar Biaya Modal Bebas Risiko di panggung makroekonomi dunia?",
+      options: [
+        "Bitcoin",
+        "US 10-Year Treasury Yield",
+        "Saham Apple",
+        "Minyak Mentah Brent"
+      ],
+      correctAnswer: 1,
+      explanation: "Imbal hasil obligasi pemerintah AS tenor 10 tahun (US10Y) adalah acuan biaya modal bebas risiko global yang mendasari diskonto valuasi seluruh kelas aset di dunia."
+    },
+    {
+      id: "q-im-3",
+      question: "Pada rezim pasar Risk-On, kelas aset mana yang paling diuntungkan dari limpahan likuiditas?",
+      options: [
+        "Kas Dolar AS dan Surat Utang Jangka Pendek",
+        "Saham Teknologi bertumbuh tinggi, Bitcoin, dan Mata Uang Komoditas",
+        "Hanya Emas murni batangan",
+        "Deposito berjangka perbankan"
+      ],
+      correctAnswer: 1,
+      explanation: "Pada kondisi Risk-On, investor bersedia mengambil risiko lebih tinggi demi imbal hasil maksimal, menyalurkan modal ke saham teknologi, crypto, dan aset bertumbuh cepat."
+    }
+  ],
+  "node-macro-5": [
+    {
+      id: "q-sop-1",
+      question: "Mengapa penyedia likuiditas (Tier-1 Banks) menarik kuotasi order limit tepat sebelum rilis data high-impact?",
+      options: [
+        "Untuk memanipulasi chart agar akun retail terkena stop loss",
+        "Untuk melindungi neraca modal institusi dari toxic order flow dan ketidakpastian data",
+        "Karena sistem bursa dunia diwajibkan offline oleh regulasi CFTC",
+        "Agar broker retail dapat meningkatkan keuntungan dari komisi trading"
+      ],
+      correctAnswer: 1,
+      explanation: "Tier-1 Liquidity Providers menarik kuotasi (quote withdrawal) untuk memitigasi risiko inventaris dan kerugian akibat eksekusi searah yang masif (toxic flow) ketika data belum terkonfirmasi."
+    },
+    {
+      id: "q-sop-2",
+      question: "Apa kelemahan utama strategi Pre-News Straddle (memasang pending buy stop dan sell stop tepat sebelum rilis)?",
+      options: [
+        "Komisi swap overnight broker menjadi berlipat ganda",
+        "Whipsaw spike dapat mengaktifkan kedua order dengan slippage buruk lalu memicu dua stop loss sekaligus",
+        "Tidak bisa digunakan pada pair major seperti EUR/USD",
+        "Broker melarang pemasangan pending order lebih dari 1 lot"
+      ],
+      correctAnswer: 1,
+      explanation: "Pada detik-detik awal, HFT sering melakukan whipsaw yang menyapu liquidity kedua sisi. Trader straddle sering terkena eksekusi buy stop di pucuk dan sell stop di dasar sebelum harga berbalik arah, berujung pada double loss."
+    },
+    {
+      id: "q-sop-3",
+      question: "Kapan waktu paling aman untuk mengeksekusi order menurut Protokol 15-Minute Rule?",
+      options: [
+        "Tepat 1 detik sebelum rilis berita menggunakan script one-click",
+        "Pada detik ke-10 saat candle M1 pertama melonjak agresif",
+        "Setelah 15 menit pasca rilis, saat spread kembali normal dan harga melakukan retest ke Fair Value Gap (FVG)",
+        "Menjelang penutupan sesi New York jam 05:00 pagi"
+      ],
+      correctAnswer: 2,
+      explanation: "Menunggu minimal 15 menit memastikan spread broker telah menyusut ke batas normal, volatilitas spike acak mereda, dan terbentuk market structure jelas dengan displacement dan FVG yang dapat diuji ulang (clean retest)."
+    }
+  ],
 };

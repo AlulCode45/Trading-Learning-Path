@@ -158,10 +158,12 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
       if (b.topPrice > max) max = b.topPrice;
     }
     if (!isFinite(min) || !isFinite(max)) return { minPrice: 60, maxPrice: 180 };
-    const range = Math.max(20, max - min);
+    const rawRange = Math.max(0.000001, max - min);
+    const minSpan = min > 20 ? 20 : (rawRange < 0.001 ? rawRange * 0.5 : rawRange * 0.2);
+    const range = Math.max(minSpan, rawRange);
     return {
-      minPrice: Math.floor(min - range * 0.16),
-      maxPrice: Math.ceil(max + range * 0.16)
+      minPrice: min - range * 0.16,
+      maxPrice: max + range * 0.16
     };
   }, [candles, polylines, boxes]);
 
@@ -195,7 +197,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
   const priceGridLevels = useMemo(() => {
     const count = 6;
     const step = (maxPrice - minPrice) / count;
-    return Array.from({ length: count + 1 }, (_, i) => Math.round(minPrice + i * step));
+    return Array.from({ length: count + 1 }, (_, i) => minPrice + i * step);
   }, [minPrice, maxPrice]);
 
   // Exponential Moving Average (EMA) Calculation
@@ -544,7 +546,7 @@ export const ChartCanvas: React.FC<ChartCanvasProps> = ({
                   fontSize="10"
                   fontFamily="JetBrains Mono, monospace"
                 >
-                  {price.toFixed(1)}
+                  {maxPrice < 10 ? price.toFixed(4) : price.toFixed(1)}
                 </text>
               </g>
             );

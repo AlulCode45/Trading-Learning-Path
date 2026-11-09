@@ -191,11 +191,22 @@ const ROADMAP_STAGE_BOXES: Record<string, StageGroupBox[]> = {
     { level: 2, title: '2. SMART MONEY & KOLAM LIKUIDITAS', subtitle: 'Siapa Whales & MM, Akumulasi Tersembunyi, EQH, EQL, Trendline Liquidity & Sweeps (Bab 5-6)', tag: 'Whale Footprint', x: 40, y: 445, width: 920, height: 300, badgeBg: 'bg-black text-[#FACC15] dark:bg-white dark:text-black', badgeText: 'FASE 2' },
     { level: 3, title: '3. STRUKTUR PASAR & KONFIRMASI CHoCH', subtitle: 'Pemetaan Swing High/Low, Break of Structure (BOS), dan Sinyal Reversal Dini CHoCH (Bab 7-8)', tag: 'Arsitektur Tren', x: 40, y: 775, width: 920, height: 300, badgeBg: 'bg-black text-[#C084FC] dark:bg-white dark:text-black', badgeText: 'FASE 3' },
     { level: 4, title: '4. ORDER BLOCK, FVG & SOP EKSEKUSI', subtitle: 'Validasi Unmitigated OB, Fair Value Gap (FVG), Algoritma Eksekusi 4-Langkah & Portofolio 70/30 (Bab 9-12)', tag: 'Eksekusi & Survival', x: 40, y: 1105, width: 920, height: 380, badgeBg: 'bg-black text-[#10B981] dark:bg-white dark:text-black', badgeText: 'FASE 4' }
+  ],
+  'macroeconomic-fundamental-news': [
+    { level: 1, title: '1. KALENDER MAKRO & THE BIG THREE', subtitle: 'Klasifikasi Red Folder, Pre-News Drift, NFP, Inflasi CPI, dan Keputusan Suku Bunga FOMC', tag: 'Katalis Moneter', x: 40, y: 35, width: 920, height: 340, badgeBg: 'bg-black text-[#FACC15] dark:bg-white dark:text-black', badgeText: 'FASE 1' },
+    { level: 2, title: '2. MEKANIKA DEVIASI & ANALISIS INTERMARKET', subtitle: 'Fenomena Priced-in, Surprise Factor, Korelasi DXY, Imbal Hasil US10Y, Emas, dan Bitcoin', tag: 'Dinamika Likuiditas', x: 40, y: 420, width: 920, height: 230, badgeBg: 'bg-black text-[#38BDF8] dark:bg-white dark:text-black', badgeText: 'FASE 2' },
+    { level: 3, title: '3. PROTOKOL EKSEKUSI & MANAJEMEN RISIKO', subtitle: 'The 15-Minute Rule, Antisipasi Spread Widening & Slippage, serta Clean Retest FVG Entry', tag: 'Protokol Eksekusi', x: 40, y: 690, width: 920, height: 230, badgeBg: 'bg-black text-[#10B981] dark:bg-white dark:text-black', badgeText: 'FASE 3' }
   ]
 };
 
 // Comprehensive presets for all 57 nodes across all 5 official roadmaps
 const POSITION_PRESETS: Record<string, { posX: number; posY: number }> = {
+  // --- Roadmap: Macroeconomic & Fundamental News Trading ---
+  'node-macro-1': { posX: LANE_CENTER_X, posY: 80 },
+  'node-macro-2': { posX: LANE_CENTER_X, posY: 235 },
+  'node-macro-3': { posX: LANE_LEFT_X,   posY: 465 },
+  'node-macro-4': { posX: LANE_RIGHT_X,  posY: 465 },
+  'node-macro-5': { posX: LANE_CENTER_X, posY: 735 },
   // --- Roadmap 1: Price Action & Market Structure ---
   'node-1-1': { posX: LANE_CENTER_X, posY: 80 },
   'node-1-2': { posX: LANE_CENTER_X, posY: 235 },
@@ -502,6 +513,49 @@ export const RoadmapCanvas: React.FC<RoadmapCanvasProps> = ({
         isActive: node52.status === 'completed',
         isCompleted: node52.status === 'completed' && node53.status === 'completed',
         color: '#E11D48'
+      });
+    }
+
+    // Branching curve from node-macro-2 to node-macro-4 (since node-macro-2 branches to both 3 and 4)
+    const nodeMacro2 = posMap.get('node-macro-2');
+    const nodeMacro4 = posMap.get('node-macro-4');
+    if (nodeMacro2 && nodeMacro4) {
+      list.push({
+        id: 'node-macro-2->node-macro-4',
+        fromNodeId: 'node-macro-2',
+        toNodeId: 'node-macro-4',
+        fromX: nodeMacro2.posX + NODE_WIDTH / 2,
+        fromY: nodeMacro2.posY + NODE_HEIGHT,
+        toX: nodeMacro4.posX + NODE_WIDTH / 2,
+        toY: nodeMacro4.posY,
+        fromPort: 'bottom',
+        toPort: 'top',
+        curveType: 'bezier',
+        lineStyle: 'solid',
+        isActive: nodeMacro2.status === 'completed',
+        isCompleted: nodeMacro2.status === 'completed' && nodeMacro4.status === 'completed',
+        color: '#0284C7'
+      });
+    }
+
+    // Convergence curve from node-macro-4 to node-macro-5
+    const nodeMacro5 = posMap.get('node-macro-5');
+    if (nodeMacro4 && nodeMacro5) {
+      list.push({
+        id: 'node-macro-4->node-macro-5',
+        fromNodeId: 'node-macro-4',
+        toNodeId: 'node-macro-5',
+        fromX: nodeMacro4.posX + NODE_WIDTH / 2,
+        fromY: nodeMacro4.posY + NODE_HEIGHT,
+        toX: nodeMacro5.posX + NODE_WIDTH / 2,
+        toY: nodeMacro5.posY,
+        fromPort: 'bottom',
+        toPort: 'top',
+        curveType: 'bezier',
+        lineStyle: 'solid',
+        isActive: nodeMacro4.status === 'completed',
+        isCompleted: nodeMacro4.status === 'completed' && nodeMacro5.status === 'completed',
+        color: '#059669'
       });
     }
 

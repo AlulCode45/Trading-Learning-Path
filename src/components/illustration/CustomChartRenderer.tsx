@@ -130,14 +130,17 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
       if (card.price > max) max = card.price;
     }
     if (!isFinite(min) || !isFinite(max)) return { minPrice: 60, maxPrice: 180 };
-    const range = Math.max(20, max - min);
+    const rawRange = Math.max(0.000001, max - min);
+    // Dynamic minimum span based on asset magnitude (e.g., forex decimal pairs vs stocks/crypto)
+    const minSpan = min > 20 ? 20 : (rawRange < 0.001 ? rawRange * 0.5 : rawRange * 0.2);
+    const range = Math.max(minSpan, rawRange);
     const hasTopCard = infoCards.some(c => c.price >= max);
     const hasBottomCard = infoCards.some(c => c.price <= min) || badges.some(b => b.price <= min);
     const topMargin = hasTopCard ? 0.32 : 0.22;
     const bottomMargin = hasBottomCard ? 0.28 : 0.18;
     return {
-      minPrice: Math.floor(min - range * bottomMargin),
-      maxPrice: Math.ceil(max + range * topMargin)
+      minPrice: min - range * bottomMargin,
+      maxPrice: max + range * topMargin
     };
   }, [candles, polylines, boxes, positions, trendlines, badges, infoCards]);
 
@@ -163,7 +166,7 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
   const priceGridLevels = useMemo(() => {
     const count = 5;
     const step = (maxPrice - minPrice) / count;
-    return Array.from({ length: count + 1 }, (_, i) => Math.round(minPrice + i * step));
+    return Array.from({ length: count + 1 }, (_, i) => minPrice + i * step);
   }, [minPrice, maxPrice]);
 
   const emaPoints = useMemo(() => {
@@ -380,7 +383,7 @@ export const CustomChartRenderer: React.FC<CustomChartRendererProps> = ({
                 fontSize="9"
                 fontFamily="JetBrains Mono, monospace"
               >
-                {price.toFixed(1)}
+                {maxPrice < 10 ? price.toFixed(4) : price.toFixed(1)}
               </text>
             </g>
           );
